@@ -1,0 +1,71 @@
+name: nifty-signal
+
+# Daily Nifty market-timing read -> classify + score -> verdict -> commentary ->
+# notify -> commit data. The committed JSON drives the CF Pages build. Equity
+# valuation moves slowly, so once/day at 1pm IST is the right cadence.
+
+on:
+  schedule:
+    - cron: '30 7 * * *' # 07:30 UTC = 1:00 PM IST (user request)
+  workflow_dispatch:
+  repository_dispatch:
+    types: [tick]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nifty-scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: nifty-tools-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            nifty-tools-${{ runner.os }}-
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[browser,dev]"
+
+      - name: Install Playwright Chromium (JS fallback)
+        run: python -m playwright install chromium --with-deps
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Read Nifty signal (once daily at 1pm IST)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_BASE_URL: ${{ secrets.NTFY_BASE_URL }}
+          NTFY_USER: ${{ secrets.NTFY_USER }}
+          NTFY_PASSWORD: ${{ secrets.NTFY_PASSWORD }}
+        run: |
+          python -m nifty_signal --data data -v
+
+      - name: Commit data
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data
+          git diff --cached --quiet || git commit -m "data: nifty signal $(date -u +'%F %H:%MZ')"
+          git push

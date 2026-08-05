@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import SignalLight from '../components/SignalLight.astro';
+import IndicatorBar from '../components/IndicatorBar.astro';
+import Sparkline from '../components/Sparkline.astro';
+import { loadSignal, loadHistory } from '../lib/data';
+
+const sig = loadSignal();
+const hist = loadHistory();
+const updated = sig.ts ? new Date(sig.ts).toUTCString() : 'awaiting first run';
+const vColor =
+  sig.verdict_score >= 70 ? 'var(--buy)'
+  : sig.verdict_score >= 55 ? 'var(--accum)'
+  : sig.verdict_score >= 40 ? 'var(--hold)'
+  : 'var(--caution)';
+---
+
+<Base>
+  <header class="top wrap">
+    <span class="kicker">Indian equity · market timing</span>
+    <h1>Is now a good time to buy?</h1>
+    <p class="sub">One signal from valuation + sentiment: Nifty PE, the Buffett indicator, and market mood, combined into a single verdict. SIP always; time your lumpsum by the light.</p>
+  </header>
+
+  <main class="wrap">
+    <section class="verdict-card">
+      <SignalLight verdict={sig.verdict} score={sig.verdict_score} />
+      <div class="verdict-read">
+        <div class="score" style={`color:${vColor}`}>{sig.verdict_score.toFixed(0)}<span>/100</span></div>
+        <div class="score-lab">buy-attractiveness</div>
+        <p class="rationale">{sig.summary || sig.rationale}</p>
+      </div>
+    </section>
+
+    <section class="inds">
+      {sig.indicators.map((ind) => <IndicatorBar ind={ind} />)}
+    </section>
+
+    <section class="spark-card">
+      <h2>Signal-score history</h2>
+      <Sparkline points={hist} />
+    </section>
+
+    <section class="legend">
+      <div><b style="color:var(--buy)">STRONG BUY</b> valuations cheap — deploy lumpsum</div>
+      <div><b style="color:var(--accum)">ACCUMULATE</b> reasonable — stagger lumpsum in</div>
+      <div><b style="color:var(--hold)">HOLD-SIP-ONLY</b> fully valued — SIP only</div>
+      <div><b style="color:var(--caution)">CAUTION</b> rich — SIP only, wait</div>
+    </section>
+
+    <p class="updated">Updated {updated}{sig.errors.length ? ` · ${sig.errors.length} source(s) n/a` : ''}</p>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Not investment advice. A valuation-timing signal, not a trade call. SIP regardless.
+      Sources: IndexPE · CEIC · Tickertape MMI · <a href="https://oriz.in">oriz.in</a>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .verdict-card {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) 1fr;
+    gap: 26px;
+    align-items: center;
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 26px 24px;
+    margin: 26px 0 18px;
+    box-shadow: 0 30px 80px -46px rgba(0, 0, 0, 0.9);
+  }
+  .verdict-read { text-align: left; }
+  .score {
+    font-family: var(--font-disp); font-weight: 700;
+    font-size: clamp(52px, 11vw, 84px); line-height: 0.95;
+  }
+  .score span { font-size: 0.4em; color: var(--dim); font-weight: 500; }
+  .score-lab {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--dim); margin-top: 2px;
+  }
+  .rationale { color: var(--ink); margin: 14px 0 0; font-size: 15px; max-width: 46ch; }
+
+  .inds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 8px 0 20px; }
+
+  .spark-card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px 10px; margin: 8px 0 18px;
+  }
+  .spark-card h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin: 0 0 10px;
+  }
+
+  .legend {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px;
+    font-size: 12px; color: var(--dim); margin: 4px 0 12px;
+  }
+  .legend b { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; margin-right: 6px; }
+
+  .updated {
+    color: var(--dimmer); font-family: var(--font-mono); font-size: 11px;
+    text-align: center; margin: 4px 0 0;
+  }
+
+  @media (max-width: 640px) {
+    .verdict-card { grid-template-columns: 1fr; text-align: center; }
+    .verdict-read { text-align: center; }
+    .rationale { margin-left: auto; margin-right: auto; }
+    .inds { grid-template-columns: 1fr; }
+    .legend { grid-template-columns: 1fr; }
+  }
+</style>

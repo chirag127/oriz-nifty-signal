@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Node / Astro
+node_modules/
+web/dist/
+web/.astro/
+.DS_Store
+
+# secrets — never commit
+.env
+*.local
+
+# keep data/ (it's the DB) but ignore scratch
+data/*.tmp
