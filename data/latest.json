@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 42.3,
+  "verdict_score": 41.1,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-06T10:09:25+00:00",
+  "ts": "2026-08-07T06:16:29+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.91,
+      "value": 20.93,
       "unit": "x",
       "zone": "fair",
-      "score": 57.6,
+      "score": 57.5,
       "detail": "vs 22.08 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 23.26,
+      "value": 23.24,
       "unit": "x",
       "zone": "fair",
-      "score": 59.7,
+      "score": 59.8,
       "detail": "vs 23.86 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,15 +40,15 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 77.95,
+      "value": 83.69,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 22.0,
+      "score": 16.3,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-06T10:09:00.036Z"
+      "as_of": "2026-08-07T06:15:00.200Z"
     }
   ],
-  "summary": "Now is a good time for SIP-only investments, given fair valuations and extreme market greed.",
+  "summary": "Now is a good time for SIP-only investments due to fair valuations and extreme market greed.",
   "errors": []
 }
