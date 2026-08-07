@@ -1,8 +1,8 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 41.1,
+  "verdict_score": 41.2,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-07T06:16:29+00:00",
+  "ts": "2026-08-07T08:45:10+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,15 +40,15 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 83.69,
+      "value": 83.37,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 16.3,
+      "score": 16.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-07T06:15:00.200Z"
+      "as_of": "2026-08-07T08:45:00.111Z"
     }
   ],
-  "summary": "Now is a good time for SIP-only investments due to fair valuations and extreme market greed.",
+  "summary": "Now is a good time for a long-term Indian-equity investor to adopt a SIP-only strategy due to fair valuations and extreme market greed.",
   "errors": []
 }
