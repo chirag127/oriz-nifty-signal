@@ -1,28 +1,28 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 41.2,
+  "verdict_score": 41.7,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-07T08:45:10+00:00",
+  "ts": "2026-08-08T08:06:45+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.93,
+      "value": 20.87,
       "unit": "x",
       "zone": "fair",
-      "score": 57.5,
-      "detail": "vs 22.08 5-yr median",
+      "score": 57.9,
+      "detail": "vs 22.07 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 23.24,
+      "value": 23.21,
       "unit": "x",
       "zone": "fair",
-      "score": 59.8,
-      "detail": "vs 23.86 5-yr median",
+      "score": 60.0,
+      "detail": "vs 23.85 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
@@ -40,15 +40,15 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 83.37,
+      "value": 81.93,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 16.6,
+      "score": 18.1,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-07T08:45:00.111Z"
+      "as_of": "2026-08-07T14:20:00.224Z"
     }
   ],
-  "summary": "Now is a good time for a long-term Indian-equity investor to adopt a SIP-only strategy due to fair valuations and extreme market greed.",
+  "summary": "HOLD-SIP-ONLY is advisable as valuations are fair but market sentiment indicates extreme greed, suggesting caution for lump-sum investments.",
   "errors": []
 }
