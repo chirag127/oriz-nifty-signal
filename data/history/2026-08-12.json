@@ -3,5 +3,10 @@
     "ts": "2026-08-12T08:48:24+00:00",
     "score": 44.4,
     "verdict": "HOLD-SIP-ONLY"
+  },
+  {
+    "ts": "2026-08-12T14:07:20+00:00",
+    "score": 44.0,
+    "verdict": "HOLD-SIP-ONLY"
   }
 ]
