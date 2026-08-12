@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 42.4,
+  "verdict_score": 44.4,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-11T08:30:57+00:00",
+  "ts": "2026-08-12T08:48:24+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.88,
+      "value": 20.65,
       "unit": "x",
       "zone": "fair",
-      "score": 57.8,
+      "score": 59.5,
       "detail": "vs 22.07 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 23.22,
+      "value": 23.05,
       "unit": "x",
       "zone": "fair",
-      "score": 59.7,
+      "score": 61.1,
       "detail": "vs 23.83 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,15 +40,15 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 77.69,
+      "value": 72.09,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 22.3,
+      "score": 27.9,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-11T08:30:00.110Z"
+      "as_of": "2026-08-12T08:48:00.130Z"
     }
   ],
-  "summary": "HOLD-SIP-ONLY (score 42/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.88x (fair); Nifty 500 PE (breadth) 23.22x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 77.69 (Extreme Greed).",
+  "summary": "HOLD-SIP-ONLY (score 44/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.65x (fair); Nifty 500 PE (breadth) 23.05x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 72.09 (Extreme Greed).",
   "errors": []
 }
