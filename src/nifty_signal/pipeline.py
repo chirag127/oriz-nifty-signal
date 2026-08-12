@@ -1,6 +1,6 @@
 """Pipeline: collect indicators -> classify zones + score -> combine into verdict
--> g4f one-line commentary (template fallback) -> write data/latest.json +
-data/history/<date>.json -> notify.
+-> keyless-LLM news sentiment (best-effort) + commentary -> write data/latest.json +
+data/history/<date>.json -> notify with combined Nifty+MMI message.
 
 Daily cadence (equity valuation moves slowly): the workflow runs once at 1pm IST
 and always sends, so the daily read lands in Telegram regardless of change.
@@ -11,13 +11,20 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+from typing import Any
 
+import httpx
+
+from .llm.sentiment import Sentiment, analyse_sentiment
 from .llm.summary import commentary
-from .models import Signal
+from .models import Indicator, Signal
 from .sources import collect
-from .util import composite_score, verdict_label
+from .sources.news import fetch_headlines
+from .util import composite_score, score_news_sentiment, verdict_label
 
 log = logging.getLogger("nifty_signal")
+
+_MMI_URL = "https://raw.githubusercontent.com/chirag127/oriz-mmi/main/data/latest.json"
 
 _RATIONALE = {
     "STRONG BUY": "Valuations cheap + sentiment supportive — good time to add lumpsum; SIP always.",
@@ -27,8 +34,41 @@ _RATIONALE = {
 }
 
 
+def _fetch_mmi_snapshot() -> dict[str, Any] | None:
+    """Fetch oriz-mmi published data (best-effort, 15s timeout)."""
+    try:
+        r = httpx.get(_MMI_URL, timeout=15, follow_redirects=True)
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:  # noqa: BLE001
+        log.warning("mmi snapshot fetch failed: %s", e)
+        return None
+
+
+def _news_sentiment_indicator(sent: Sentiment) -> Indicator:
+    from .util import score_news_sentiment
+    sc = score_news_sentiment(sent["sentiment"], sent["confidence"])
+    return Indicator(
+        key="news_sentiment",
+        label="News sentiment",
+        value=float(sent["confidence"]),
+        unit="",
+        zone=sent["sentiment"],
+        score=round(sc, 1),
+        detail=sent.get("one_line", ""),
+        source="kilo/ddgs",
+    )
+
+
 def build_signal() -> tuple[Signal, list[str]]:
     indicators, errors = collect()
+
+    # news + LLM sentiment (best-effort)
+    headlines = fetch_headlines()
+    sent = analyse_sentiment(headlines)
+    if sent:
+        indicators.append(_news_sentiment_indicator(sent))
+
     scores = {i.key: i.score for i in indicators if i.score is not None}
     score = composite_score(scores)
     verdict = verdict_label(score)
@@ -83,6 +123,7 @@ def run(
 
     if with_notify:
         from .notify.channels import notify_all
-        notify_all(sig)
+        mmi_snapshot = _fetch_mmi_snapshot()
+        notify_all(sig, mmi_snapshot=mmi_snapshot)
 
     return sig

@@ -5,7 +5,13 @@ from pathlib import Path
 
 from nifty_signal.sources.buffett import BuffettIndicator
 from nifty_signal.sources.mmi import parse_mmi
-from nifty_signal.sources.nifty_pe import Nifty500PE, Nifty50PE, _parse_indexpe
+from nifty_signal.sources.nifty_pe import (
+    Nifty500PE,
+    Nifty50PE,
+    NiftyMidcap100PE,
+    NiftySmallcap100PE,
+    _parse_indexpe,
+)
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -35,6 +41,27 @@ def test_nifty500_indicator_from_fixture(monkeypatch):
     assert ind.value == 23.26
     assert ind.zone in {"cheap", "fair", "expensive", "frothy"}
     assert "23.86" in ind.detail
+
+
+def test_midcap100_indicator_from_fixture(monkeypatch):
+    html = (FIX / "indexpe_midcap100.html").read_text(encoding="utf-8")
+    monkeypatch.setattr("nifty_signal.sources.nifty_pe.fetch_text", lambda url: html)
+    ind = NiftyMidcap100PE().fetch()
+    assert ind.key == "midcap_pe"
+    assert ind.value == 30.92
+    assert ind.score is None           # informational only
+    assert "29.52" in ind.detail
+    assert ind.zone in {"cheap", "fair", "expensive", "frothy"}
+
+
+def test_smallcap100_indicator_from_fixture(monkeypatch):
+    html = (FIX / "indexpe_smallcap100.html").read_text(encoding="utf-8")
+    monkeypatch.setattr("nifty_signal.sources.nifty_pe.fetch_text", lambda url: html)
+    ind = NiftySmallcap100PE().fetch()
+    assert ind.key == "smallcap_pe"
+    assert ind.value == 31.89
+    assert ind.score is None           # informational only
+    assert "28.99" in ind.detail
 
 
 def test_buffett_indicator_from_fixture(monkeypatch):

@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.28",
     "g4f>=0.3",
+    "ddgs>=7.0",
 ]
 
 [project.optional-dependencies]
@@ -25,3 +26,4 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = ["integration: live-network tests (skipped when offline)"]

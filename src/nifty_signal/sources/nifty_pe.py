@@ -1,10 +1,13 @@
-"""Nifty valuation — Nifty 50 PE (primary) + Nifty 500 PE vs median (breadth).
+"""Nifty valuation — Nifty 50 PE + Nifty 500 PE (breadth) + Nifty Midcap 100 +
+Nifty Smallcap 100 (segment breakdown).
 
-Source: indexpe.in — server-rendered, keyless. VERIFIED 2026-08-05 (httpx). Both
-the current PE and its 5-yr median appear in the page <meta description> and
-title, e.g. "Nifty 50 PE ratio is 20.91 as of August 2026, about 5% below its
-5-year median of 22.08." Fallback for the Nifty 50 headline PE: nifty-pe-ratio.com
-(value in <title>).
+Source: indexpe.in — server-rendered, keyless. VERIFIED 2026-08-05 (httpx) for
+Nifty 50 + 500; VERIFIED 2026-08-12 (httpx) for Midcap 100 + Smallcap 100.
+All pages share the same <meta description> pattern:
+  "NIFTY XYZ PE ratio is <val> as of <month year>, about N% [above|below] its
+  5-year median of <median>."
+Midcap/Smallcap indicators are informational only (weight=0 in composite) — they
+add segment colour to the verdict message without distorting the aggregate score.
 """
 
 from __future__ import annotations
@@ -77,6 +80,50 @@ class Nifty500PE(Source):
             zone=zone_vs_median(pe, median),
             score=round(score_vs_median(pe, median), 1),
             detail=f"vs {median:g} 5-yr median",
+            source="IndexPE",
+            as_of=as_of,
+        )
+
+
+class NiftyMidcap100PE(Source):
+    """Informational only — weight=0 in composite; shown in segment breakdown."""
+    key = "midcap_pe"
+    url = "https://indexpe.in/nifty-midcap-100"
+
+    def fetch(self) -> Indicator:
+        pe, median, as_of = _parse_indexpe(fetch_text(self.url))
+        detail = f"vs {median:g} 5-yr median" if median else ""
+        zone = zone_vs_median(pe, median) if median else zone_nifty_pe(pe)
+        return Indicator(
+            key="midcap_pe",
+            label="Nifty Midcap 100 PE",
+            value=round(pe, 2),
+            unit="x",
+            zone=zone,
+            score=None,  # informational only — excluded from composite
+            detail=detail,
+            source="IndexPE",
+            as_of=as_of,
+        )
+
+
+class NiftySmallcap100PE(Source):
+    """Informational only — weight=0 in composite; shown in segment breakdown."""
+    key = "smallcap_pe"
+    url = "https://indexpe.in/nifty-smallcap-100"
+
+    def fetch(self) -> Indicator:
+        pe, median, as_of = _parse_indexpe(fetch_text(self.url))
+        detail = f"vs {median:g} 5-yr median" if median else ""
+        zone = zone_vs_median(pe, median) if median else zone_nifty_pe(pe)
+        return Indicator(
+            key="smallcap_pe",
+            label="Nifty Smallcap 100 PE",
+            value=round(pe, 2),
+            unit="x",
+            zone=zone,
+            score=None,  # informational only — excluded from composite
+            detail=detail,
             source="IndexPE",
             as_of=as_of,
         )

@@ -127,14 +127,29 @@ def score_mmi(v: float) -> float:
     return _clamp(100.0 - v)
 
 
+def score_news_sentiment(sentiment: str, confidence: int) -> float:
+    """Map LLM sentiment to buy-attractiveness score.
+    bullish -> below 50 (contrarian: market optimism = less attractive entry)
+    bearish -> above 50 (contrarian: fear = better entry)
+    neutral -> 50.
+    Weight in composite is small (0.05) so this nudges ±a few points only.
+    """
+    base = {"bullish": 35.0, "bearish": 65.0}.get(sentiment.lower(), 50.0)
+    # scale by confidence: low confidence pulls toward 50
+    return _clamp(50.0 + (base - 50.0) * (confidence / 100.0))
+
+
 # ---- composite verdict ---------------------------------------------------
 
 # weights sum to 1 among AVAILABLE indicators (renormalised if any n/a).
+# news_sentiment is a small nudge (±3-5 pts effect); midcap/smallcap_pe have
+# score=None so they never enter composite_score regardless.
 WEIGHTS = {
-    "nifty_pe": 0.40,   # primary
-    "buffett": 0.25,
-    "mmi": 0.20,
-    "nifty500_pe": 0.15,
+    "nifty_pe": 0.38,       # primary large-cap valuation
+    "buffett": 0.24,        # total-market / GDP
+    "mmi": 0.19,            # sentiment contrarian
+    "nifty500_pe": 0.14,    # broad-market breadth
+    "news_sentiment": 0.05, # keyless-LLM news nudge (small weight)
 }
 
 

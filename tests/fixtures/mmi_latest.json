@@ -1,0 +1,16 @@
+{
+  "source": "tickertape",
+  "value": 72.09,
+  "zone": "Extreme Greed",
+  "ts": "2026-08-12T08:50:12+00:00",
+  "source_date": "2026-08-12T08:48:00.130Z",
+  "raw": 68.57,
+  "nifty": 24288.05,
+  "vix": -11.94,
+  "fii": -156131,
+  "summary": "Market greed elevated; watch for pullback.",
+  "comparisons": [
+    {"label": "Yesterday", "value": 78.52, "zone": "Extreme Greed", "date": "2026-08-11T00:00:00.000Z"},
+    {"label": "Last week", "value": 74.42, "zone": "Extreme Greed", "date": "2026-08-05T00:00:00.000Z"}
+  ]
+}

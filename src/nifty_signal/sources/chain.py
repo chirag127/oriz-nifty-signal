@@ -11,13 +11,20 @@ from ..models import Indicator
 from .base import Source
 from .buffett import BuffettIndicator
 from .mmi import MmiSource
-from .nifty_pe import Nifty500PE, Nifty50PE
+from .nifty_pe import Nifty500PE, Nifty50PE, NiftyMidcap100PE, NiftySmallcap100PE
 
 log = logging.getLogger("nifty_signal")
 
 
 def build_sources() -> list[Source]:
-    return [Nifty50PE(), Nifty500PE(), BuffettIndicator(), MmiSource()]
+    return [
+        Nifty50PE(),
+        Nifty500PE(),
+        BuffettIndicator(),
+        MmiSource(),
+        NiftyMidcap100PE(),    # informational — score=None, excluded from composite
+        NiftySmallcap100PE(),  # informational — score=None, excluded from composite
+    ]
 
 
 def collect() -> tuple[list[Indicator], list[str]]:
