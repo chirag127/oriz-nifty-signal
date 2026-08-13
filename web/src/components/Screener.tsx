@@ -13,6 +13,7 @@ import {
 import { HeatBar } from './HeatBar';
 import { WeightPanel } from './WeightPanel';
 import { FilterBuilder, type Filter, passes } from './FilterBuilder';
+import { FundamentalSliders } from './FundamentalSliders';
 import { Compare } from './Compare';
 
 const FACTOR_COLOR: Record<SubKey, string> = {
@@ -158,11 +159,11 @@ function Board({ data }: { data: Payload }) {
 
       {data.ai && <AiCard ai={data.ai} rows={rows} weights={weights} />}
 
-      {/* PRESET picker — grouped scans + weighting profiles */}
+      {/* PRESET picker — grouped scans (filters + sort) */}
       <section class="profiles">
         <div class="phead">
-          <h2>Presets — scans &amp; weightings</h2>
-          <span class="pct-hint">each sets the filters + sort (and, where relevant, the factor weights); surfaces the top {TOP_N} — narrow to your 5</span>
+          <h2>Presets — scans</h2>
+          <span class="pct-hint">each sets filters + sort; surfaces the top {TOP_N} — narrow to your 5</span>
         </div>
         {PRESET_GROUPS.map((g) => (
           <div class="preset-group" key={g}>
@@ -183,16 +184,20 @@ function Board({ data }: { data: Payload }) {
           </div>
         ))}
         {preset === 'custom' && <div class="profile-row"><span class="profile-chip active custom">Custom mix</span></div>}
-        <p class="profile-blurb">{preset === 'custom' ? 'Your own factor mix — sliders below drive the ranking live.' : activePreset?.blurb}</p>
+        <p class="profile-blurb">{preset === 'custom' ? 'Your own score weighting — the factor sliders drive the composite ranking live.' : activePreset?.blurb}</p>
       </section>
 
       <div class="grid">
         <aside class="controls">
+          <FundamentalSliders filters={filters} setFilters={setFilters} />
+          <details class="adv-filter">
+            <summary>Advanced filter builder</summary>
+            <FilterBuilder filters={filters} setFilters={setFilters} />
+          </details>
           <WeightPanel
             weights={weights} normalised={nz} colors={FACTOR_COLOR}
             onChange={onWeights} onEqual={() => onWeights(eqWeights())}
           />
-          <FilterBuilder filters={filters} setFilters={setFilters} />
           <div class="panel actions">
             <button class="btn ghost" onClick={reset}>reset</button>
             <button class="btn" onClick={share}>share screen ↗</button>

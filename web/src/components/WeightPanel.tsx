@@ -2,8 +2,9 @@ import { SUBS, type SubKey } from '../lib/scoring';
 
 type Weights = Record<SubKey, number>;
 
-// Weight sliders that show each factor's NORMALISED share (% of influence, sums
-// to 100) alongside the raw slider — so relative influence is always visible.
+// Score-weighting sliders — how the return-potential COMPOSITE rank is computed.
+// Not a filter. Each factor's NORMALISED share (% of influence, sums to 100) is
+// shown alongside the raw slider so relative influence on the ranking is visible.
 export function WeightPanel({
   weights, normalised, colors, onChange, onEqual,
 }: {
@@ -15,9 +16,10 @@ export function WeightPanel({
   return (
     <section class="panel weights-panel">
       <div class="phead">
-        <h2>Factor weights</h2>
+        <h2>Score weighting</h2>
         <button class="mini" onClick={onEqual}>equal</button>
       </div>
+      <p class="scoring-cap">How the return-potential rank is computed — tune the composite ranking, not a filter.</p>
 
       {/* stacked influence bar — the normalized proportion, at a glance */}
       <div class="influence" role="img" aria-label="factor influence proportions">
@@ -48,7 +50,7 @@ export function WeightPanel({
           </label>
         ))}
       </div>
-      <p class="note">The composite recomputes live from each stock’s stored sub-scores — no refetch. Renormalised over the factors a stock actually has.</p>
+      <p class="note">The composite ranking recomputes live from each stock’s stored sub-scores — no refetch. Renormalised over the factors a stock actually has. Sort by “Return-potential rank” to use it.</p>
     </section>
   );
 }

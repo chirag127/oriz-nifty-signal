@@ -22,7 +22,7 @@ const hasAi = Boolean(data.ai);
     <div class="hero-copy">
       <span class="kicker">Indian equity · return-potential screener</span>
       <h1>Rank the market by <span class="hl">return potential</span>.</h1>
-      <p class="sub">Every listed Indian stock, scored on a single composite that blends value, growth, quality, momentum and analyst upside. Pick a <b>weighting profile</b>, re-weight the factors live, and read the <b>after-tax MTF buy-and-hold</b> return. Runs entirely in your browser.</p>
+      <p class="sub">Every listed Indian stock, scored on a single composite that blends value, growth, quality, momentum and analyst upside. Pick a <b>scan preset</b>, drag the <b>fundamental filters</b> (PE, PB, ROE…), tune the <b>score weighting</b>, and read the <b>after-tax MTF buy-and-hold</b> return. Runs entirely in your browser.</p>
     </div>
     <dl class="stat-row">
       <div class="stat"><dt>Universe</dt><dd>{count.toLocaleString('en-IN')}</dd><span>listed stocks</span></div>
@@ -121,6 +121,44 @@ const hasAi = Boolean(data.ai);
   .wrow input[type=range] { width: 100%; }
   .wpct { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--gold-soft); text-align: right; }
   .note { color: var(--dimmer); font-size: 11.5px; margin: 12px 0 0; line-height: 1.5; }
+  .scoring-cap { color: var(--dim); font-size: 11.5px; margin: -4px 0 14px; line-height: 1.5; }
+  .weights-panel { border-color: color-mix(in srgb, var(--gold) 22%, var(--line)); }
+
+  /* ---- fundamental range-sliders (primary filter path) ------------------- */
+  .sgrid { display: grid; gap: 15px; }
+  .srow { display: grid; gap: 5px; }
+  .slab { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-mono); font-size: 11.5px; color: var(--dim); }
+  .srow.on .slab { color: var(--ink); }
+  .sval { font-size: 11px; font-weight: 700; color: var(--dimmer); }
+  .srow.on .sval { color: var(--gold-soft); }
+  .strack { position: relative; height: 18px; }
+  .strack::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 4px; transform: translateY(-50%); background: var(--bg-2); border: 1px solid var(--line); border-radius: 4px; }
+  .sfill { position: absolute; top: 50%; height: 4px; transform: translateY(-50%); background: var(--gold); border-radius: 4px; }
+  .strack input[type=range] {
+    position: absolute; left: 0; top: 0; width: 100%; height: 18px; margin: 0;
+    background: none; pointer-events: none; -webkit-appearance: none; appearance: none;
+  }
+  .strack input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; pointer-events: auto; cursor: grab;
+    width: 15px; height: 15px; border-radius: 50%; background: var(--gold); border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--gold);
+  }
+  .strack input[type=range]::-moz-range-thumb {
+    pointer-events: auto; cursor: grab; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--gold); border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--gold);
+  }
+  .strack input[type=range]::-moz-range-track { background: none; }
+
+  /* advanced filter builder — collapsed by default, sliders are primary */
+  .adv-filter { margin: 0 0 14px; }
+  .adv-filter > summary {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); cursor: pointer; padding: 8px 2px; list-style: none;
+  }
+  .adv-filter > summary::-webkit-details-marker { display: none; }
+  .adv-filter > summary::before { content: '＋ '; color: var(--dimmer); }
+  .adv-filter[open] > summary::before { content: '－ '; }
+  .adv-filter > summary:hover { color: var(--ink); }
+  .adv-filter .filter-panel { margin-bottom: 0; }
 
   /* ---- filter builder ---------------------------------------------------- */
   .fb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }

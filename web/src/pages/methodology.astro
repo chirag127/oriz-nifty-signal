@@ -56,7 +56,7 @@ const piotroski = [
   <main class="wrap wrap-narrow doc">
     <nav class="toc panel">
       <a href="#composite">Value composite</a>
-      <a href="#profiles">Presets &amp; scans</a>
+      <a href="#profiles">Scoring, presets &amp; sliders</a>
       <a href="#metrics">Every metric</a>
       <a href="#piotroski">Piotroski 9-pt</a>
       <a href="#value-quality">Value vs quality</a>
@@ -90,8 +90,14 @@ higher composite = higher return potential</pre>
     </section>
 
     <section id="profiles" class="panel">
-      <h2>Presets — 12 curated scans &amp; weightings</h2>
-      <p>Every preset sets the <b>filters + the sort</b> (and, for the weighting ones, the factor sliders), then surfaces the <b>top ~100</b> so you narrow to your final 5. Grouped Core / Named / Strategy. <b>My Deep Value</b> loads by default. Exact rule for each:</p>
+      <h2>Presets — 13 curated scans</h2>
+      <p>Three separate controls drive the screen, and the site keeps them distinct:</p>
+      <ul>
+        <li><b>Score weighting = scoring.</b> The Value / Growth / Quality / Momentum / Analyst factor weights set <b>how the return-potential composite is computed and sorted</b>. They are a scoring control, not a filter — nothing is excluded, the ranking just re-tilts.</li>
+        <li><b>Presets = scans.</b> Each preset sets a <b>filter set + a sort</b> and surfaces the <b>top ~100</b> so you narrow to your final 5. A preset may set a sensible default weighting under the hood, but its identity is the scan, not the weights.</li>
+        <li><b>Fundamental sliders = filter thresholds.</b> The PE / PB / ROE / D/E / mcap / div-yield range-sliders set numeric min/max <b>filters</b> by dragging — the friendly path into the same filter state the advanced builder writes. Switching a preset moves the sliders.</li>
+      </ul>
+      <p>Presets are grouped Core / Named / Strategy. <b>My Deep Value</b> loads by default. Exact rule for each:</p>
       {groups.map((g) => (
         <>
           <h3>{g}</h3>
