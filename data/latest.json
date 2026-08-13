@@ -2,7 +2,7 @@
   "verdict": "HOLD-SIP-ONLY",
   "verdict_score": 46.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-13T09:09:58+00:00",
+  "ts": "2026-08-13T09:11:34+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -77,12 +77,12 @@
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty PE at ~20.6, 12.6% below 10-year average, markets fairly valued with no strong directional cues.",
+      "detail": "Markets trade range-bound with mixed bullish and bearish signals, no clear direction.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "",
+  "summary": "HOLD-SIP-ONLY (score 46/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.62x (fair); Nifty 500 PE (breadth) 23.02x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 65.5 (Greed); Nifty Midcap 100 PE 30.92x (fair); Nifty Smallcap 100 PE 31.89x (expensive); News sentiment 70 (neutral).",
   "lowest_pe": [
     {
       "symbol": "TMPV",
