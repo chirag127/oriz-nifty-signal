@@ -1,13 +1,9 @@
 {
-  "ts": "2026-08-13T10:45:37+00:00",
+  "ts": "2026-08-13T11:14:16+00:00",
   "stocks": [
     {
       "symbol": "TMPV",
       "pe": 1.55
-    },
-    {
-      "symbol": "IDEA",
-      "pe": 4.04
     },
     {
       "symbol": "HINDPETRO",
@@ -80,6 +76,10 @@
     {
       "symbol": "J&KBANK",
       "pe": 7.3
+    },
+    {
+      "symbol": "COALINDIA",
+      "pe": 8.18
     }
   ]
 }
