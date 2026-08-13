@@ -2,7 +2,7 @@
   "verdict": "HOLD-SIP-ONLY",
   "verdict_score": 45.9,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-13T08:45:53+00:00",
+  "ts": "2026-08-13T08:51:48+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 65.98,
+      "value": 66.09,
       "unit": "",
       "zone": "Greed",
-      "score": 34.0,
+      "score": 33.9,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-13T08:45:00.097Z"
+      "as_of": "2026-08-13T08:51:00.052Z"
     },
     {
       "key": "midcap_pe",
@@ -73,15 +73,15 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 65.0,
+      "value": 87.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty 50 PE at 20.6, slightly below 10-year average, no clear directional market signal.",
+      "detail": "Nifty 50 trades near average historical valuation with no clear directional catalyst from current updates.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "HOLD-SIP-ONLY (score 46/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.62x (fair); Nifty 500 PE (breadth) 23.02x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 65.98 (Greed); Nifty Midcap 100 PE 30.92x (fair); Nifty Smallcap 100 PE 31.89x (expensive); News sentiment 65 (neutral).",
+  "summary": "HOLD-SIP-ONLY (score 46/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.62x (fair); Nifty 500 PE (breadth) 23.02x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 66.09 (Greed); Nifty Midcap 100 PE 30.92x (fair); Nifty Smallcap 100 PE 31.89x (expensive); News sentiment 87 (neutral).",
   "errors": []
 }
