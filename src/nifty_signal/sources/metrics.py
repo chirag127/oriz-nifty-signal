@@ -376,12 +376,36 @@ def _finalize_mtf_score(rows: list[dict]) -> None:
         row["mtf_score"] = row.get("rp_score")
 
 
+MIN_MCAP_CR = 500.0   # drop nano/micro-caps below Rs 500 Cr (illiquid, unreliable data)
+
+def _investable_filter(rows: list[dict]) -> list[dict]:
+    """Drop non-investable rows before scoring: tiny/illiquid micro-caps
+    (mcap < MIN_MCAP_CR) and negative/zero PE or PB (loss-making / negative
+    book — not value candidates). Keeps a row with a MISSING (None) mcap/pe/pb
+    only if it isn't explicitly negative — missing != negative."""
+    out: list[dict] = []
+    for r in rows:
+        mc = r.get("mcap")
+        if isinstance(mc, (int, float)) and mc < MIN_MCAP_CR:
+            continue
+        pe = r.get("pe")
+        if isinstance(pe, (int, float)) and pe <= 0:
+            continue
+        pb = r.get("pb")
+        if isinstance(pb, (int, float)) and pb <= 0:
+            continue
+        out.append(r)
+    log.info("investable filter: %d -> %d (mcap>=%.0fCr, PE>0, PB>0)", len(rows), len(out), MIN_MCAP_CR)
+    return out
+
+
 def all_metrics(enrich_top: int = 60) -> dict:
     """Full pipeline: sweep -> Piotroski-enrich the value leaders -> compute
     scores -> annotate membership flags. Returns the JSON payload dict.
     `enrich_top` per-stock enrichment fetches (financials: Piotroski/EV-EBITDA/PEG;
     analyst: MoneyControl consensus + target + upside) over the top candidates."""
     rows = _sweep()
+    rows = _investable_filter(rows)
     n500 = _nifty500_symbols()
     by_sym = {r["symbol"]: r for r in rows}
 
