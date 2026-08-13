@@ -29,11 +29,22 @@ TICKERTAPE LABEL -> our short key (units verified: %, ratio, or Cr):
   ftls F&O lot(present=>MTF-eligible) · bookValue BV · faceValue FV · lastPrice price · acVol volume
   incEps EPS · incNinc NetIncome(Cr) · incTrev Revenue(Cr) · incEbi EBITDA(Cr) · balTdeb Debt · balTeq Equity · cafFcf FCF
 
-VALUE composite = equal-weight mean of per-factor z-scores of the cheapness
-yields (E/P=1/PE, B/P=1/PB, S/P=1/PS, EBITDA/EV=1/EV_EBITDA, FCF-yield=1/P_FCF,
-1/PEG). Positive-only (loss-makers / negative-book never score cheap); missing
-a factor => averaged over the rest. Div-yield stored + z-scored for re-weighting
-but KEPT OUT of the core rank (tax-inefficient for this strategy).
+VALUE composite = equal-weight mean of the PERCENTILE ranks (0-100, higher =
+cheaper) of the 5 classic cheapness yields across the investable universe:
+E/P=1/PE, B/P=1/PB, S/P=1/PS, EBITDA/EV=1/EV_EBITDA, FCF-yield=1/P_FCF.
+Positive-only (loss-makers / negative-book never score cheap, and the investable
+filter already drops PE<=0/PB<=0/mcap<500Cr); missing a factor => averaged over
+the present ones (need >=2). Each factor's percentile stored in the row `z`
+object so the site can re-weight; the composite `value_score` is the mean.
+Div-yield percentile stored (`dy`) for re-weighting but KEPT OUT of the core rank
+(tax-inefficient for this strategy).
+
+PRESET-BACKING fields (computed per stock so site presets are exact):
+- graham_ok / graham_score: classic Graham defensive (PE<15, PB<1.5, PE*PB<22.5,
+  D/E<1).
+- magic_rank + magic_ey_rank + magic_roce_rank: Greenblatt Magic Formula combined
+  rank of earnings-yield (EBIT/EV) + ROCE (lower magic_rank = better).
+- f_score: Piotroski (already enriched) exposed as-is.
 
 MTF Buy-and-Hold (1yr) = ranked by AFTER-TAX after-interest expected 1Y return:
   net = gross_return% - MTF_INTEREST% - LTCG(12.5% on the positive gain net of
@@ -48,6 +59,7 @@ import io
 import json
 import logging
 import math
+from bisect import bisect_left, bisect_right
 from pathlib import Path
 
 from ..util import (
@@ -106,16 +118,17 @@ _LABELS = list(_FIELD_MAP)
 
 # VALUE composite factors: our key -> how to turn it into a cheapness yield.
 # "inv" => 1/x (positive-only). "raw" => used as-is (already a yield, >=0).
+# Each is PERCENTILE-ranked 0-100 across the investable universe (higher=cheaper).
 _VALUE_FACTORS = {
     "ep": ("pe", "inv"),          # E/P
     "bp": ("pb", "inv"),          # B/P
     "sp": ("ps", "inv"),          # S/P
     "ebitda_ev": ("ev_ebitda", "inv"),
     "fcf_yield": ("p_fcf", "inv"),
-    "inv_peg": ("peg", "inv"),    # peg added during enrich; 1/PEG
 }
-# div-yield z-scored for re-weighting but NOT in the default composite (tax drag)
-_EXTRA_Z = {"dy": ("div_yield", "raw")}
+# div-yield percentile-ranked for re-weighting but NOT in the default composite
+# (tax drag)
+_EXTRA_PCT = {"dy": ("div_yield", "raw")}
 
 # GROWTH catalyst factors (higher = better): our key -> raw metric, all "raw"
 # (already growth %s). Averaged into a growth sub-score z.
@@ -210,6 +223,25 @@ def _zscores(values: dict[str, float]) -> dict[str, float]:
     return {k: max(-Z_CLAMP, min(Z_CLAMP, (v - mean) / sd)) for k, v in values.items()}
 
 
+def _percentile(values: dict[str, float]) -> dict[str, float]:
+    """Cross-sectional percentile rank 0-100 (higher value => higher percentile).
+    Ties share the average rank. Single value => 100 (it's the whole universe)."""
+    n = len(values)
+    if n == 0:
+        return {}
+    if n == 1:
+        return {k: 100.0 for k in values}
+    ordered = sorted(values.values())
+    # avg rank of each distinct value (0-based), mapped to 0-100
+    out: dict[str, float] = {}
+    for k, v in values.items():
+        lo = bisect_left(ordered, v)
+        hi = bisect_right(ordered, v)
+        avg_rank = (lo + hi - 1) / 2.0
+        out[k] = round(100.0 * avg_rank / (n - 1), 3)
+    return out
+
+
 def _yield_of(row: dict, key: str, mode: str) -> float | None:
     v = row.get(key)
     if not isinstance(v, (int, float)):
@@ -274,22 +306,23 @@ def _sub_z(rows: list[dict], factors: dict[str, str]) -> tuple[dict[str, dict[st
 
 
 def compute(rows: list[dict]) -> list[dict]:
-    """Attach PEG, per-factor z-scores, VALUE composite, growth/quality/momentum/
-    analyst sub-scores, the flagship RETURN-POTENTIAL composite, quality flag, and
-    the MTF-buy-hold after-tax fields to every row. Pure function over the swept
-    rows (unit-tested with synthetic data)."""
+    """Attach PEG, per-factor VALUE percentiles + composite, growth/quality/
+    momentum/analyst sub-scores, the flagship RETURN-POTENTIAL composite, quality
+    flag, Graham + Magic-Formula preset fields, and the MTF-buy-hold after-tax
+    fields to every row. Pure function over the swept rows (unit-tested)."""
     for row in rows:
         row["peg"] = _r(_peg(row))
 
-    # value cheapness-yield z-scores (+ div-yield extra, kept out of core rank)
-    factor_yields: dict[str, dict[str, float]] = {f: {} for f in {**_VALUE_FACTORS, **_EXTRA_Z}}
+    # VALUE = percentile rank (0-100, higher=cheaper) of each cheapness yield
+    # across the universe (+ div-yield extra pctile, kept out of core rank).
+    factor_yields: dict[str, dict[str, float]] = {f: {} for f in {**_VALUE_FACTORS, **_EXTRA_PCT}}
     for row in rows:
         s = row["symbol"]
-        for f, (key, mode) in {**_VALUE_FACTORS, **_EXTRA_Z}.items():
+        for f, (key, mode) in {**_VALUE_FACTORS, **_EXTRA_PCT}.items():
             y = _yield_of(row, key, mode)
             if y is not None:
                 factor_yields[f][s] = y
-    zs = {f: _zscores(vals) for f, vals in factor_yields.items()}
+    pct = {f: _percentile(vals) for f, vals in factor_yields.items()}
     qstats = _quality_stats(rows)
 
     # growth + momentum sub-scores (raw-metric z-means) + quality/analyst sub-scores
@@ -298,13 +331,14 @@ def compute(rows: list[dict]) -> list[dict]:
     quality_sub = {r["symbol"]: q for r in rows if (q := _quality_score(r, qstats)) is not None}
     upside_vals = {r["symbol"]: r["upside_pct"] for r in rows if isinstance(r.get("upside_pct"), (int, float))}
     analyst_z = _zscores(upside_vals)
+    magic = _magic_formula(rows)
 
     for row in rows:
         s = row["symbol"]
         z: dict[str, float] = {}
-        for f in {**_VALUE_FACTORS, **_EXTRA_Z}:
-            if s in zs[f]:
-                z[f] = round(zs[f][s], 3)
+        for f in {**_VALUE_FACTORS, **_EXTRA_PCT}:
+            if s in pct[f]:
+                z[f] = round(pct[f][s], 2)
         row["z"] = z
 
         core = [z[f] for f in _VALUE_FACTORS if f in z]
@@ -320,21 +354,77 @@ def compute(rows: list[dict]) -> list[dict]:
             and isinstance(de, (int, float)) and de < 1.5
             and (f is None or f >= 6)
         )
+        _graham(row)
+        m = magic.get(s)
+        if m:
+            row["magic_ey_rank"], row["magic_roce_rank"], row["magic_rank"] = m
         row["mtf_eligible"] = row.get("lot") is not None
         row["mtf_net_1y"] = _r(mtf_after_tax_return(row.get("r_1y")))
         row["rp_score"] = _return_potential(row)
 
     _finalize_mtf_score(rows)
+    magic_q1 = math.ceil(len(magic) / 4) if magic else 0
+    for row in rows:
+        row["scans"] = _scans(row, magic_q1)
     return rows
+
+
+# scan-membership: which named screens each stock passes (site chips + AI can say
+# "passes Graham + Magic Formula + Piotroski 8"). Emitted per-row as `scans`.
+def _scans(row: dict, magic_q1: int) -> list[str]:
+    out: list[str] = []
+    if row.get("graham_ok"):
+        out.append("graham")
+    mr = row.get("magic_rank")
+    if isinstance(mr, int) and magic_q1 and mr <= magic_q1:
+        out.append("magic_q1")            # Greenblatt Magic Formula top quartile
+    f = row.get("f_score")
+    if isinstance(f, (int, float)):
+        if f >= 8:
+            out.append("piotroski8")      # near-perfect Piotroski (8-9)
+        elif f >= 7:
+            out.append("piotroski7")
+    peg, g = row.get("peg"), row.get("eps_growth")
+    if isinstance(peg, (int, float)) and 0 < peg < 1 and isinstance(g, (int, float)) and g > 15:
+        out.append("garp")               # growth-at-reasonable-price
+    if row.get("quality_flag"):
+        out.append("quality")
+    vs = row.get("value_score")
+    if isinstance(vs, (int, float)) and vs >= 80:
+        out.append("deep_value")         # top-quintile cheapness composite
+    return out
+
+
+# scan slug -> human label (site chips + AI narration). Emitted once at top level.
+_SCAN_LABELS: dict[str, str] = {
+    "graham": "Graham Defensive",
+    "magic_q1": "Magic Formula (top quartile)",
+    "piotroski8": "Piotroski 8-9",
+    "piotroski7": "Piotroski 7",
+    "garp": "GARP",
+    "quality": "Quality",
+    "deep_value": "Deep Value",
+}
+
+
+# uniform-0-100 sd ~= 100/sqrt(12); centre + scale the value percentile to a
+# ~z scale so rp_score blends it with the z-based sub-scores fairly.
+_PCT_SD = 100.0 / math.sqrt(12.0)
+
+
+def _value_z(value_score: float) -> float:
+    return (value_score - 50.0) / _PCT_SD
 
 
 def _return_potential(row: dict) -> float | None:
     """Flagship RETURN-POTENTIAL composite: weighted mean of value/growth/quality/
     momentum/analyst sub-scores (weights renormalised over the ones present).
-    Loss-makers + no value signal => None (can't be a value re-rate candidate)."""
-    if row.get("value_score") is None:
+    value_score is a 0-100 percentile => rescaled to a ~z before blending with the
+    z-based subs. Loss-makers + no value signal => None (can't be a re-rate cand)."""
+    vs = row.get("value_score")
+    if vs is None:
         return None
-    subs = {"value": row.get("value_score"), "growth": row.get("growth_score"),
+    subs = {"value": _value_z(vs), "growth": row.get("growth_score"),
             "quality": row.get("quality_score"), "momentum": row.get("momentum_score"),
             "analyst": row.get("analyst_score")}
     num = den = 0.0
@@ -357,6 +447,51 @@ def _quality_score(row: dict, stats: dict[str, tuple[float, float]]) -> float | 
     if isinstance(fs, (int, float)):
         parts.append((fs - 4.5) / 2.0)  # centre 9-pt Piotroski on ~mid, ~2 sd
     return round(sum(parts) / len(parts), 4) if parts else None
+
+
+def _graham(row: dict) -> None:
+    """Classic Graham defensive screen. graham_ok = PE<15 AND PB<1.5 AND
+    PE*PB<22.5 AND D/E<1 (all four present + met). graham_score 0-4 = how many of
+    the four rungs pass (present-tolerant; None-D/E treated as unknown => that rung
+    fails). Stored so the site 'Graham' preset is exact."""
+    pe, pb, de = row.get("pe"), row.get("pb"), row.get("de")
+    have_pe = isinstance(pe, (int, float))
+    have_pb = isinstance(pb, (int, float))
+    have_de = isinstance(de, (int, float))
+    checks = [
+        have_pe and pe < 15,
+        have_pb and pb < 1.5,
+        have_pe and have_pb and pe * pb < 22.5,
+        have_de and de < 1,
+    ]
+    row["graham_score"] = sum(1 for c in checks if c)
+    row["graham_ok"] = all(checks)
+
+
+def _magic_formula(rows: list[dict]) -> dict[str, tuple[int, int, int]]:
+    """Greenblatt Magic Formula: combined rank of earnings-yield (EBIT/EV =
+    1/ev_ebit) + ROCE. Only rows with BOTH present are ranked (rank 1 = best on
+    that metric). magic_rank = sum of the two component ranks (lower = better).
+    Returns {symbol: (ey_rank, roce_rank, magic_rank)}."""
+    cand = [r for r in rows
+            if isinstance(r.get("ev_ebit"), (int, float)) and r["ev_ebit"] > 0
+            and isinstance(r.get("roce"), (int, float))]
+    if not cand:
+        return {}
+    ey_rank = _rank_desc({r["symbol"]: 1.0 / r["ev_ebit"] for r in cand})
+    roce_rank = _rank_desc({r["symbol"]: r["roce"] for r in cand})
+    combined = sorted(cand, key=lambda r: ey_rank[r["symbol"]] + roce_rank[r["symbol"]])
+    out: dict[str, tuple[int, int, int]] = {}
+    for i, r in enumerate(combined, 1):
+        s = r["symbol"]
+        out[s] = (ey_rank[s], roce_rank[s], i)
+    return out
+
+
+def _rank_desc(values: dict[str, float]) -> dict[str, int]:
+    """1-based rank, highest value = rank 1 (ties broken by insertion order)."""
+    ordered = sorted(values.items(), key=lambda kv: kv[1], reverse=True)
+    return {s: i for i, (s, _) in enumerate(ordered, 1)}
 
 
 def _finalize_mtf_score(rows: list[dict]) -> None:
@@ -478,15 +613,17 @@ def all_metrics(enrich_top: int = 60) -> dict:
         "analyst_covered": sum(1 for r in rows if r.get("analyst_count")),
         "assumptions": {"mtf_interest_pct": MTF_INTEREST_PCT, "ltcg_pct": LTCG_PCT, "beta_cap": BETA_CAP},
         "value_factors": list(_VALUE_FACTORS),
-        "z_factors": list({**_VALUE_FACTORS, **_EXTRA_Z}),
+        "z_factors": list({**_VALUE_FACTORS, **_EXTRA_PCT}),
         "rp_weights": _RP_WEIGHTS,
+        "scan_labels": _SCAN_LABELS,
     }
 
 
 # keys kept as-is (bool/int/str/dict); every other numeric key rounded to 2dp.
 _KEEP = {"symbol", "name", "sector", "z", "quality_flag", "mtf_eligible", "consensus",
          "n500", "value_rank", "mtf_rank", "rp_rank", "f_score", "f_components_computed",
-         "analyst_count"}
+         "analyst_count", "graham_ok", "graham_score", "scans",
+         "magic_rank", "magic_ey_rank", "magic_roce_rank"}
 _NUM4 = {"value_score", "quality_score", "growth_score", "momentum_score",
          "analyst_score", "rp_score", "mtf_score"}
 
@@ -499,7 +636,7 @@ def _lean(row: dict) -> dict:
     for k, v in row.items():
         if k == "sid":
             continue
-        if v is None or (k == "z" and not v):
+        if v is None or (k in ("z", "scans") and not v):
             continue
         if k in _KEEP:
             out[k] = v
