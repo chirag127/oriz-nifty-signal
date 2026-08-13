@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { PROFILES, SUBS, normalise } from '../lib/scoring';
 
 const metrics = [
   { m: 'PE (P/E)', mean: 'Price ÷ trailing earnings per share.', why: 'How many rupees you pay per rupee of annual profit.', good: 'Lower = cheaper. <15 cheap, >30 rich — but banks/utilities run low, growth runs high. Loss-makers have no meaningful PE.' },
@@ -32,22 +33,20 @@ const piotroski = [
 ---
 
 <Base
-  title="Methodology & tax rules — how the value composite + MTF screener works | Nifty Signal"
-  desc="The source of truth: every metric explained, the exact equal-weight z-score composite formula, the Piotroski 9-point breakdown, the MTF 1-year buy-and-hold rationale, and the full India equity tax section (LTCG 12.5% vs STCG 20%, exemption, dividend drag, churn-after-12-months)."
+  active="methodology"
+  title="Methodology & tax rules — how the return-potential composite + MTF screener works | Nifty Signal"
+  desc="The source of truth: every metric explained, the composite formula, the weighting profiles, the Piotroski 9-point breakdown, the MTF 1-year buy-and-hold rationale, and the full India equity tax section (LTCG 12.5% vs STCG 20%, exemption, dividend drag, churn-after-12-months)."
 >
-  <header class="top wrap">
+  <header class="top wrap wrap-narrow">
     <span class="kicker">the source of truth</span>
     <h1>How this works</h1>
-    <p class="sub">Every metric, the exact composite formula, the Piotroski breakdown, the MTF strategy, and the full tax logic. Plain language. This page — not a README — is the methodology of record.</p>
-    <nav class="pagenav">
-      <a href="/">← signal</a>
-      <a href="/screener">open the screener →</a>
-    </nav>
+    <p class="sub">Every metric, the composite formula, the weighting profiles, the Piotroski breakdown, the MTF strategy, and the full tax logic. Plain language. This page — not a README — is the methodology of record.</p>
   </header>
 
-  <main class="wrap doc">
+  <main class="wrap wrap-narrow doc">
     <nav class="toc panel">
-      <a href="#composite">Value composite</a>
+      <a href="#composite">Return-potential composite</a>
+      <a href="#profiles">Weighting profiles</a>
       <a href="#metrics">Every metric</a>
       <a href="#piotroski">Piotroski 9-pt</a>
       <a href="#value-quality">Value vs quality</a>
@@ -57,22 +56,46 @@ const piotroski = [
     </nav>
 
     <section id="composite" class="panel">
-      <h2>The value composite — what Screener.in doesn’t give you</h2>
-      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended cheapness score. That blended score is the point of this site.</p>
-      <p>For each stock we convert every cheapness factor into a <b>yield</b> (so higher = cheaper), then take its <b>cross-sectional z-score</b> — how many standard deviations above/below the market average it sits. The composite is the <b>equal-weight mean of the z-scores the stock has</b>:</p>
-      <pre class="formula">factors  = E/P, B/P, S/P, EBIT/EV, FCF-yield, 1/PEG   (div-yield display-only)
+      <h2>The return-potential composite — what Screener.in doesn’t give you</h2>
+      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended score. That blended score is the point of this site. It runs in two layers:</p>
+      <p><b>1 · Value composite (per-factor z-scores).</b> Each cheapness factor is turned into a <b>yield</b> (so higher = cheaper), then z-scored across the market — how many standard deviations above/below average it sits:</p>
+      <pre class="formula">value factors = E/P, B/P, S/P, EBITDA/EV, FCF-yield, 1/PEG   (div-yield display-only)
 
 per factor:  yield = 1 / ratio        (E/P = 1/PE, etc.)
              z     = (yield − market mean) / market stdev
 
-composite = mean( z[f]  for each factor f the stock HAS )
-higher composite = cheaper overall</pre>
+value_score = mean( z[f]  for each factor f the stock HAS )</pre>
+      <p><b>2 · Return-potential composite (weighted sub-scores).</b> Five sub-scores — <b>Value, Growth, Quality, Momentum, Analyst</b> — are each a z-mean of their inputs. The composite is their <b>weighted mean</b>, renormalised over the sub-scores the stock actually has:</p>
+      <pre class="formula">subs = value · growth · quality · momentum · analyst
+
+composite = Σ( wₖ · subₖ )  /  Σ( wₖ )     over present subs
+higher composite = higher return potential</pre>
+      <h3>Live re-weighting</h3>
+      <p>The JSON ships each stock’s sub-scores, so the sliders <b>recompute the composite in your browser</b> with no refetch. The <b>diverging heat gauge</b> in the rank column shows the composite (teal = below-average, gold = above), and the thin strip under it shows <b>which factors drove the score</b>.</p>
       <h3>Missing-value handling</h3>
-      <p>A factor only counts when its ratio is valid and positive (PE, PB, PS, EV/EBIT &gt; 0). A stock missing a factor is averaged over the rest — never penalised with a zero. Small/micro caps have thinner data, so the <b>Data</b> column shows each row’s completeness.</p>
+      <p>A factor only counts when valid and positive. A stock missing a factor is averaged over the rest — never penalised with a zero. Coverage thins on small/micro caps.</p>
       <h3>Loss-maker exclusion</h3>
-      <p>Negative or zero earnings and negative book don’t produce a valid yield, so <b>loss-makers never score “cheap”</b> on those factors — a stock isn’t cheap just because its price collapsed alongside its profits.</p>
-      <h3>Custom weights (live)</h3>
-      <p>The site ships the per-factor z-scores, so the sliders <b>recompute the composite in your browser</b> with no refetch. Default is equal weight; set FCF-yield to max and everything else to zero to rank purely on cash yield, for example.</p>
+      <p>Negative or zero earnings and negative book don’t produce a valid yield, so <b>loss-makers never score “cheap.”</b></p>
+    </section>
+
+    <section id="profiles" class="panel">
+      <h2>Weighting profiles — how each tilts the composite</h2>
+      <p>Weights are shown as a <b>normalised % of influence</b> (they sum to 100), not raw multipliers, so relative emphasis is always visible. Pick a profile, or drag any slider to build your own “Custom mix.”</p>
+      <table class="mtable prof-table">
+        <thead><tr><th>Profile</th><th>Emphasis</th>{SUBS.map((s) => <th>{s.label}</th>)}</tr></thead>
+        <tbody>
+          {PROFILES.map((p) => {
+            const nz = normalise(p.weights);
+            return (
+              <tr>
+                <td class="m">{p.label}{(p as { flagship?: boolean }).flagship ? ' ★' : ''}</td>
+                <td>{p.blurb}</td>
+                {SUBS.map((s) => <td class="pw">{Math.round(nz[s.key])}%</td>)}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </section>
 
     <section id="metrics" class="panel">
@@ -146,16 +169,16 @@ higher composite = cheaper overall</pre>
   </main>
 
   <footer>
-    <div class="wrap">
+    <div class="wrap wrap-narrow">
       <a href="/screener">← back to the screener</a> · Not investment/tax advice · <a href="https://oriz.in">oriz.in</a>
     </div>
   </footer>
 </Base>
 
 <style>
-  .pagenav { display: flex; gap: 22px; justify-content: center; margin: 16px 0 0; font-family: var(--font-mono); font-size: 12px; }
-  .pagenav a { color: var(--accent); }
-  .doc { max-width: 860px; }
+  .top { text-align: center; padding: 44px 24px 8px; }
+  .top .sub { color: var(--dim); max-width: 60ch; margin: 12px auto 0; }
+  .doc { padding-top: 8px; }
   .panel {
     background: var(--panel); border: 1px solid var(--line);
     border-radius: 14px; padding: 22px 24px; margin: 0 0 16px;
@@ -166,15 +189,15 @@ higher composite = cheaper overall</pre>
   }
   .panel h3 {
     font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--accent); margin: 20px 0 6px;
+    text-transform: uppercase; color: var(--gold); margin: 20px 0 6px;
   }
   .panel p { color: var(--ink); margin: 0 0 12px; }
   .panel ul { color: var(--ink); margin: 0 0 6px; padding-left: 20px; }
   .panel li { margin: 0 0 8px; }
-  code { font-family: var(--font-mono); font-size: 0.9em; color: var(--accent); background: var(--bg-2); padding: 1px 5px; border-radius: 5px; }
+  code { font-family: var(--font-mono); font-size: 0.9em; color: var(--gold); background: var(--bg-2); padding: 1px 5px; border-radius: 5px; }
 
   .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; }
-  .toc a { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .toc a { font-family: var(--font-mono); font-size: 12px; color: var(--gold); }
   .toc a:hover { text-decoration: underline; }
 
   .formula {
@@ -189,21 +212,23 @@ higher composite = cheaper overall</pre>
     color: var(--dim); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
   }
   .mtable td { padding: 9px 10px; border-bottom: 1px solid var(--bg-2); color: var(--ink); vertical-align: top; }
-  .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--gold); white-space: nowrap; }
+  .prof-table td.pw { font-family: var(--font-mono); text-align: right; color: var(--gold-soft); font-weight: 600; }
+  .prof-table th:nth-child(n+3), .prof-table td:nth-child(n+3) { text-align: right; }
 
-  .tax { border-color: color-mix(in srgb, var(--buy) 30%, var(--line)); }
-  .tax h2 { color: var(--buy); }
+  .tax { border-color: color-mix(in srgb, var(--good) 30%, var(--line)); }
+  .tax h2 { color: var(--good); }
   .taxnote { color: var(--dim); font-size: 12px; }
-  .disc { border-color: color-mix(in srgb, var(--caution) 30%, var(--line)); }
-  .disc h2 { color: var(--caution); }
+  .disc { border-color: color-mix(in srgb, var(--bad) 30%, var(--line)); }
+  .disc h2 { color: var(--bad); }
   .disc p { color: var(--dim); font-size: 13px; }
 
-  footer a { color: var(--accent); }
+  footer a { color: var(--gold); }
   @media (max-width: 640px) {
     .mtable, .mtable thead, .mtable tbody, .mtable tr, .mtable td, .mtable th { display: block; }
     .mtable thead { display: none; }
     .mtable td { border-bottom: none; padding: 3px 0; }
     .mtable tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
-    .mtable td.m { color: var(--accent); font-size: 14px; margin-bottom: 4px; }
+    .mtable td.m { color: var(--gold); font-size: 14px; margin-bottom: 4px; }
   }
 </style>

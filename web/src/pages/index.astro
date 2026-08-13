@@ -1,162 +1,95 @@
 ---
 import Base from '../layouts/Base.astro';
-import SignalLight from '../components/SignalLight.astro';
-import IndicatorBar from '../components/IndicatorBar.astro';
-import Sparkline from '../components/Sparkline.astro';
-import { loadSignal, loadHistory } from '../lib/data';
+import { loadMetrics } from '../lib/screener';
+import { PROFILES } from '../lib/scoring';
 
-const sig = loadSignal();
-const hist = loadHistory();
-const lowestPe = (sig.lowest_pe ?? []).slice(0, 15);
-const updated = sig.ts ? new Date(sig.ts).toUTCString() : 'awaiting first run';
-const vColor =
-  sig.verdict_score >= 70 ? 'var(--buy)'
-  : sig.verdict_score >= 55 ? 'var(--accum)'
-  : sig.verdict_score >= 40 ? 'var(--hold)'
-  : 'var(--caution)';
+const data = loadMetrics();
+const count = (data.count ?? data.stocks.length).toLocaleString('en-IN');
 ---
 
-<Base>
-  <header class="top wrap">
-    <span class="kicker">Indian equity · market timing</span>
-    <h1>Is now a good time to buy?</h1>
-    <p class="sub">One signal from valuation + sentiment: Nifty PE, the Buffett indicator, and market mood, combined into a single verdict. SIP always; time your lumpsum by the light.</p>
-    <nav class="pagenav">
-      <a href="/screener">the value-composite screener →</a>
-      <a href="/methodology">methodology</a>
-    </nav>
+<Base active="signal">
+  <header class="lp-hero wrap">
+    <span class="kicker">nifty.oriz.in · Indian equity intelligence</span>
+    <h1>The market, ranked by<br /><span class="hl">return potential</span>.</h1>
+    <p class="sub">A backend-free screener over <b>{count}</b> listed Indian stocks. One composite blends value, growth, quality, momentum and analyst upside — pick a weighting profile, re-weight the factors live, share the exact screen by URL.</p>
+    <div class="cta">
+      <a class="btn-lg" href="/screener">Open the screener →</a>
+      <a class="btn-lg ghost" href="/methodology">How it works</a>
+    </div>
   </header>
 
   <main class="wrap">
-    <section class="verdict-card">
-      <SignalLight verdict={sig.verdict} score={sig.verdict_score} />
-      <div class="verdict-read">
-        <div class="score" style={`color:${vColor}`}>{sig.verdict_score.toFixed(0)}<span>/100</span></div>
-        <div class="score-lab">buy-attractiveness</div>
-        <p class="rationale">{sig.summary || sig.rationale}</p>
-      </div>
+    <section class="cards">
+      <article class="card">
+        <span class="cn">01</span>
+        <h3>A single return-potential score</h3>
+        <p>Screener.in shows metrics one at a time. Here every stock gets one blended composite — the differentiator — visualised as a diverging heat gauge, not a bare number.</p>
+      </article>
+      <article class="card">
+        <span class="cn">02</span>
+        <h3>Weighting profiles you control</h3>
+        <p>Factor weights shown as a normalised % of influence. Ship-ready profiles tilt the mix, or drag the sliders for your own — the ranking recomputes live in your browser.</p>
+        <ul class="prof-list">
+          {PROFILES.map((p) => <li><b>{p.label}</b> — {p.blurb}</li>)}
+        </ul>
+      </article>
+      <article class="card">
+        <span class="cn">03</span>
+        <h3>Tuned for MTF buy-and-hold</h3>
+        <p>An after-tax, after-interest 1-year column subtracts ~12% MTF interest and 12.5% LTCG, so you see the leveraged, taxed return — not the gross one. Full tax logic on the methodology page.</p>
+      </article>
     </section>
 
-    <section class="inds">
-      {sig.indicators.map((ind) => <IndicatorBar ind={ind} />)}
+    <section class="strip">
+      <div><b>Filter builder</b><span>any metric, sector, MTF-eligible, Nifty 500</span></div>
+      <div><b>Watchlist &amp; compare</b><span>star up to 8, side-by-side</span></div>
+      <div><b>Sector view</b><span>medians + strongest name per sector</span></div>
+      <div><b>CSV export &amp; shareable URL</b><span>the whole screen, portable</span></div>
     </section>
-
-    <section class="spark-card">
-      <h2>Signal-score history</h2>
-      <Sparkline points={hist} />
-    </section>
-
-    {lowestPe.length > 0 && (
-      <section class="lowpe-card">
-        <h2>Cheapest Nifty 500 by PE</h2>
-        <ol class="lowpe-list">
-          {lowestPe.map((s) => (
-            <li><span class="sym">{s.symbol}</span><span class="pe">{s.pe.toFixed(1)}x</span></li>
-          ))}
-        </ol>
-        <p class="lowpe-note">Trailing P/E, lowest positive first. Low PE ≠ cheap — a screen, not a recommendation. <a href="/screener">Open the full value-composite screener →</a></p>
-      </section>
-    )}
-
-    <section class="legend">
-      <div><b style="color:var(--buy)">STRONG BUY</b> valuations cheap — deploy lumpsum</div>
-      <div><b style="color:var(--accum)">ACCUMULATE</b> reasonable — stagger lumpsum in</div>
-      <div><b style="color:var(--hold)">HOLD-SIP-ONLY</b> fully valued — SIP only</div>
-      <div><b style="color:var(--caution)">CAUTION</b> rich — SIP only, wait</div>
-    </section>
-
-    <p class="updated">Updated {updated}{sig.errors.length ? ` · ${sig.errors.length} source(s) n/a` : ''}</p>
   </main>
 
   <footer>
     <div class="wrap">
-      Not investment advice. A valuation-timing signal, not a trade call. SIP regardless.
-      Sources: IndexPE · CEIC · Tickertape MMI · <a href="https://oriz.in">oriz.in</a>
+      <span>Not investment or tax advice — an educational screen. Data best-effort from keyless public sources.</span>
+      <a href="/screener">screener →</a>
+      <a href="https://oriz.in">oriz.in</a>
     </div>
   </footer>
 </Base>
 
 <style>
-  .verdict-card {
-    display: grid;
-    grid-template-columns: minmax(0, 320px) 1fr;
-    gap: 26px;
-    align-items: center;
-    background: linear-gradient(180deg, var(--panel), var(--bg-2));
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 26px 24px;
-    margin: 26px 0 18px;
-    box-shadow: 0 30px 80px -46px rgba(0, 0, 0, 0.9);
+  .lp-hero { text-align: center; padding: 70px 24px 40px; }
+  .lp-hero h1 { margin: 14px auto 0; }
+  .lp-hero .hl { color: var(--gold); font-style: italic; }
+  .lp-hero .sub { color: var(--dim); font-size: 17px; max-width: 60ch; margin: 18px auto 0; }
+  .cta { display: flex; gap: 12px; justify-content: center; margin: 30px 0 0; flex-wrap: wrap; }
+  .btn-lg {
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: #1a1408;
+    background: var(--gold); border-radius: 10px; padding: 13px 26px; transition: 0.12s;
   }
-  .verdict-read { text-align: left; }
-  .score {
-    font-family: var(--font-disp); font-weight: 700;
-    font-size: clamp(52px, 11vw, 84px); line-height: 0.95;
-  }
-  .score span { font-size: 0.4em; color: var(--dim); font-weight: 500; }
-  .score-lab {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--dim); margin-top: 2px;
-  }
-  .rationale { color: var(--ink); margin: 14px 0 0; font-size: 15px; max-width: 46ch; }
+  .btn-lg:hover { background: var(--gold-soft); }
+  .btn-lg.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-2); }
+  .btn-lg.ghost:hover { border-color: var(--gold); color: var(--gold-soft); }
 
-  .inds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 8px 0 20px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 28px 0 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 24px 22px; position: relative; }
+  .card .cn { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.1em; }
+  .card h3 { font-family: var(--font-disp); font-weight: 600; font-size: 20px; margin: 8px 0 8px; letter-spacing: -0.01em; }
+  .card p { color: var(--dim); font-size: 14px; margin: 0; }
+  .prof-list { list-style: none; margin: 14px 0 0; padding: 0; }
+  .prof-list li { font-size: 12px; color: var(--dim); padding: 5px 0; border-top: 1px solid var(--line); }
+  .prof-list b { font-family: var(--font-mono); color: var(--ink); font-size: 11.5px; }
 
-  .spark-card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 14px; padding: 16px 18px 10px; margin: 8px 0 18px;
-  }
-  .spark-card h2 {
-    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin: 0 0 10px;
-  }
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 20px; }
+  .strip div { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .strip b { font-family: var(--font-disp); font-weight: 600; font-size: 15px; display: block; }
+  .strip span { font-size: 12px; color: var(--dim); }
 
-  .lowpe-card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 14px; padding: 16px 18px; margin: 8px 0 18px;
-  }
-  .lowpe-card h2 {
-    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin: 0 0 12px;
-  }
-  .lowpe-list {
-    list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 14px;
-    counter-reset: rank;
-  }
-  .lowpe-list li {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 13px; padding: 3px 0; border-bottom: 1px solid var(--line);
-  }
-  .lowpe-list .sym { font-family: var(--font-mono); color: var(--ink); }
-  .lowpe-list .pe { font-family: var(--font-mono); color: var(--buy); font-weight: 600; }
-  .lowpe-note { color: var(--dimmer); font-size: 11px; margin: 12px 0 0; }
-  .lowpe-note a { color: var(--accent); }
-  .pagenav {
-    display: flex; gap: 22px; justify-content: center; margin: 18px 0 0;
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
-  }
-  .pagenav a { color: var(--accent); }
-  .pagenav a:hover { text-decoration: underline; }
-  @media (max-width: 640px) { .lowpe-list { grid-template-columns: repeat(2, 1fr); } }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  footer a { color: var(--gold); }
 
-  .legend {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px;
-    font-size: 12px; color: var(--dim); margin: 4px 0 12px;
-  }
-  .legend b { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; margin-right: 6px; }
-
-  .updated {
-    color: var(--dimmer); font-family: var(--font-mono); font-size: 11px;
-    text-align: center; margin: 4px 0 0;
-  }
-
-  @media (max-width: 640px) {
-    .verdict-card { grid-template-columns: 1fr; text-align: center; }
-    .verdict-read { text-align: center; }
-    .rationale { margin-left: auto; margin-right: auto; }
-    .inds { grid-template-columns: 1fr; }
-    .legend { grid-template-columns: 1fr; }
+  @media (max-width: 860px) {
+    .cards { grid-template-columns: 1fr; }
+    .strip { grid-template-columns: 1fr 1fr; }
   }
 </style>

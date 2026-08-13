@@ -10,6 +10,11 @@
     "check": "astro check"
   },
   "dependencies": {
-    "astro": "^6.4.8"
+    "@astrojs/preact": "^6.0.2",
+    "@preact/preset-vite": "^2.10.6",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.14.9",
+    "astro": "^6.4.8",
+    "preact": "^10.29.8"
   }
 }
