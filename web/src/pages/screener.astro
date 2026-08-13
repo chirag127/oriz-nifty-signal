@@ -22,7 +22,7 @@ const hasAi = Boolean(data.ai);
     <div class="hero-copy">
       <span class="kicker">Indian equity · return-potential screener</span>
       <h1>Rank the market by <span class="hl">return potential</span>.</h1>
-      <p class="sub">Every listed Indian stock, scored on a single composite that blends value, growth, quality, momentum and analyst upside. Pick a <b>scan preset</b>, drag the <b>fundamental filters</b> (PE, PB, ROE…), tune the <b>score weighting</b>, and read the <b>after-tax MTF buy-and-hold</b> return. Runs entirely in your browser.</p>
+      <p class="sub">Every listed Indian stock, ranked by a single composite that is a <b>weighted percentile average of the fundamentals themselves</b>. Pick a <b>scan preset</b>, drag each metric's <b>filter band</b> and <b>weight</b> (PE, PB, ROE, D/E…), and read the <b>after-tax MTF buy-and-hold</b> return. Runs entirely in your browser.</p>
     </div>
     <dl class="stat-row">
       <div class="stat"><dt>Universe</dt><dd>{count.toLocaleString('en-IN')}</dd><span>listed stocks</span></div>
@@ -98,8 +98,8 @@ const hasAi = Boolean(data.ai);
   }
   .profile-chip:hover { border-color: var(--line-2); background: var(--panel-2); }
   .profile-chip.active { background: color-mix(in srgb, var(--gold) 16%, var(--bg-2)); border-color: var(--gold); color: var(--gold-soft); }
-  .profile-chip.flagship .star { color: var(--gold); margin-right: 5px; }
-  .profile-chip.flagship.active { box-shadow: 0 0 0 1px var(--gold); }
+  .profile-chip.featured .star { color: var(--gold); margin-right: 5px; }
+  .profile-chip.featured.active { box-shadow: 0 0 0 1px var(--gold); }
   .profile-chip.custom { cursor: default; font-style: italic; }
   .preset-group { display: flex; align-items: baseline; gap: 12px; margin: 0 0 10px; flex-wrap: wrap; }
   .pg-label {
@@ -107,29 +107,28 @@ const hasAi = Boolean(data.ai);
     color: var(--dimmer); min-width: 62px; padding-top: 4px;
   }
   .preset-group .profile-row { flex: 1; }
+  .variant-row { display: flex; align-items: center; gap: 8px; margin: 4px 0 0; flex-wrap: wrap; }
+  .vchip { font-family: var(--font-mono); font-size: 11px; color: var(--dim); background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+  .vchip:hover { color: var(--ink); border-color: var(--line-2); }
+  .vchip.on { background: color-mix(in srgb, var(--gold) 12%, var(--bg-2)); color: var(--gold-soft); border-color: var(--gold); }
   .profile-blurb { color: var(--dim); font-size: 13.5px; margin: 12px 0 0; min-height: 1.3em; max-width: 90ch; }
 
   .grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start; }
 
-  /* ---- weights panel ----------------------------------------------------- */
-  .influence { display: flex; height: 26px; border-radius: 7px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--line); background: var(--bg-2); }
-  .inf-seg { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.75); transition: width 0.2s ease; min-width: 0; overflow: hidden; }
-  .wgrid { display: grid; gap: 11px; }
-  .wrow { display: grid; grid-template-columns: 96px 1fr 38px; align-items: center; gap: 10px; }
-  .wlab { font-family: var(--font-mono); font-size: 11.5px; color: var(--dim); display: inline-flex; align-items: center; gap: 6px; }
-  .wswatch { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
-  .wrow input[type=range] { width: 100%; }
-  .wpct { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--gold-soft); text-align: right; }
+  /* ---- weights (per-metric, in the slider rows) -------------------------- */
   .note { color: var(--dimmer); font-size: 11.5px; margin: 12px 0 0; line-height: 1.5; }
-  .scoring-cap { color: var(--dim); font-size: 11.5px; margin: -4px 0 14px; line-height: 1.5; }
-  .weights-panel { border-color: color-mix(in srgb, var(--gold) 22%, var(--line)); }
 
-  /* ---- fundamental range-sliders (primary filter path) ------------------- */
-  .sgrid { display: grid; gap: 15px; }
-  .srow { display: grid; gap: 5px; }
-  .slab { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-mono); font-size: 11.5px; color: var(--dim); }
-  .srow.on .slab { color: var(--ink); }
-  .sval { font-size: 11px; font-weight: 700; color: var(--dimmer); }
+  /* ---- metric rows: filter band + weight dial ---------------------------- */
+  .scol-head { display: grid; grid-template-columns: 92px 1fr 62px; gap: 8px; margin-bottom: 8px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dimmer); }
+  .scol-head span:nth-child(2) { text-align: center; }
+  .scol-head span:nth-child(3) { text-align: right; }
+  .sgrid { display: grid; gap: 12px; }
+  .srow { display: grid; grid-template-columns: 92px 1fr 62px; gap: 8px; align-items: center; }
+  .slab { display: flex; flex-direction: column; gap: 1px; font-family: var(--font-mono); font-size: 11px; color: var(--dim); min-width: 0; }
+  .srow.weighted .slab { color: var(--ink); }
+  .sname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sdir { color: var(--dimmer); font-size: 8.5px; }
+  .sval { font-size: 10px; font-weight: 700; color: var(--dimmer); }
   .srow.on .sval { color: var(--gold-soft); }
   .strack { position: relative; height: 18px; }
   .strack::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 4px; transform: translateY(-50%); background: var(--bg-2); border: 1px solid var(--line); border-radius: 4px; }
@@ -147,6 +146,22 @@ const hasAi = Boolean(data.ai);
     background: var(--gold); border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--gold);
   }
   .strack input[type=range]::-moz-range-track { background: none; }
+  .wdial { display: flex; align-items: center; gap: 5px; }
+  .wdial input[type=range] { width: 100%; height: 16px; accent-color: var(--f-value); }
+  .wval { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--f-value); width: 16px; text-align: right; }
+  .srow:not(.weighted) .wval { color: var(--dimmer); }
+  .scat { margin: 12px 0 0; border-top: 1px solid var(--line); padding-top: 10px; }
+  .scat > summary {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); cursor: pointer; list-style: none; display: flex; justify-content: space-between; padding: 4px 0;
+  }
+  .scat > summary::-webkit-details-marker { display: none; }
+  .scat > summary::before { content: '＋ '; color: var(--dimmer); }
+  .scat[open] > summary::before { content: '－ '; }
+  .scat > summary:hover { color: var(--ink); }
+  .scat-n { color: var(--dimmer); font-weight: 400; }
+  .scat .sgrid { margin-top: 10px; }
+  .sliders-panel { border-color: color-mix(in srgb, var(--gold) 18%, var(--line)); }
 
   /* advanced filter builder — collapsed by default, sliders are primary */
   .adv-filter { margin: 0 0 14px; }
@@ -285,5 +300,13 @@ const hasAi = Boolean(data.ai);
     .grid { grid-template-columns: minmax(0, 1fr); }
     .controls { min-width: 0; }
     .table-scroll { max-height: 70vh; }
+  }
+  @media (max-width: 430px) {
+    .hero { padding: 28px 16px 20px; }
+    .scol-head, .srow { grid-template-columns: 80px 1fr 52px; gap: 6px; }
+    .preset-group { gap: 6px; }
+    .pg-label { min-width: 100%; }
+    .profile-chip { padding: 8px 13px; font-size: 12px; }
+    .results-bar { flex-wrap: wrap; gap: 8px; }
   }
 </style>

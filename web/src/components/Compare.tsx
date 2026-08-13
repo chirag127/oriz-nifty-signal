@@ -1,9 +1,9 @@
 import { useMemo } from 'preact/hooks';
 import type { StockRow } from '../lib/screener';
-import { composite, type SubKey } from '../lib/scoring';
+import { composite, type Weights, type PctEngine } from '../lib/scoring';
 
 const CMP = [
-  { key: 'composite', label: 'Composite', fmt: 'z', hi: 'high' },
+  { key: 'composite', label: 'Composite', fmt: 'pct', hi: 'high' },
   { key: 'pe', label: 'PE', fmt: 'x', hi: 'low' },
   { key: 'pb', label: 'PB', fmt: 'x', hi: 'low' },
   { key: 'ev_ebitda', label: 'EV/EBITDA', fmt: 'x', hi: 'low' },
@@ -19,15 +19,16 @@ const CMP = [
 
 const f = {
   z: (v: number | null) => (v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(2)),
+  pct: (v: number | null) => (v == null ? '—' : v.toFixed(0)),
   x: (v: number | null) => (v == null ? '—' : v.toFixed(1) + 'x'),
   n1: (v: number | null) => (v == null ? '—' : v.toFixed(1)),
   n2: (v: number | null) => (v == null ? '—' : v.toFixed(2)),
 } as Record<string, (v: number | null) => string>;
 
 export function Compare({
-  rows, watch, weights, clear, toggleWatch,
+  rows, watch, weights, eng, clear, toggleWatch,
 }: {
-  rows: StockRow[]; watch: Set<string>; weights: Record<SubKey, number>;
+  rows: StockRow[]; watch: Set<string>; weights: Weights; eng: PctEngine;
   clear: () => void; toggleWatch: (s: string) => void;
 }) {
   const picked = useMemo(
@@ -35,7 +36,7 @@ export function Compare({
     [watch, rows],
   );
   const val = (r: StockRow, k: string): number | null =>
-    k === 'composite' ? composite(r, weights) : (typeof r[k] === 'number' ? (r[k] as number) : null);
+    k === 'composite' ? composite(r, weights, eng) : (typeof r[k] === 'number' ? (r[k] as number) : null);
 
   return (
     <section class="panel compare-panel">

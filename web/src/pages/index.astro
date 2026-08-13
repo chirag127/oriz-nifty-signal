@@ -11,7 +11,7 @@ const count = (data.count ?? data.stocks.length).toLocaleString('en-IN');
   <header class="lp-hero wrap">
     <span class="kicker">nifty.oriz.in · Indian equity intelligence</span>
     <h1>The market, ranked by<br /><span class="hl">return potential</span>.</h1>
-    <p class="sub">A backend-free screener over <b>{count}</b> listed Indian stocks. One composite blends value, growth, quality, momentum and analyst upside — pick a weighting profile, re-weight the factors live, share the exact screen by URL.</p>
+    <p class="sub">A backend-free screener over <b>{count}</b> listed Indian stocks. One composite is a <b>weighted percentile average of the fundamentals themselves</b> — pick a scan, set each metric's filter band and weight, share the exact screen by URL.</p>
     <div class="cta">
       <a class="btn-lg" href="/screener">Open the screener →</a>
       <a class="btn-lg ghost" href="/methodology">How it works</a>
@@ -22,15 +22,15 @@ const count = (data.count ?? data.stocks.length).toLocaleString('en-IN');
     <section class="cards">
       <article class="card">
         <span class="cn">01</span>
-        <h3>A single return-potential score</h3>
-        <p>Screener.in shows metrics one at a time. Here every stock gets one blended composite — the differentiator — visualised as a diverging heat gauge, not a bare number.</p>
+        <h3>Fundamentals are the score</h3>
+        <p>Screener.in shows metrics one at a time. Here every stock gets one composite — a weighted percentile average of its raw fundamentals — visualised as a heat gauge, not a bare number.</p>
       </article>
       <article class="card">
         <span class="cn">02</span>
-        <h3>Weighting profiles you control</h3>
-        <p>Factor weights shown as a normalised % of influence. Ship-ready profiles tilt the mix, or drag the sliders for your own — the ranking recomputes live in your browser.</p>
+        <h3>Per-metric band + weight</h3>
+        <p>Each of ~28 metrics has a filter band and a weight dial. The band screens; the weight sets how much it drives the rank. Presets re-tilt both — the ranking recomputes live in your browser.</p>
         <ul class="prof-list">
-          {PROFILES.map((p) => <li><b>{p.label}</b> — {p.blurb}</li>)}
+          {PROFILES.filter((p) => p.featured).map((p) => <li><b>{p.label}</b> — {p.blurb}</li>)}
         </ul>
       </article>
       <article class="card">

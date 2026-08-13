@@ -6,32 +6,26 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { StockRow, Payload } from '../lib/screener';
 import {
-  SUBS, PRESETS, DEFAULT_PRESET, COLS, FMT,
-  normalise, composite, drivers, aftertax1y, scanMembership,
-  type SubKey, type Col, type Preset, type PresetGroup,
+  PRESETS, DEFAULT_PRESET, DEFAULT_WEIGHTS, COLS, FMT, METRIC_KEYS,
+  buildPctEngine, composite, drivers, aftertax1y, scanMembership, cloneWeights,
+  type Col, type Preset, type PresetGroup, type Weights, type PctEngine,
 } from '../lib/scoring';
 import { HeatBar } from './HeatBar';
-import { WeightPanel } from './WeightPanel';
 import { FilterBuilder, type Filter, passes } from './FilterBuilder';
 import { FundamentalSliders } from './FundamentalSliders';
 import { Compare } from './Compare';
 
-const FACTOR_COLOR: Record<SubKey, string> = {
-  value: 'var(--f-value)', growth: 'var(--f-growth)', quality: 'var(--f-quality)',
-  momentum: 'var(--f-momentum)', analyst: 'var(--f-analyst)',
-};
-
-type Weights = Record<SubKey, number>;
-const eqWeights = (): Weights => ({ value: 20, growth: 20, quality: 20, momentum: 20, analyst: 20 });
 const TOP_N = 100; // scans surface the top ~100; user narrows to their 5
-
-const PRESET_GROUPS: PresetGroup[] = ['Core', 'Named', 'Strategy'];
+const PRESET_GROUPS: PresetGroup[] = ['Featured', 'Core', 'Named', 'Strategy'];
 const byId = (id: string): Preset | undefined => PRESETS.find((p) => p.id === id);
-// convert a preset's declarative filters+flags into FilterBuilder state
-function presetFilters(p: Preset): Filter[] {
+
+// preset's declarative filters (+ chosen variant) → FilterBuilder state
+function presetFilters(p: Preset, variant?: string): Filter[] {
   const out: Filter[] = [];
   for (const fl of p.flags || []) out.push({ kind: 'flag', field: fl, on: true });
   for (const f of p.filters || []) out.push({ kind: 'num', field: f.field, op: f.op, a: f.a, b: f.b });
+  const v = p.variants?.find((x) => x.id === (variant ?? p.defaultVariant));
+  for (const f of v?.filters || []) out.push({ kind: 'num', field: f.field, op: f.op, a: f.a, b: f.b });
   return out;
 }
 
@@ -56,33 +50,39 @@ function Board({ data }: { data: Payload }) {
     .filter((r) => r && r.symbol)
     .map((r) => (r.fii == null && r.dii == null) ? r : { ...r, fii_dii: (r.fii ?? 0) + (r.dii ?? 0) }), [data]);
 
+  // percentile engine — built ONCE over the universe (the scoring backbone)
+  const eng = useMemo<PctEngine>(() => buildPctEngine(rows), [rows]);
+
   const defPreset = byId(DEFAULT_PRESET)!;
   const [preset, setPreset] = useState(DEFAULT_PRESET);
-  const [weights, setWeights] = useState<Weights>(() => ({ ...(defPreset.weights || eqWeights()) }));
+  const [variant, setVariant] = useState<string | undefined>(defPreset.defaultVariant);
+  const [weights, setWeights] = useState<Weights>(() => ({ ...(defPreset.weights || DEFAULT_WEIGHTS) }));
   const [filters, setFilters] = useState<Filter[]>(() => presetFilters(defPreset));
   const [sorting, setSorting] = useState<SortingState>(() => [{ id: defPreset.sort!.id, desc: defPreset.sort!.desc }]);
   const [watch, setWatch] = useState<Set<string>>(new Set());
   const [showSector, setShowSector] = useState(false);
   const [topOnly, setTopOnly] = useState(true);
 
-  // apply a preset: set weights (if any), filters+flags, and sort together
-  const applyPreset = useCallback((id: string) => {
+  // apply a preset: weights + filter bands (+ variant) + sort together
+  const applyPreset = useCallback((id: string, v?: string) => {
     const p = byId(id);
     if (!p) return;
     setPreset(id);
-    if (p.weights) setWeights({ ...p.weights });
-    setFilters(presetFilters(p));
+    const vr = v ?? p.defaultVariant;
+    setVariant(vr);
+    setWeights({ ...(p.weights || DEFAULT_WEIGHTS) });
+    setFilters(presetFilters(p, vr));
     if (p.sort) setSorting([{ id: p.sort.id, desc: p.sort.desc }]);
   }, []);
 
   // ---- URL state (shareable) ----
   useEffect(() => {
     const u = new URLSearchParams(location.search);
-    if (u.get('p') && byId(u.get('p')!)) { applyPreset(u.get('p')!); }
+    if (u.get('p') && byId(u.get('p')!)) { applyPreset(u.get('p')!, u.get('v') || undefined); }
     if (u.get('w')) {
       const parts = u.get('w')!.split(',').map(Number);
-      const w = eqWeights();
-      SUBS.forEach((s, i) => { if (isFinite(parts[i])) w[s.key] = parts[i]; });
+      const w = cloneWeights(weights);
+      METRIC_KEYS.forEach((k, i) => { if (isFinite(parts[i])) w[k] = parts[i]; });
       setWeights(w);
       setPreset('custom');
     }
@@ -97,14 +97,14 @@ function Board({ data }: { data: Payload }) {
 
   useEffect(() => {
     const u = new URLSearchParams();
-    if (preset && preset !== 'custom') u.set('p', preset);
-    u.set('w', SUBS.map((s) => weights[s.key]).join(','));
+    if (preset && preset !== 'custom') { u.set('p', preset); if (variant) u.set('v', variant); }
+    u.set('w', METRIC_KEYS.map((k) => weights[k] || 0).join(','));
     if (sorting[0]) u.set('s', sorting[0].id + ':' + (sorting[0].desc ? 'desc' : 'asc'));
     if (filters.length) u.set('f', encodeURIComponent(JSON.stringify(filters)));
     history.replaceState(null, '', '?' + u.toString());
-  }, [preset, weights, sorting, filters]);
+  }, [preset, variant, weights, sorting, filters]);
 
-  const derived = useCallback((r: StockRow) => composite(r, weights), [weights]);
+  const derived = useCallback((r: StockRow) => composite(r, weights, eng), [weights, eng]);
 
   // ---- filtered + augmented rows ----
   const view = useMemo(() => {
@@ -131,6 +131,8 @@ function Board({ data }: { data: Payload }) {
 
   const shown = useMemo(() => (topOnly ? view.slice(0, TOP_N) : view), [view, topOnly]);
 
+  // dragging a band or a weight switches to "custom"
+  const onFilters = (f: Filter[]) => { setFilters(f); setPreset('custom'); };
   const onWeights = (w: Weights) => { setWeights(w); setPreset('custom'); };
 
   const toggleWatch = (sym: string) => setWatch((prev) => {
@@ -139,13 +141,17 @@ function Board({ data }: { data: Payload }) {
     return n;
   });
 
+  const clearControls = () => {
+    setFilters([]);
+    setWeights({ ...DEFAULT_WEIGHTS });
+    setPreset('custom');
+  };
   const reset = () => applyPreset(DEFAULT_PRESET);
   const share = async () => {
     try { await navigator.clipboard.writeText(location.href); } catch { /* address bar has it */ }
   };
 
   const activePreset = byId(preset);
-  const nz = normalise(weights);
 
   return (
     <div class="scr">
@@ -157,13 +163,13 @@ function Board({ data }: { data: Payload }) {
         </div>
       )}
 
-      {data.ai && <AiCard ai={data.ai} rows={rows} weights={weights} />}
+      {data.ai && <AiCard ai={data.ai} rows={rows} />}
 
-      {/* PRESET picker — grouped scans (filters + sort) */}
+      {/* PRESET picker — scans (filter bands + weight profile + sort) */}
       <section class="profiles">
         <div class="phead">
           <h2>Presets — scans</h2>
-          <span class="pct-hint">each sets filters + sort; surfaces the top {TOP_N} — narrow to your 5</span>
+          <span class="pct-hint">each sets filter bands + weights + sort; surfaces the top {TOP_N} — narrow to your 5</span>
         </div>
         {PRESET_GROUPS.map((g) => (
           <div class="preset-group" key={g}>
@@ -172,11 +178,11 @@ function Board({ data }: { data: Payload }) {
               {PRESETS.filter((p) => p.group === g).map((p) => (
                 <button
                   key={p.id}
-                  class={'profile-chip' + (preset === p.id ? ' active' : '') + (p.flagship ? ' flagship' : '')}
+                  class={'profile-chip' + (preset === p.id ? ' active' : '') + (p.featured ? ' featured' : '')}
                   onClick={() => applyPreset(p.id)}
                   aria-pressed={preset === p.id}
                 >
-                  {p.flagship && <span class="star" aria-hidden="true">★</span>}
+                  {p.featured && <span class="star" aria-hidden="true">★</span>}
                   {p.label}
                 </button>
               ))}
@@ -184,20 +190,29 @@ function Board({ data }: { data: Payload }) {
           </div>
         ))}
         {preset === 'custom' && <div class="profile-row"><span class="profile-chip active custom">Custom mix</span></div>}
-        <p class="profile-blurb">{preset === 'custom' ? 'Your own score weighting — the factor sliders drive the composite ranking live.' : activePreset?.blurb}</p>
+        {/* variant selector for the featured Quality-Value + turnaround scan */}
+        {activePreset?.variants && (
+          <div class="variant-row">
+            <span class="pg-label">turn</span>
+            {activePreset.variants.map((vv) => (
+              <button key={vv.id} class={'vchip' + (variant === vv.id ? ' on' : '')} onClick={() => applyPreset(activePreset.id, vv.id)}>{vv.label}</button>
+            ))}
+          </div>
+        )}
+        <p class="profile-blurb">{preset === 'custom' ? 'Your own scan — the metric bands filter, the weights drive the composite rank live.' : activePreset?.blurb}</p>
       </section>
 
       <div class="grid">
         <aside class="controls">
-          <FundamentalSliders filters={filters} setFilters={setFilters} />
+          <FundamentalSliders
+            filters={filters} setFilters={onFilters}
+            weights={weights} setWeights={onWeights}
+            onClear={clearControls}
+          />
           <details class="adv-filter">
             <summary>Advanced filter builder</summary>
-            <FilterBuilder filters={filters} setFilters={setFilters} />
+            <FilterBuilder filters={filters} setFilters={onFilters} />
           </details>
-          <WeightPanel
-            weights={weights} normalised={nz} colors={FACTOR_COLOR}
-            onChange={onWeights} onEqual={() => onWeights(eqWeights())}
-          />
           <div class="panel actions">
             <button class="btn ghost" onClick={reset}>reset</button>
             <button class="btn" onClick={share}>share screen ↗</button>
@@ -214,11 +229,11 @@ function Board({ data }: { data: Payload }) {
             <div class="rb-actions">
               <button class={'mini' + (topOnly ? ' on' : '')} onClick={() => setTopOnly((t) => !t)}>top {TOP_N}</button>
               <button class={'mini' + (showSector ? ' on' : '')} onClick={() => setShowSector((s) => !s)}>sector view</button>
-              <button class="mini" onClick={() => exportCsv(shown, weights)}>export CSV</button>
+              <button class="mini" onClick={() => exportCsv(shown)}>export CSV</button>
             </div>
           </div>
           <Grid
-            view={shown} weights={weights} sorting={sorting} setSorting={setSorting}
+            view={shown} weights={weights} eng={eng} sorting={sorting} setSorting={setSorting}
             watch={watch} toggleWatch={toggleWatch}
           />
         </section>
@@ -226,13 +241,13 @@ function Board({ data }: { data: Payload }) {
 
       {showSector && <SectorView rows={rows} derived={derived} />}
 
-      <Compare rows={rows} watch={watch} weights={weights} clear={() => setWatch(new Set())} toggleWatch={toggleWatch} />
+      <Compare rows={rows} watch={watch} weights={weights} eng={eng} clear={() => setWatch(new Set())} toggleWatch={toggleWatch} />
     </div>
   );
 }
 
 // value used for sorting a given column id
-function cellVal(a: { row: StockRow; composite: number | null; aftertax_1y: number | null }, id: string) {
+function cellVal(a: Aug, id: string) {
   if (id === 'composite') return a.composite;
   if (id === 'aftertax_1y') return a.aftertax_1y;
   if (id === 'symbol') return a.row.symbol;
@@ -250,21 +265,12 @@ function cellVal(a: { row: StockRow; composite: number | null; aftertax_1y: numb
 interface Aug { row: StockRow; composite: number | null; aftertax_1y: number | null }
 
 function Grid({
-  view, weights, sorting, setSorting, watch, toggleWatch,
+  view, weights, eng, sorting, setSorting, watch, toggleWatch,
 }: {
-  view: Aug[]; weights: Record<SubKey, number>; sorting: SortingState;
+  view: Aug[]; weights: Weights; eng: PctEngine; sorting: SortingState;
   setSorting: (s: SortingState) => void; watch: Set<string>; toggleWatch: (s: string) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
-
-  // heat domain: 95th-percentile of |composite| over the view, so a single
-  // garbage outlier (bad data) doesn't flatten every other bar to nothing.
-  const heatMax = useMemo(() => {
-    const abs = view.map((a) => (a.composite != null ? Math.abs(a.composite) : 0)).filter((x) => x > 0).sort((a, b) => a - b);
-    if (!abs.length) return 1;
-    const p95 = abs[Math.floor(abs.length * 0.95)] ?? abs[abs.length - 1];
-    return Math.max(0.5, p95);
-  }, [view]);
 
   const columns = useMemo<ColumnDef<Aug>[]>(() => {
     const cols: ColumnDef<Aug>[] = [
@@ -274,7 +280,7 @@ function Grid({
         cell: ({ row, table }) => {
           const a = row.original;
           const rank = table.getSortedRowModel().rows.findIndex((r) => r.id === row.id) + 1;
-          return <HeatBar rank={rank} value={a.composite} max={heatMax} drivers={drivers(a.row, weights)} />;
+          return <HeatBar rank={rank} value={a.composite} drivers={drivers(a.row, weights, eng)} />;
         },
       },
       {
@@ -298,7 +304,7 @@ function Grid({
       ...COLS.filter((c) => c.key !== 'symbol').map(colDef),
     ];
     return cols;
-  }, [heatMax, weights, watch]);
+  }, [weights, eng, watch]);
 
   const table = useReactTable({
     data: view, columns, state: { sorting },
@@ -359,7 +365,7 @@ function Grid({
           {padBot > 0 && <tr style={{ height: padBot }}><td colSpan={columns.length}></td></tr>}
         </tbody>
       </table>
-      {!sortedRows.length && <div class="empty">No stocks match — loosen a filter.</div>}
+      {!sortedRows.length && <div class="empty">No stocks match — loosen a band.</div>}
     </div>
   );
 }
@@ -388,7 +394,7 @@ function colDef(c: Col): ColumnDef<Aug> {
   };
 }
 function colorCls(key: string): string {
-  if (['mtf_net_1y', 'r_1y', 'r_1m', 'eps_growth', 'rev_growth', 'upside_pct'].includes(key)) return 'signed';
+  if (['mtf_net_1y', 'r_1y', 'r_1m', 'r_6m', 'eps_growth', 'rev_growth', 'upside_pct'].includes(key)) return 'signed';
   return '';
 }
 
@@ -428,7 +434,7 @@ function SectorView({ rows, derived }: { rows: StockRow[]; derived: (r: StockRow
               <tr key={s.sector}>
                 <td class="td-text sec-name">{s.sector}</td>
                 <td>{s.n}</td>
-                <td><span class="zval" style={{ color: heatColor(s.comp ?? 0) }}>{FMT.z(s.comp ?? undefined)}</span></td>
+                <td><span class="zval" style={{ color: heatColor(s.comp ?? 50) }}>{FMT.pct(s.comp ?? undefined)}</span></td>
                 <td>{FMT.x(s.pe ?? undefined)}</td>
                 <td>{FMT.n1(s.roe ?? undefined)}</td>
                 <td class="signed">{FMT.n1(s.r1y ?? undefined)}</td>
@@ -444,7 +450,7 @@ function SectorView({ rows, derived }: { rows: StockRow[]; derived: (r: StockRow
 }
 
 // ------------------------------------------------------------------ AI ------
-function AiCard({ ai, rows, weights }: { ai: NonNullable<Payload['ai']>; rows: StockRow[]; weights: Record<SubKey, number> }) {
+function AiCard({ ai, rows }: { ai: NonNullable<Payload['ai']>; rows: StockRow[] }) {
   const bySym = useMemo(() => {
     const m: Record<string, StockRow> = {};
     for (const r of rows) m[r.symbol] = r;
@@ -479,17 +485,16 @@ function AiCard({ ai, rows, weights }: { ai: NonNullable<Payload['ai']>; rows: S
   );
 }
 
-// heat color helper shared with HeatBar
+// heat color helper shared with HeatBar (composite 0-100)
 export function heatColor(v: number): string {
-  if (v == null) return 'var(--dimmer)';
-  if (v >= 0.6) return 'var(--heat-hi)';
-  if (v >= 0.15) return 'var(--heat-hi-2)';
-  if (v > -0.15) return 'var(--heat-mid)';
+  if (v >= 75) return 'var(--heat-hi)';
+  if (v >= 55) return 'var(--heat-hi-2)';
+  if (v >= 40) return 'var(--heat-mid)';
   return 'var(--heat-lo)';
 }
 
 // ------------------------------------------------------------------ CSV -----
-function exportCsv(view: Aug[], weights: Record<SubKey, number>) {
+function exportCsv(view: Aug[]) {
   const keys = ['symbol', 'sector', 'composite', ...COLS.filter((c) => c.key !== 'symbol' && c.key !== 'sector').map((c) => c.key), 'aftertax_1y'];
   const head = keys.join(',');
   const lines = [head];

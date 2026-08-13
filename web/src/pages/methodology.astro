@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { PRESETS, type PresetGroup } from '../lib/scoring';
+import { PRESETS, METRICS, DEFAULT_WEIGHTS, type PresetGroup, type MetricGroup } from '../lib/scoring';
 
 const opSym = (o: string) => ({ '>=': '≥', '<=': '≤', '>': '>', '<': '<', between: '–' }[o] ?? o);
 const ruleText = (p: typeof PRESETS[number]): string => {
@@ -10,7 +10,8 @@ const ruleText = (p: typeof PRESETS[number]): string => {
   const filt = parts.length ? parts.join(' · ') : 'no filter — whole universe';
   return `${filt} — sort ${p.sort!.id} ${p.sort!.desc ? '↓' : '↑'}`;
 };
-const groups: PresetGroup[] = ['Core', 'Named', 'Strategy'];
+const groups: PresetGroup[] = ['Featured', 'Core', 'Named', 'Strategy'];
+const mgroups: MetricGroup[] = ['Valuation', 'Quality', 'Growth', 'Health', 'Momentum', 'Ownership', 'Analyst'];
 
 const metrics = [
   { m: 'PE (P/E)', mean: 'Price ÷ trailing earnings per share.', why: 'How many rupees you pay per rupee of annual profit.', good: 'Lower = cheaper. <15 cheap, >30 rich — but banks/utilities run low, growth runs high. Loss-makers have no meaningful PE.' },
@@ -55,8 +56,8 @@ const piotroski = [
 
   <main class="wrap wrap-narrow doc">
     <nav class="toc panel">
-      <a href="#composite">Value composite</a>
-      <a href="#profiles">Scoring, presets &amp; sliders</a>
+      <a href="#composite">The composite</a>
+      <a href="#profiles">Presets, bands &amp; weights</a>
       <a href="#metrics">Every metric</a>
       <a href="#piotroski">Piotroski 9-pt</a>
       <a href="#value-quality">Value vs quality</a>
@@ -66,38 +67,43 @@ const piotroski = [
     </nav>
 
     <section id="composite" class="panel">
-      <h2>The value composite — what Screener.in doesn’t give you</h2>
-      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended cheapness score. That blended score is the point of this site. It runs in two layers:</p>
-      <p><b>1 · Value composite (percentile-ranked).</b> Each cheapness factor is turned into a <b>yield</b> (so higher = cheaper), then <b>percentile-ranked 0–100 across the whole investable universe</b> — the 90th percentile means cheaper than 90% of stocks on that factor. The value score is the equal-weight mean of the percentiles the stock has:</p>
-      <pre class="formula">value factors = E/P, B/P, S/P, EBITDA/EV, FCF-yield   (div-yield display-only)
+      <h2>The composite — fundamentals ARE the score</h2>
+      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended score. That blended score is the point of this site — and it is computed <b>directly from the raw fundamentals</b>, with no abstract sub-score layer in between.</p>
+      <p><b>1 · Percentile each metric, in its GOOD direction.</b> Every metric is percentile-ranked 0–100 across the loaded universe. For “lower is better” metrics (PE, PB, PS, EV/EBITDA, P/FCF, PEG, D/E, pledge, beta, distance-below-52W-high) the percentile is flipped so <b>cheap/safe = high</b>. For “higher is better” metrics (ROE, ROCE, margins, growth, momentum, FCF-yield, upside, Piotroski, institutional stake) the percentile is used as-is.</p>
+      <p><b>2 · Weighted percentile average.</b> The composite is the weighted mean of those percentiles, <b>renormalised over the metrics the stock actually has</b>:</p>
+      <pre class="formula">pct[m]     = percentile of the metric across the universe (0–100, in its good direction)
 
-per factor:  yield      = 1 / ratio                    (E/P = 1/PE, etc.)
-             pct[f]      = percentile-rank of yield across the universe (0–100, higher=cheaper)
-
-value_score = mean( pct[f]  for each factor f the stock HAS )   (≥2 factors required)</pre>
-      <p>Percentile (not raw z-score) is used so one extreme outlier can’t distort the scale — every stock sits on a clean 0–100 ladder. A value_score of 97 means the stock is in the cheapest ~3% of the market on its available factors.</p>
-      <p><b>2 · Return-potential composite (weighted sub-scores).</b> Five sub-scores — <b>Value, Growth, Quality, Momentum, Analyst</b> — feed a weighted mean, renormalised over the sub-scores the stock actually has. Growth/quality/momentum/analyst are cross-sectional z-means; the 0–100 value percentile is mapped onto the same z scale (50th→0, ~90th→+2) so the blend is apples-to-apples:</p>
-      <pre class="formula">subs = value · growth · quality · momentum · analyst
-
-composite = Σ( wₖ · subₖ )  /  Σ( wₖ )     over present subs
-higher composite = higher return potential</pre>
+composite  = Σ( wₘ · pct[m] )  /  Σ( wₘ )     over the metrics present (weight &gt; 0)
+higher composite = higher return potential (0–100)</pre>
+      <p>A metric with <b>weight 0 is excluded</b>. A metric <b>missing</b> for a stock is dropped and the weights renormalise over the rest — never penalised with a zero. A stock with fewer than <b>{METRICS.length >= 4 ? 4 : 4} present weighted metrics ranks last</b> (too little to score fairly).</p>
+      <h3>Default weights — value-heavy</h3>
+      <p>Out of the box the weights tilt to <b>value</b> (cheapness), then <b>quality</b>, then growth / momentum / analyst light:</p>
+      <table class="mtable">
+        <thead><tr><th>Group</th><th>Metrics (weight)</th></tr></thead>
+        <tbody>
+          {mgroups.map((g) => (
+            <tr>
+              <td class="m">{g}</td>
+              <td>{METRICS.filter((m) => m.group === g).map((m) => `${m.label} ${DEFAULT_WEIGHTS[m.key] ?? 0}`).join(' · ')}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h3>Percentile ranges (slider bands)</h3>
+      <p>Each metric’s slider spans the <b>1st–99th data-percentile</b> of real values, so one outlier can’t stretch the scale. A band left at its full min–max applies <b>no filter</b> (it’s ignored) — only a moved band screens.</p>
       <h3>Live re-weighting</h3>
-      <p>The JSON ships each stock’s sub-scores, so the sliders <b>recompute the composite in your browser</b> with no refetch. The <b>diverging heat gauge</b> in the rank column shows the composite (teal = below-average, gold = above), and the thin strip under it shows <b>which factors drove the score</b>.</p>
-      <h3>Missing-value handling</h3>
-      <p>A factor only counts when valid and positive. A stock missing a factor is averaged over the rest — never penalised with a zero. Coverage thins on small/micro caps.</p>
-      <h3>Loss-maker exclusion</h3>
-      <p>Negative or zero earnings and negative book don’t produce a valid yield, so <b>loss-makers never score “cheap.”</b></p>
+      <p>The whole universe ships as one JSON; the percentiles and the composite are computed <b>in your browser</b>, so dragging any weight re-ranks instantly with no refetch. The <b>heat gauge</b> in the rank column shows the 0–100 composite and the thin strip under it shows <b>which metrics drove the score</b>.</p>
     </section>
 
     <section id="profiles" class="panel">
-      <h2>Presets — 13 curated scans</h2>
-      <p>Three separate controls drive the screen, and the site keeps them distinct:</p>
+      <h2>Presets, bands &amp; weights</h2>
+      <p>Three controls drive the screen, two-way synced:</p>
       <ul>
-        <li><b>Score weighting = scoring.</b> The Value / Growth / Quality / Momentum / Analyst factor weights set <b>how the return-potential composite is computed and sorted</b>. They are a scoring control, not a filter — nothing is excluded, the ranking just re-tilts.</li>
-        <li><b>Presets = scans.</b> Each preset sets a <b>filter set + a sort</b> and surfaces the <b>top ~100</b> so you narrow to your final 5. A preset may set a sensible default weighting under the hood, but its identity is the scan, not the weights.</li>
-        <li><b>Fundamental sliders = filter thresholds.</b> The PE / PB / ROE / D/E / mcap / div-yield range-sliders set numeric min/max <b>filters</b> by dragging — the friendly path into the same filter state the advanced builder writes. Switching a preset moves the sliders.</li>
+        <li><b>Metric weights = scoring.</b> Each metric’s weight sets <b>how much it drives the composite</b>. Weight 0 excludes it. Not a filter — nothing is dropped, the ranking just re-tilts.</li>
+        <li><b>Metric filter bands = screening.</b> Each metric’s dual-thumb band sets a numeric min/max <b>filter</b> by dragging. Left at full range = off. Reuses the same filter state the advanced builder writes.</li>
+        <li><b>Presets = scans.</b> Each preset sets the filter bands <b>and</b> a weight profile <b>and</b> a sort, and surfaces the <b>top ~100</b> so you narrow to your final 5. Picking one moves the bands + weights; dragging any band or weight switches to <b>custom</b>.</li>
       </ul>
-      <p>Presets are grouped Core / Named / Strategy. <b>My Deep Value</b> loads by default. Exact rule for each:</p>
+      <p>Presets are grouped Featured / Core / Named / Strategy. <b>Best Return-Potential</b> loads by default. Exact rule for each:</p>
       {groups.map((g) => (
         <>
           <h3>{g}</h3>
@@ -106,7 +112,7 @@ higher composite = higher return potential</pre>
             <tbody>
               {PRESETS.filter((p) => p.group === g).map((p) => (
                 <tr>
-                  <td class="m">{p.label}{p.flagship ? ' ★' : ''}{p.id === 'my_deep_value' ? ' (default)' : ''}</td>
+                  <td class="m">{p.label}{p.featured ? ' ★' : ''}{p.id === 'best_rp' ? ' (default)' : ''}</td>
                   <td>{p.blurb}</td>
                   <td class="rule">{ruleText(p)}</td>
                 </tr>
@@ -115,16 +121,11 @@ higher composite = higher return potential</pre>
           </table>
         </>
       ))}
-      <h3>My Deep Value — the default &amp; its value-trap guard</h3>
-      <p>The screen opens on <b>My Deep Value</b>: <code>PE &lt; 6 AND PB &lt; 1.5</code>, sorted cheapest-first. Cheap alone catches value-traps, so a <b>quality guard</b> is documented as the intended filter — keep names where <b>ROE &gt; 12% OR Piotroski F ≥ 6 OR D/E &lt; 1</b> — to drop the obvious traps inside the cheap tail while staying deliberately wide. The Value, Graham and net-net cheapness rungs stack on top for tighter cuts.</p>
-      <h3>Named-scan definitions</h3>
+      <h3>The three featured scans</h3>
       <ul>
-        <li><b>Graham defensive</b> — PE &lt; 15, PB &lt; 1.5, PE×PB &lt; 22.5, D/E &lt; 1. All four rungs must pass (the <code>graham_ok</code> flag).</li>
-        <li><b>Magic Formula (Greenblatt)</b> — rank the universe by earnings-yield (EBIT/EV) and separately by ROCE, sum the two ranks, re-rank; <code>magic_rank</code> = 1 is best. Sorted ascending.</li>
-        <li><b>Piotroski</b> — the 9-point health score (below); the scan keeps <b>F ≥ 7</b>. Computed on the liquid enriched shortlist, so coverage is intentionally narrow.</li>
-        <li><b>GARP</b> — PEG &lt; 1 with ROE &gt; 15% and positive EPS growth: growth you’re not overpaying for.</li>
-        <li><b>FII/DII Accumulation</b> — combined institutional stake (FII + DII) ≥ 25% and cheap (value ≥ 60th pct): following smart money into cheap names.</li>
-        <li><b>High FCF-Yield</b> — lowest P/FCF (the most free cash per rupee of price).</li>
+        <li><b>Deep Value</b> — <code>PE &lt; 6 AND PB &lt; 1.5</code> with a documented quality guard (ROE &gt; 12 OR Piotroski ≥ 6 OR D/E &lt; 1) to drop value-traps; value-heavy weights, sorted by composite.</li>
+        <li><b>Best Return-Potential</b> (default) — MTF/F&amp;O-eligible, beta &lt; 1.2, ranked by <b>after-tax after-interest 1Y return</b> (1Y − 12% MTF interest − 12.5% LTCG on the gain).</li>
+        <li><b>Quality-Value + turnaround</b> — quality (ROE &gt; 15 &amp; D/E &lt; 1) that is cheap and turning. The <b>turnaround condition is selectable</b>: default <em>6M momentum up</em> (r_6m &gt; 0 and below the 52W high), or <em>earnings turn</em> (EPS &amp; revenue growth positive), or <em>both</em>.</li>
       </ul>
     </section>
 
