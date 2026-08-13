@@ -2,7 +2,7 @@
   "verdict": "HOLD-SIP-ONLY",
   "verdict_score": 46.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-13T11:14:16+00:00",
+  "ts": "2026-08-13T11:58:45+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -77,12 +77,12 @@
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty likely range-bound near 24,500 with cautious sentiment and dip-buying interest.",
+      "detail": "Nifty falls for 3rd consecutive day, expected to trade range-bound with dip-buying support.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "Given overvalued smallcaps, greedy market sentiment and stretched aggregate valuations, hold existing positions, add long-term Indian equity only via SIPs.",
+  "summary": "For long-term Indian equity investors, elevated market greed and stretched smallcap valuations make SIP-only deployment preferable to lump-sum investments currently.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
