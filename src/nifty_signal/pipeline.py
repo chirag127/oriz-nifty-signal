@@ -34,13 +34,13 @@ _RATIONALE = {
 }
 
 
-def _fetch_lowest_pe() -> list[dict]:
-    """Cheapest Nifty 500 by trailing PE (best-effort, empty on failure)."""
+def _fetch_value_score() -> list[dict]:
+    """Full Nifty 500 ranked by composite value score (best-effort, [] on failure)."""
     try:
-        from .sources.lowest_pe import lowest_pe_nifty500
-        return lowest_pe_nifty500(top=20)
+        from .sources.value_score import value_score_nifty500
+        return value_score_nifty500()
     except Exception as e:  # noqa: BLE001
-        log.warning("lowest-PE fetch failed: %s", e)
+        log.warning("value-score fetch failed: %s", e)
         return []
 
 
@@ -139,7 +139,10 @@ def run(
     lowest_pe = _fetch_lowest_pe()
     write_snapshot(sig, errors, data_dir, lowest_pe=lowest_pe)
 
-    if with_notify:
+    # Notify ONLY on STRONG BUY (suppress ACCUMULATE/HOLD-SIP-ONLY/CAUTION).
+    # The stock recommendations (lowest-PE / value screener picks) ride along
+    # only when the market signal is STRONG BUY.
+    if with_notify and sig.verdict == "STRONG BUY":
         from .notify.channels import notify_all
         mmi_snapshot = _fetch_mmi_snapshot()
         notify_all(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)
