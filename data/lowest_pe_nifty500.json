@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-13T09:05:54+00:00",
+  "ts": "2026-08-13T09:09:58+00:00",
   "stocks": [
     {
       "symbol": "TMPV",
@@ -20,6 +20,10 @@
     {
       "symbol": "PFC",
       "pe": 4.85
+    },
+    {
+      "symbol": "LICHSGFIN",
+      "pe": 4.93
     },
     {
       "symbol": "BPCL",
@@ -76,10 +80,6 @@
     {
       "symbol": "J&KBANK",
       "pe": 7.3
-    },
-    {
-      "symbol": "COALINDIA",
-      "pe": 8.18
     }
   ]
 }

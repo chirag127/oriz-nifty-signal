@@ -2,7 +2,7 @@
   "verdict": "HOLD-SIP-ONLY",
   "verdict_score": 46.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-13T09:05:54+00:00",
+  "ts": "2026-08-13T09:09:58+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 65.58,
+      "value": 65.5,
       "unit": "",
       "zone": "Greed",
-      "score": 34.4,
+      "score": 34.5,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-13T09:03:00.062Z"
+      "as_of": "2026-08-13T09:09:00.065Z"
     },
     {
       "key": "midcap_pe",
@@ -73,11 +73,11 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 72.0,
+      "value": 70.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty 50 PE at ~20.6, slightly below 10-year average, presents neutral market timing stance.",
+      "detail": "Nifty PE at ~20.6, 12.6% below 10-year average, markets fairly valued with no strong directional cues.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
@@ -103,6 +103,10 @@
     {
       "symbol": "PFC",
       "pe": 4.85
+    },
+    {
+      "symbol": "LICHSGFIN",
+      "pe": 4.93
     },
     {
       "symbol": "BPCL",
@@ -159,10 +163,6 @@
     {
       "symbol": "J&KBANK",
       "pe": 7.3
-    },
-    {
-      "symbol": "COALINDIA",
-      "pe": 8.18
     }
   ],
   "errors": []
