@@ -34,6 +34,16 @@ _RATIONALE = {
 }
 
 
+def _fetch_lowest_pe() -> list[dict]:
+    """Cheapest Nifty 500 by trailing PE (best-effort, empty on failure)."""
+    try:
+        from .sources.lowest_pe import lowest_pe_nifty500
+        return lowest_pe_nifty500(top=20)
+    except Exception as e:  # noqa: BLE001
+        log.warning("lowest-PE fetch failed: %s", e)
+        return []
+
+
 def _fetch_mmi_snapshot() -> dict[str, Any] | None:
     """Fetch oriz-mmi published data (best-effort, 15s timeout)."""
     try:
@@ -81,14 +91,21 @@ def build_signal() -> tuple[Signal, list[str]]:
     return sig, errors
 
 
-def write_snapshot(sig: Signal, errors: list[str], data_dir: Path) -> None:
-    """latest.json = current signal. history/<date>.json = append-only daily log
-    (drives the sparkline)."""
+def write_snapshot(sig: Signal, errors: list[str], data_dir: Path, lowest_pe: list[dict] | None = None) -> None:
+    """latest.json = current signal (+ lowest_pe list). history/<date>.json =
+    append-only daily log (drives the sparkline). lowest_pe_nifty500.json =
+    standalone cheapest-by-PE list (git-as-DB)."""
     data_dir.mkdir(parents=True, exist_ok=True)
-    payload = {**sig.to_dict(), "errors": errors}
+    lowest_pe = lowest_pe or []
+    payload = {**sig.to_dict(), "lowest_pe": lowest_pe, "errors": errors}
     (data_dir / "latest.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+    if lowest_pe:
+        (data_dir / "lowest_pe_nifty500.json").write_text(
+            json.dumps({"ts": sig.ts, "stocks": lowest_pe}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
 
     hist_dir = data_dir / "history"
     hist_dir.mkdir(exist_ok=True)
@@ -119,11 +136,12 @@ def run(
     if with_llm:
         sig.summary = commentary(sig)
 
-    write_snapshot(sig, errors, data_dir)
+    lowest_pe = _fetch_lowest_pe()
+    write_snapshot(sig, errors, data_dir, lowest_pe=lowest_pe)
 
     if with_notify:
         from .notify.channels import notify_all
         mmi_snapshot = _fetch_mmi_snapshot()
-        notify_all(sig, mmi_snapshot=mmi_snapshot)
+        notify_all(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)
 
     return sig

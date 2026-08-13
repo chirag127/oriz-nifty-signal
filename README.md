@@ -22,6 +22,12 @@ Composite = weighted mean buy-attractiveness (renormalised over available
 indicators; a failed source is recorded as `n/a`, never fabricated).
 Verdict: score ≥70 STRONG BUY · 55-70 ACCUMULATE · 40-55 HOLD-SIP-ONLY · <40 CAUTION.
 
+**Cheapest Nifty 500 by PE** — alongside the verdict, the daily run ranks the
+Nifty 500 constituents (NSE keyless CSV) by trailing P/E (Tickertape keyless
+`screener/query`, matched by ticker), drops null/≤0 (loss-making), and surfaces
+the lowest ~20 in `data/lowest_pe_nifty500.json` + the site + Telegram. A screen,
+not a recommendation — low PE ≠ cheap.
+
 ## Stack
 
 - **Python scraper** (`src/nifty_signal/`) — httpx sources with per-indicator

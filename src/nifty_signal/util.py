@@ -191,6 +191,21 @@ def fetch_json(url: str, timeout: float = 25.0, referer: str = "") -> dict:
         return r.json()
 
 
+def fetch_json_post(url: str, body: dict, timeout: float = 40.0, referer: str = "") -> dict:
+    headers = {
+        "User-Agent": _UA,
+        "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Content-Type": "application/json",
+    }
+    if referer:
+        headers["Referer"] = referer
+    with httpx.Client(headers=headers, timeout=timeout, follow_redirects=True) as client:
+        r = client.post(url, json=body)
+        r.raise_for_status()
+        return r.json()
+
+
 def fetch_text(url: str, timeout: float = 25.0) -> str:
     headers = {"User-Agent": _UA, "Accept-Language": "en-US,en;q=0.9"}
     with httpx.Client(headers=headers, timeout=timeout, follow_redirects=True) as client:

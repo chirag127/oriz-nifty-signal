@@ -125,6 +125,36 @@ def test_format_ntfy_without_mmi():
     assert "nifty-signal.oriz.in" in m
 
 
+_LOWPE = [{"symbol": "HINDPETRO", "pe": 4.61}, {"symbol": "IOC", "pe": 4.7}, {"symbol": "PFC", "pe": 4.85}]
+
+
+def test_format_message_includes_lowest_pe():
+    m = format_message(_signal(), mmi_snapshot=None, lowest_pe=_LOWPE)
+    assert "Cheapest Nifty 500 by PE" in m
+    assert "HINDPETRO" in m and "4.61x" in m
+
+
+def test_format_ntfy_includes_lowest_pe():
+    m = format_ntfy(_signal(), mmi_snapshot=None, lowest_pe=_LOWPE)
+    assert "<" not in m
+    assert "Cheapest Nifty 500 by PE" in m
+    assert "HINDPETRO 4.61x" in m
+
+
+def test_lowest_pe_omitted_when_empty():
+    m = format_message(_signal(), mmi_snapshot=None, lowest_pe=[])
+    assert "Cheapest Nifty 500" not in m
+
+
+def test_write_snapshot_writes_lowest_pe_file(tmp_path: Path):
+    write_snapshot(_signal(), [], tmp_path, lowest_pe=_LOWPE)
+    latest = json.loads((tmp_path / "latest.json").read_text(encoding="utf-8"))
+    assert latest["lowest_pe"] == _LOWPE
+    lp = json.loads((tmp_path / "lowest_pe_nifty500.json").read_text(encoding="utf-8"))
+    assert lp["stocks"] == _LOWPE
+    assert lp["ts"]
+
+
 def test_notifiers_noop_without_env(monkeypatch):
     for k in ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "NTFY_TOPIC"):
         monkeypatch.delenv(k, raising=False)

@@ -131,7 +131,17 @@ def _mmi_section(mmi: dict[str, Any], html: bool = False) -> str:
         return "\n".join(parts)
 
 
-def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
+def _lowest_pe_section(lowest_pe: list[dict], html: bool = False, top: int = 10) -> str:
+    """Cheapest Nifty 500 by trailing PE — top N as symbol PEx."""
+    if not lowest_pe:
+        return ""
+    rows = lowest_pe[:top]
+    bits = [f"{_esc(r['symbol']) if html else r['symbol']} {r['pe']:g}x" for r in rows]
+    head = "💰 <b>Cheapest Nifty 500 by PE</b>" if html else "Cheapest Nifty 500 by PE:"
+    return head + "\n" + " · ".join(bits)
+
+
+def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> str:
     """Telegram HTML combined message: Nifty verdict + segment breakdown + MMI."""
     emoji = _VERDICT_EMOJI.get(sig.verdict, "⚪")
     head = (
@@ -161,6 +171,11 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> s
 
     lines.append(f"→ {SITE}")
 
+    lp = _lowest_pe_section(lowest_pe or [], html=True)
+    if lp:
+        lines.append("")
+        lines.extend(lp.split("\n"))
+
     # MMI section (separator + block)
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=True)
@@ -171,7 +186,7 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> s
     return "\n".join(lines)
 
 
-def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
+def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> str:
     lines = [f"{sig.verdict} — score {sig.verdict_score:.0f}/100", sig.rationale]
 
     ind = _ind_line(sig)
@@ -191,6 +206,11 @@ def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
         lines.append(news_line)
 
     lines.append(SITE)
+
+    lp = _lowest_pe_section(lowest_pe or [], html=False)
+    if lp:
+        lines.append("")
+        lines.append(lp)
 
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=False)
@@ -252,8 +272,8 @@ def send_ntfy(text: str) -> bool:
         return False
 
 
-def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> dict[str, bool]:
+def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> dict[str, bool]:
     return {
-        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot)),
-        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot)),
+        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)),
+        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)),
     }

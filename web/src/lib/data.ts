@@ -19,6 +19,10 @@ export interface Indicator {
   source: string;
   as_of: string;
 }
+export interface LowestPe {
+  symbol: string;
+  pe: number;
+}
 export interface Signal {
   verdict: string;
   verdict_score: number;
@@ -27,12 +31,14 @@ export interface Signal {
   indicators: Indicator[];
   summary: string;
   errors: string[];
+  lowest_pe?: LowestPe[];
 }
 export interface HistPoint {
   ts: string;
   score: number;
   verdict: string;
 }
+
 
 const EMPTY: Signal = {
   verdict: 'HOLD-SIP-ONLY',
