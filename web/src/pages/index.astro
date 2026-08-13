@@ -21,6 +21,10 @@ const vColor =
     <span class="kicker">Indian equity · market timing</span>
     <h1>Is now a good time to buy?</h1>
     <p class="sub">One signal from valuation + sentiment: Nifty PE, the Buffett indicator, and market mood, combined into a single verdict. SIP always; time your lumpsum by the light.</p>
+    <nav class="pagenav">
+      <a href="/screener">the value-composite screener →</a>
+      <a href="/methodology">methodology</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -50,7 +54,7 @@ const vColor =
             <li><span class="sym">{s.symbol}</span><span class="pe">{s.pe.toFixed(1)}x</span></li>
           ))}
         </ol>
-        <p class="lowpe-note">Trailing P/E, lowest positive first. Low PE ≠ cheap — a screen, not a recommendation.</p>
+        <p class="lowpe-note">Trailing P/E, lowest positive first. Low PE ≠ cheap — a screen, not a recommendation. <a href="/screener">Open the full value-composite screener →</a></p>
       </section>
     )}
 
@@ -128,6 +132,13 @@ const vColor =
   .lowpe-list .sym { font-family: var(--font-mono); color: var(--ink); }
   .lowpe-list .pe { font-family: var(--font-mono); color: var(--buy); font-weight: 600; }
   .lowpe-note { color: var(--dimmer); font-size: 11px; margin: 12px 0 0; }
+  .lowpe-note a { color: var(--accent); }
+  .pagenav {
+    display: flex; gap: 22px; justify-content: center; margin: 18px 0 0;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+  }
+  .pagenav a { color: var(--accent); }
+  .pagenav a:hover { text-decoration: underline; }
   @media (max-width: 640px) { .lowpe-list { grid-template-columns: repeat(2, 1fr); } }
 
   .legend {

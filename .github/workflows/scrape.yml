@@ -1,8 +1,11 @@
 name: nifty-signal
 
-# Daily Nifty market-timing read -> classify + score -> verdict -> commentary ->
-# notify -> commit data. The committed JSON drives the CF Pages build. Equity
-# valuation moves slowly, so once/day at 1pm IST is the right cadence.
+# Daily pipeline: fetch (screener sweep + enrich) -> score (z-scores, VALUE
+# composite, quality, return-potential, MTF after-tax) -> keyless AI analysis
+# (daily commentary + per-top-pick why-cheap/key-risk, into the JSON) -> write
+# data/*.json -> notify (top picks ONLY on STRONG BUY) -> commit (git-as-DB,
+# rebase-before-push). The committed JSON drives the CF Pages build. Equity
+# valuation moves slowly, so once/day at 12:30pm IST is the right cadence.
 
 on:
   schedule:
@@ -51,7 +54,7 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
-      - name: Read Nifty signal (once daily at 1pm IST)
+      - name: Run pipeline (fetch -> score -> AI -> JSON -> notify STRONG BUY -> commit)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

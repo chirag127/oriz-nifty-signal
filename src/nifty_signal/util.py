@@ -15,12 +15,41 @@ Composite verdict from the weighted mean buy-attractiveness score:
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Awaitable, Callable, TypeVar
 
 import httpx
 
 log = logging.getLogger("nifty_signal")
+
+_T = TypeVar("_T")
+_R = TypeVar("_R")
+
+
+def map_concurrent(
+    fn: Callable[[_T], _R], items: list[_T], *, workers: int = 16
+) -> dict[_T, _R]:
+    """Run `fn` over `items` in a thread pool (I/O-bound keyless GETs). Returns
+    {item: result} for items whose result is not None; one failure never aborts
+    the batch (logged + skipped). Resilient partial results."""
+    out: dict[_T, _R] = {}
+    if not items:
+        return out
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(fn, it): it for it in items}
+        for fut in as_completed(futs):
+            it = futs[fut]
+            try:
+                res = fut.result()
+            except Exception as e:  # noqa: BLE001 — resilient: skip bad item
+                log.warning("concurrent task failed item=%s: %s", it, e)
+                continue
+            if res is not None:
+                out[it] = res
+    return out
 
 _UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -212,3 +241,59 @@ def fetch_text(url: str, timeout: float = 25.0) -> str:
         r = client.get(url)
         r.raise_for_status()
         return r.text
+
+
+# ---- async keyless fetch (bounded concurrency) --------------------------
+
+def _headers(referer: str = "", json_body: bool = False) -> dict[str, str]:
+    h = {
+        "User-Agent": _UA,
+        "Accept": "application/json,text/plain,*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    if json_body:
+        h["Content-Type"] = "application/json"
+    if referer:
+        h["Referer"] = referer
+    return h
+
+
+async def gather_bounded(
+    coro_fns: list[Callable[[httpx.AsyncClient], Awaitable[_R]]],
+    *,
+    concurrency: int = 24,
+    timeout: float = 40.0,
+) -> list[_R | None]:
+    """Run coroutine-factories over one shared AsyncClient, capped at
+    `concurrency` in-flight. Order preserved; a failing task yields None
+    (logged) so a partial sweep still scores. I/O-bound keyless calls."""
+    if not coro_fns:
+        return []
+    sem = asyncio.Semaphore(concurrency)
+    limits = httpx.Limits(max_connections=concurrency, max_keepalive_connections=concurrency)
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, limits=limits) as client:
+        async def guarded(fn: Callable[[httpx.AsyncClient], Awaitable[_R]]) -> _R | None:
+            async with sem:
+                try:
+                    return await fn(client)
+                except Exception as e:  # noqa: BLE001 — resilient: skip bad task
+                    log.warning("async task failed: %s", e)
+                    return None
+        return await asyncio.gather(*(guarded(fn) for fn in coro_fns))
+
+
+async def afetch_json_post(client: httpx.AsyncClient, url: str, body: dict, referer: str = "") -> dict:
+    r = await client.post(url, json=body, headers=_headers(referer, json_body=True))
+    r.raise_for_status()
+    return r.json()
+
+
+async def afetch_json(client: httpx.AsyncClient, url: str, referer: str = "") -> dict:
+    r = await client.get(url, headers=_headers(referer))
+    r.raise_for_status()
+    return r.json()
+
+
+def run_async(coro: Awaitable[_R]) -> _R:
+    """Run an async coroutine from sync code (fresh loop per call)."""
+    return asyncio.run(coro)

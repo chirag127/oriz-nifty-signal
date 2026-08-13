@@ -1,0 +1,351 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadMetrics, isDemo } from '../lib/screener';
+
+const meta = loadMetrics();
+const demo = isDemo();
+const count = meta.stocks.length;
+---
+
+<Base
+  title="Stock Screener — value composite over all Indian equities | Nifty Signal"
+  desc="Client-side stock screener over ~5000 Indian stocks. Rank by a combined value composite Screener.in lacks, re-weight factors live, and see after-tax MTF buy-and-hold returns. Backend-free, shareable."
+>
+  <header class="top wrap">
+    <span class="kicker">Indian equity · value screener</span>
+    <h1>The Value Composite Screener</h1>
+    <p class="sub">Rank every Indian stock by a <b>combined value composite</b> — the single number Screener.in doesn't give you. Re-weight the factors live, tilt for quality, and read the <b>after-tax MTF buy-and-hold</b> return. Runs entirely in your browser.</p>
+    <nav class="pagenav">
+      <a href="/">← signal</a>
+      <a href="/methodology">how this works / methodology →</a>
+    </nav>
+  </header>
+
+  <main class="wrap screener">
+    <div id="screener-status" class="status">Loading {count.toLocaleString('en-IN')} stocks…</div>
+    <div id="demo-banner" class="demo-banner" hidden>
+      Demo data — the daily pipeline hasn't published <code>nifty_all_metrics.json</code> yet. Numbers are illustrative; the screener is fully live once real data lands.
+    </div>
+
+    <section id="ai-analysis" class="panel ai-panel" hidden>
+      <div class="ai-head">
+        <h2>AI read</h2>
+        <span class="ai-tag">AI-generated · not investment advice</span>
+      </div>
+      <div id="ai-body" class="ai-body"></div>
+    </section>
+
+    <!-- presets -->
+    <section class="panel presets">
+      <h2>Presets</h2>
+      <div class="preset-row">
+        <button class="preset-btn flagship" data-preset="mtf">★ MTF Buy-and-Hold (1yr)</button>
+        <button class="preset-btn" data-preset="deep">Deep Value</button>
+        <button class="preset-btn" data-preset="quality">Quality Value</button>
+        <button class="preset-btn" data-preset="lowpepb">Low PE + PB</button>
+        <button class="preset-btn" data-preset="fcf">High FCF yield</button>
+        <button class="preset-btn" data-preset="nonpsu">Value non-PSU</button>
+      </div>
+      <p id="preset-note" class="preset-note"></p>
+    </section>
+
+    <div class="grid">
+      <!-- left: filter builder + weights -->
+      <aside class="controls">
+        <section class="panel">
+          <h2>Filter builder</h2>
+          <div class="fb-row">
+            <select id="f-metric" aria-label="metric"></select>
+            <select id="f-op" aria-label="operator">
+              <option value="<">&lt;</option>
+              <option value="<=">&le;</option>
+              <option value=">">&gt;</option>
+              <option value=">=" selected>&ge;</option>
+              <option value="between">between</option>
+            </select>
+            <input id="f-a" type="number" step="any" placeholder="value" aria-label="value" />
+            <input id="f-b" type="number" step="any" placeholder="to" aria-label="upper value" />
+            <button id="f-add" class="btn">add</button>
+          </div>
+          <div class="quick">
+            <button class="q" data-quick data-kind="flag" data-field="is_mtf_eligible" data-on="1">MTF-eligible</button>
+            <button class="q" data-quick data-kind="flag" data-field="quality" data-on="1">Quality</button>
+            <button class="q" data-quick data-kind="flag" data-field="is_psu" data-on="0">Non-PSU</button>
+            <button class="q" data-quick data-kind="index" data-val="NIFTY50">Nifty 50</button>
+            <button class="q" data-quick data-kind="index" data-val="NIFTY500">Nifty 500</button>
+            <button class="q" data-quick data-kind="tier" data-val="large">Large-cap</button>
+            <button class="q" data-quick data-kind="tier" data-val="mid">Mid-cap</button>
+            <button class="q" data-quick data-kind="tier" data-val="small">Small-cap</button>
+          </div>
+          <div id="filter-list" class="filter-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="wh">
+            <h2>Custom factor weights</h2>
+            <button id="eq-weights" class="mini">reset equal</button>
+          </div>
+          <p class="wnote">The composite recomputes live from stored per-factor z-scores. Default = equal weight.</p>
+          <div id="weights" class="weights"></div>
+        </section>
+
+        <section class="panel actions">
+          <button id="reset" class="btn ghost">reset all</button>
+          <button id="share" class="btn">share query</button>
+        </section>
+      </aside>
+
+      <!-- right: results -->
+      <section class="results">
+        <div class="results-bar">
+          <div class="count"><span id="result-count">—</span> stocks match</div>
+          <div class="rb-actions">
+            <button id="toggle-sector" class="mini">sector view</button>
+            <button id="csv" class="mini">export CSV</button>
+            <span class="hint">click a column to sort</span>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table id="stable" class="stable"></table>
+        </div>
+        <div id="pager" class="pager"></div>
+      </section>
+    </div>
+
+    <section id="sector-panel" class="panel" hidden>
+      <h2>Sector view — median metrics + cheapest-quality per sector</h2>
+      <div class="table-scroll" id="sector-view"></div>
+      <p class="wnote">Median across sector members (n≥3). "Cheapest-quality" = highest-composite name that passes the quality flag. Compare a stock to its sector median in the watchlist below.</p>
+    </section>
+
+    <section class="panel compare-panel">
+      <div class="wh">
+        <h2>Watchlist &amp; compare (<span id="watch-count">0</span>)</h2>
+        <button id="clear-watch" class="mini">clear</button>
+      </div>
+      <div id="compare" class="compare"></div>
+    </section>
+
+    <section class="panel roadmap">
+      <h2>Roadmap</h2>
+      <ul>
+        <li><b>Per-row 1Y price sparkline</b> — deferred: needs a price time-series in the data JSON (pipeline exposes point-in-time ratios, not daily price history yet).</li>
+        <li><b>Flagship backtest / historical hit-rate</b> — deferred: needs committed history of the screen’s forward returns; will accrue as daily snapshots build up.</li>
+      </ul>
+    </section>
+
+    <p class="updated">Universe of {count.toLocaleString('en-IN')} stocks{demo ? ' (demo)' : ''} · data as of <span id="data-ts">awaiting first run</span> · <a href="/methodology">methodology & tax rules</a></p>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Not investment or tax advice — a screen, not a recommendation. Low multiples ≠ cheap; PSUs are cyclical / policy-exposed.
+      See <a href="/methodology">methodology</a>. · <a href="https://oriz.in">oriz.in</a>
+    </div>
+  </footer>
+
+  <script src="/screener.js" is:inline></script>
+</Base>
+
+<style>
+  .pagenav {
+    display: flex; gap: 22px; justify-content: center; margin: 16px 0 0;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+  }
+  .pagenav a { color: var(--accent); }
+  .screener { max-width: 1320px; }
+
+  .status { color: var(--dim); font-family: var(--font-mono); font-size: 13px; margin: 18px 0; text-align: center; }
+  .demo-banner {
+    background: color-mix(in srgb, var(--hold) 12%, var(--panel));
+    border: 1px solid color-mix(in srgb, var(--hold) 40%, var(--line));
+    border-radius: 12px; padding: 12px 16px; margin: 14px 0; font-size: 13px; color: var(--ink);
+  }
+  .demo-banner code { font-family: var(--font-mono); color: var(--hold); }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px; margin: 0 0 14px;
+  }
+  .panel h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin: 0 0 12px;
+  }
+
+  .presets { margin-top: 18px; }
+  .preset-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .preset-btn {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+    color: var(--ink); background: var(--bg-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: 0.15s;
+  }
+  .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .preset-btn.active { background: color-mix(in srgb, var(--accent) 16%, var(--bg-2)); border-color: var(--accent); color: var(--accent); }
+  .preset-btn.flagship { color: var(--buy); border-color: color-mix(in srgb, var(--buy) 45%, var(--line)); }
+  .preset-btn.flagship.active { background: color-mix(in srgb, var(--buy) 14%, var(--bg-2)); }
+  .preset-note { color: var(--dim); font-size: 12px; margin: 12px 0 0; min-height: 1.2em; }
+
+  .grid { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+
+  .fb-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+  .fb-row select, .fb-row input {
+    font-family: var(--font-mono); font-size: 12px; color: var(--ink);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px;
+    min-width: 0;
+  }
+  .fb-row #f-metric { grid-column: 1 / -1; }
+  .fb-row #f-op { grid-column: 1; }
+  .fb-row #f-a { grid-column: 2; }
+  .fb-row #f-b { grid-column: 1 / 2; }
+  .fb-row #f-add { grid-column: 2; }
+
+  .btn {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--bg);
+    background: var(--accent); border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  .btn.ghost { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); }
+  .btn:hover { filter: brightness(1.08); }
+
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+  .q {
+    font-family: var(--font-mono); font-size: 11px; color: var(--dim);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 10px; cursor: pointer;
+  }
+  .q:hover { color: var(--accent); border-color: var(--accent); }
+  .q.active { background: color-mix(in srgb, var(--accent) 16%, var(--bg-2)); color: var(--accent); border-color: var(--accent); }
+
+  .filter-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink);
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg-2));
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+    border-radius: 999px; padding: 4px 6px 4px 10px;
+  }
+  .chip-x { background: none; border: 0; color: var(--dim); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; }
+  .chip-x:hover { color: var(--caution); }
+  .chip-empty { color: var(--dimmer); font-family: var(--font-mono); font-size: 11px; }
+
+  .wh { display: flex; justify-content: space-between; align-items: center; }
+  .mini, .pg {
+    font-family: var(--font-mono); font-size: 10px; color: var(--dim);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; cursor: pointer;
+  }
+  .mini:hover, .pg:hover { color: var(--accent); }
+  .wnote { color: var(--dimmer); font-size: 11px; margin: -4px 0 12px; }
+  .weights { display: grid; gap: 8px; }
+  .wrow { display: grid; grid-template-columns: 64px 1fr 30px; align-items: center; gap: 8px; }
+  .wlab { font-family: var(--font-mono); font-size: 11px; color: var(--dim); }
+  .wrow input[type='range'] { width: 100%; accent-color: var(--accent); }
+  .wval { font-family: var(--font-mono); font-size: 11px; color: var(--accent); text-align: right; }
+
+  .actions { display: flex; gap: 8px; }
+  .actions .btn { flex: 1; }
+
+  .results-bar { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 8px; }
+  .count { font-family: var(--font-disp); font-size: 15px; }
+  .count span { color: var(--accent); font-weight: 700; }
+  .hint { color: var(--dimmer); font-family: var(--font-mono); font-size: 11px; }
+
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+  table.stable { border-collapse: collapse; width: 100%; font-size: 12px; }
+  .stable thead th {
+    position: sticky; top: 0; z-index: 2; background: var(--panel-2);
+    border-bottom: 1px solid var(--line); padding: 0; text-align: right; white-space: nowrap;
+  }
+  .stable th.col-text { text-align: left; }
+  .sort-btn {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--dim); background: none; border: 0; padding: 10px 10px; cursor: pointer; width: 100%; text-align: inherit;
+  }
+  .sort-btn:hover { color: var(--ink); }
+  .sort-btn.active { color: var(--accent); }
+  .stable tbody td {
+    font-family: var(--font-mono); padding: 7px 10px; text-align: right; white-space: nowrap;
+    border-bottom: 1px solid var(--bg-2); color: var(--ink);
+  }
+  .stable tbody tr:hover { background: var(--bg-2); }
+  .stable td.col-text { text-align: left; color: var(--dim); }
+  .stable td.sym { color: var(--ink); font-weight: 600; }
+  .stable td.composite-cell { min-width: 132px; }
+  .zbar-wrap {
+    display: flex; align-items: center; gap: 8px; justify-content: flex-end;
+    height: 20px; position: relative;
+  }
+  .zbar {
+    height: 8px; border-radius: 4px; min-width: 4px; flex: 0 0 auto;
+    max-width: 78px; transition: width 0.25s ease, background 0.25s ease;
+    box-shadow: 0 0 8px -2px currentColor;
+  }
+  .zval { font-family: var(--font-mono); font-weight: 700; font-size: 12px; min-width: 42px; text-align: right; }
+  .rank-badge {
+    display: inline-block; min-width: 26px; text-align: center;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    color: var(--dim); background: var(--bg-2); border: 1px solid var(--line);
+    border-radius: 6px; padding: 1px 5px; margin-right: 8px;
+  }
+  .rank-badge.top { color: var(--buy); border-color: color-mix(in srgb, var(--buy) 50%, var(--line)); background: color-mix(in srgb, var(--buy) 12%, var(--bg-2)); }
+  .stable td.yes { color: var(--buy); }
+  @media (prefers-reduced-motion: reduce) {
+    .zbar, .fill { transition: none; }
+  }
+
+  .pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0 0; }
+  .pg-info { font-family: var(--font-mono); font-size: 11px; color: var(--dim); }
+  .pg:disabled { opacity: 0.4; cursor: default; }
+
+  .updated { color: var(--dimmer); font-family: var(--font-mono); font-size: 11px; text-align: center; margin: 16px 0 0; }
+  .updated a { color: var(--accent); }
+
+  /* AI panel */
+  .ai-panel { border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); }
+  .ai-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .ai-head h2 { margin: 0; color: var(--accent); }
+  .ai-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--dimmer); text-transform: uppercase; }
+  .ai-body { color: var(--ink); font-size: 14px; }
+  .ai-body p { margin: 0 0 10px; }
+  .ai-picks { margin: 8px 0 0; padding-left: 18px; }
+  .ai-picks li { margin: 0 0 6px; font-size: 13px; }
+  .ai-picks b { font-family: var(--font-mono); color: var(--accent); }
+  .ai-risk { color: var(--caution); font-size: 12px; }
+
+  /* results-bar actions */
+  .rb-actions { display: flex; align-items: center; gap: 8px; }
+  .rb-actions .mini.active { color: var(--accent); border-color: var(--accent); }
+
+  /* watchlist star column */
+  .stable th.col-star, .stable td.col-star { text-align: center; padding: 0; width: 26px; }
+  .star-btn { background: none; border: 0; color: var(--dimmer); cursor: pointer; font-size: 14px; padding: 6px; line-height: 1; }
+  .star-btn.on { color: var(--hold); }
+  .star-btn:hover { color: var(--hold); }
+
+  /* compare table */
+  .cmp-empty { color: var(--dim); font-size: 13px; margin: 0; }
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .cmp-table th { font-family: var(--font-mono); padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+  .cmp-table th.cmp-metric { text-align: left; }
+  .cmp-sym { color: var(--ink); font-weight: 700; font-size: 13px; }
+  .cmp-sec { color: var(--dimmer); font-size: 10px; }
+  .cmp-table td { font-family: var(--font-mono); padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--bg-2); color: var(--ink); }
+  .cmp-table td.cmp-metric { text-align: left; color: var(--dim); font-family: var(--font-ui); }
+  .cmp-table td.best { color: var(--buy); font-weight: 700; }
+  .cmp-table .cmp-sec-med { color: var(--dim); font-style: italic; }
+  .cmp-note { color: var(--dimmer); font-size: 11px; margin: 10px 0 0; }
+
+  /* sector table */
+  .sector-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sector-table th { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .sector-table th:first-child { text-align: left; }
+  .sector-table td { font-family: var(--font-mono); padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--bg-2); color: var(--ink); }
+  .sector-table td.sec-name { text-align: left; font-family: var(--font-ui); font-weight: 600; }
+  .sector-table td.sym { color: var(--accent); }
+
+  .roadmap ul { margin: 0; padding-left: 18px; color: var(--dim); font-size: 13px; }
+  .roadmap li { margin: 0 0 6px; }
+  .roadmap b { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

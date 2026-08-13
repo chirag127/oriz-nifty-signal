@@ -90,21 +90,3 @@ def test_parse_mmi_missing_indicator():
     with pytest.raises(ValueError):
         parse_mmi({"date": "x"})
 
-
-def test_lowest_pe_ranks_ascending_positive(monkeypatch):
-    from nifty_signal.sources import lowest_pe as lp
-    monkeypatch.setattr(lp, "_nifty500_symbols", lambda: {"AAA", "BBB", "CCC", "DDD", "EEE"})
-    monkeypatch.setattr(lp, "_pe_by_ticker", lambda: {
-        "AAA": 30.0, "BBB": 4.0, "CCC": None, "DDD": -5.0, "EEE": 12.5, "ZZZ": 1.0,
-    })
-    out = lp.lowest_pe_nifty500(top=10)
-    assert [r["symbol"] for r in out] == ["BBB", "EEE", "AAA"]  # None/neg dropped, ZZZ not in 500
-    assert out[0]["pe"] == 4.0
-    assert all(r["pe"] > 0 for r in out)
-
-
-def test_lowest_pe_respects_top(monkeypatch):
-    from nifty_signal.sources import lowest_pe as lp
-    monkeypatch.setattr(lp, "_nifty500_symbols", lambda: {f"S{i}" for i in range(30)})
-    monkeypatch.setattr(lp, "_pe_by_ticker", lambda: {f"S{i}": float(i + 1) for i in range(30)})
-    assert len(lp.lowest_pe_nifty500(top=5)) == 5

@@ -1,0 +1,209 @@
+---
+import Base from '../layouts/Base.astro';
+
+const metrics = [
+  { m: 'PE (P/E)', mean: 'Price ÷ trailing earnings per share.', why: 'How many rupees you pay per rupee of annual profit.', good: 'Lower = cheaper. <15 cheap, >30 rich — but banks/utilities run low, growth runs high. Loss-makers have no meaningful PE.' },
+  { m: 'PB (P/B)', mean: 'Price ÷ book value (net assets) per share.', why: 'What you pay over the accounting net worth. Best for asset-heavy names (banks, PSUs).', good: '<1 = below book. High-ROE businesses justify higher PB.' },
+  { m: 'PS (P/S)', mean: 'Market cap ÷ annual sales.', why: 'Valuation independent of margin/accounting — useful when earnings are noisy or negative.', good: 'Lower cheaper; compare within a sector only.' },
+  { m: 'EV/EBIT', mean: 'Enterprise value ÷ operating profit.', why: 'Capital-structure-neutral — counts debt, so a leveraged and an unleveraged firm compare fairly.', good: 'Lower cheaper. Our EV cheapness factor (keyless EV/EBITDA proper is not exposed).' },
+  { m: 'P/FCF', mean: 'Market cap ÷ free cash flow.', why: 'Free cash flow is harder to fake than earnings — the cash actually left after capex.', good: 'Lower cheaper; negative FCF = excluded from the FCF factor.' },
+  { m: 'PEG', mean: 'PE ÷ earnings-growth %.', why: 'Cheapness adjusted for growth — a high PE can be fair if profits are compounding.', good: '<1 = cheap for the growth. Needs positive growth + positive PE to be valid.' },
+  { m: 'FCF yield', mean: 'Free cash flow ÷ market cap.', why: 'The inverse of P/FCF — the cash return on today’s price.', good: 'Higher = more cash per rupee invested. >5% is strong.' },
+  { m: 'Div yield', mean: 'Dividend ÷ price.', why: 'Cash paid out. DISPLAY-ONLY here — dividends are slab-taxed, so high yield is tax-inefficient for this strategy.', good: 'Higher pays more, but drags after-tax return; kept out of the core rank.' },
+  { m: 'ROE', mean: 'Net profit ÷ shareholder equity.', why: 'How well the firm turns retained capital into profit — the compounding engine.', good: '>15% good, >20% excellent. A quality gate, not a value factor.' },
+  { m: 'ROCE', mean: 'Operating profit ÷ capital employed.', why: 'Return on ALL capital (debt + equity) — harder to flatter with leverage than ROE.', good: '>15% good. Should exceed cost of capital.' },
+  { m: 'D/E', mean: 'Total debt ÷ equity.', why: 'Leverage. High debt magnifies both returns and the risk of a margin-call spiral under MTF.', good: '<1 comfortable; >2 risky, especially leveraged buy-and-hold.' },
+  { m: 'Piotroski F', mean: '9-point fundamental-health score (see below).', why: 'One number for improving profitability, leverage and efficiency — screens value-traps.', good: '≥6 healthy, ≤3 weak.' },
+  { m: 'Beta', mean: 'Sensitivity to the index.', why: 'High beta = larger drawdowns = higher margin-call risk when you’re leveraged.', good: '<1 defensive, >1.2 we exclude from the MTF preset.' },
+  { m: '1Y return', mean: 'Price change over the last year.', why: 'The gross number the after-tax helper starts from.', good: 'Context only — past return is not future return.' },
+];
+
+const piotroski = [
+  ['Profitability', 'ROA positive', 'Net income > 0'],
+  ['Profitability', 'CFO positive', 'Operating cash flow > 0'],
+  ['Profitability', 'ROA rising', 'ROA this year > last year'],
+  ['Profitability', 'Accruals', 'CFO > net income (earnings backed by cash)'],
+  ['Leverage / liquidity', 'Lower leverage', 'Long-term-debt ratio down YoY'],
+  ['Leverage / liquidity', 'Current ratio up', 'Current assets / liabilities improved'],
+  ['Leverage / liquidity', 'No dilution', 'Shares outstanding did not rise'],
+  ['Efficiency', 'Margin up', 'Gross (or operating) margin rose YoY'],
+  ['Efficiency', 'Turnover up', 'Asset turnover (sales / assets) rose YoY'],
+];
+---
+
+<Base
+  title="Methodology & tax rules — how the value composite + MTF screener works | Nifty Signal"
+  desc="The source of truth: every metric explained, the exact equal-weight z-score composite formula, the Piotroski 9-point breakdown, the MTF 1-year buy-and-hold rationale, and the full India equity tax section (LTCG 12.5% vs STCG 20%, exemption, dividend drag, churn-after-12-months)."
+>
+  <header class="top wrap">
+    <span class="kicker">the source of truth</span>
+    <h1>How this works</h1>
+    <p class="sub">Every metric, the exact composite formula, the Piotroski breakdown, the MTF strategy, and the full tax logic. Plain language. This page — not a README — is the methodology of record.</p>
+    <nav class="pagenav">
+      <a href="/">← signal</a>
+      <a href="/screener">open the screener →</a>
+    </nav>
+  </header>
+
+  <main class="wrap doc">
+    <nav class="toc panel">
+      <a href="#composite">Value composite</a>
+      <a href="#metrics">Every metric</a>
+      <a href="#piotroski">Piotroski 9-pt</a>
+      <a href="#value-quality">Value vs quality</a>
+      <a href="#mtf">MTF 1-yr strategy</a>
+      <a href="#tax">Tax rules</a>
+      <a href="#disclaimer">Disclaimer</a>
+    </nav>
+
+    <section id="composite" class="panel">
+      <h2>The value composite — what Screener.in doesn’t give you</h2>
+      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended cheapness score. That blended score is the point of this site.</p>
+      <p>For each stock we convert every cheapness factor into a <b>yield</b> (so higher = cheaper), then take its <b>cross-sectional z-score</b> — how many standard deviations above/below the market average it sits. The composite is the <b>equal-weight mean of the z-scores the stock has</b>:</p>
+      <pre class="formula">factors  = E/P, B/P, S/P, EBIT/EV, FCF-yield, 1/PEG   (div-yield display-only)
+
+per factor:  yield = 1 / ratio        (E/P = 1/PE, etc.)
+             z     = (yield − market mean) / market stdev
+
+composite = mean( z[f]  for each factor f the stock HAS )
+higher composite = cheaper overall</pre>
+      <h3>Missing-value handling</h3>
+      <p>A factor only counts when its ratio is valid and positive (PE, PB, PS, EV/EBIT &gt; 0). A stock missing a factor is averaged over the rest — never penalised with a zero. Small/micro caps have thinner data, so the <b>Data</b> column shows each row’s completeness.</p>
+      <h3>Loss-maker exclusion</h3>
+      <p>Negative or zero earnings and negative book don’t produce a valid yield, so <b>loss-makers never score “cheap”</b> on those factors — a stock isn’t cheap just because its price collapsed alongside its profits.</p>
+      <h3>Custom weights (live)</h3>
+      <p>The site ships the per-factor z-scores, so the sliders <b>recompute the composite in your browser</b> with no refetch. Default is equal weight; set FCF-yield to max and everything else to zero to rank purely on cash yield, for example.</p>
+    </section>
+
+    <section id="metrics" class="panel">
+      <h2>Every metric — plain language</h2>
+      <table class="mtable">
+        <thead><tr><th>Metric</th><th>What it is</th><th>Why it matters</th><th>What cheap / good looks like</th></tr></thead>
+        <tbody>
+          {metrics.map((r) => (
+            <tr>
+              <td class="m">{r.m}</td>
+              <td>{r.mean}</td>
+              <td>{r.why}</td>
+              <td>{r.good}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section id="piotroski" class="panel">
+      <h2>Piotroski F-score — 9 points</h2>
+      <p>One point per test that passes, comparing this financial year to the last. It screens value-traps: a cheap stock with a rising F-score is improving; a cheap stock with a falling one is often cheap for a reason. A test whose data is missing is <b>skipped, never faked</b> — the row also reports how many of the 9 were computable.</p>
+      <table class="mtable">
+        <thead><tr><th>Group</th><th>Test</th><th>Passes when</th></tr></thead>
+        <tbody>
+          {piotroski.map((r) => (<tr><td class="m">{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>))}
+        </tbody>
+      </table>
+    </section>
+
+    <section id="value-quality" class="panel">
+      <h2>Value vs quality</h2>
+      <p><b>Value</b> is cheapness (the composite). <b>Quality</b> is business strength — ROE, ROCE, Piotroski, low debt. They’re kept separate on purpose:</p>
+      <ul>
+        <li>The primary rank is <b>pure value</b>, so genuinely cheap names surface even if unglamorous.</li>
+        <li>A <b>Quality flag</b> (ROE&gt;15% &amp; ROCE&gt;15% &amp; Piotroski≥6 &amp; D/E&lt;1.5) marks the strong businesses.</li>
+        <li>Cheap <b>and</b> quality = the sweet spot; cheap <b>without</b> quality = possible value-trap. The <b>Quality Value</b> preset intersects both.</li>
+      </ul>
+    </section>
+
+    <section id="mtf" class="panel">
+      <h2>The MTF 1-year buy-and-hold strategy</h2>
+      <p><b>MTF</b> (Margin Trading Facility) lets you hold a leveraged long position and pay interest (~12%/yr assumed here) rather than square off intraday. This screener is tuned for buying quality-value on margin, <b>holding just over 12 months, then rebalancing annually</b>. Why the 12-month hold and annual churn:</p>
+      <ul>
+        <li><b>Tax</b> — a hold past 12 months converts the gain from STCG (20%) to LTCG (12.5%). The annual churn is deliberately LTCG-optimal.</li>
+        <li><b>Interest drag</b> — you must clear ~12%/yr just to break even on the borrowed portion. The <b>after-tax 1Y</b> column subtracts it: <code>1Y return − MTF interest − LTCG on the gain</code>. A name that doesn’t clear interest is a losing leveraged trade even if the stock rose.</li>
+        <li><b>Margin-call risk</b> — leverage magnifies drawdowns; a sharp fall can force liquidation at the worst time. Hence the preset caps <b>beta ≤ 1.2</b> and tilts to quality.</li>
+        <li><b>Value-trap risk</b> — cheap + weak fundamentals can stay cheap for years while interest accrues. The quality tilt + Piotroski guard against it.</li>
+      </ul>
+      <p>The <b>MTF Buy-and-Hold (1yr)</b> preset therefore restricts to MTF-eligible, β≤1.2, ROE≥12 names and ranks by <b>after-tax, after-interest 1Y return</b> — not gross return.</p>
+    </section>
+
+    <section id="tax" class="panel tax">
+      <h2>Tax rules (India equity) — lowest-tax by design</h2>
+      <p>This strategy targets the <b>lowest tax drag</b>. The rules baked into the after-tax column and the presets:</p>
+      <ul>
+        <li><b>LTCG vs STCG</b> — hold &gt;12 months → long-term capital gains at <b>12.5%</b>. Sell inside 12 months → short-term at <b>20%</b>. Holding past a year nearly halves the tax; the annual churn is timed for it.</li>
+        <li><b>₹1.25L LTCG exemption/yr</b> — the first ₹1.25 lakh of long-term gains each year is tax-free. Harvesting gains up to the threshold realises them at 0% tax.</li>
+        <li><b>Dividend drag</b> — dividends are taxed at your <b>slab rate</b> (up to ~30%+). For a high earner, a high-dividend stock is tax-inefficient, so div-yield is <b>display-only</b>, kept out of the core rank; high-div names are flagged as tax-inefficient for this strategy.</li>
+        <li><b>MTF interest deductibility</b> — interest paid on the margin facility <i>may</i> offset gains under a business-income treatment. Informational only, depends on how you file — not tax advice.</li>
+        <li><b>Churn after 12 months</b> — rebalance just past the one-year mark so every realised gain is LTCG, not STCG.</li>
+        <li><b>Tax-loss harvesting</b> — before the annual churn, book losers to offset the winners’ gains and cut the net taxable amount.</li>
+      </ul>
+      <p class="taxnote">Rates reflect the current India LTCG/STCG regime for listed equity. Verify against the latest Finance Act and your own situation before acting.</p>
+    </section>
+
+    <section id="disclaimer" class="panel disc">
+      <h2>Disclaimer</h2>
+      <p><b>Not investment or tax advice.</b> This is an educational screen, not a recommendation. Low multiples don’t make a stock cheap in reality; a high composite is a starting point for research, not a buy signal. PSUs are cyclical and policy-exposed — they dominate low-PE screens for reasons that don’t always reverse. Leverage (MTF) can lose more than your capital. Data is best-effort from keyless public sources and can be stale, partial, or wrong. Do your own research; consult a registered adviser and a tax professional.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="/screener">← back to the screener</a> · Not investment/tax advice · <a href="https://oriz.in">oriz.in</a>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .pagenav { display: flex; gap: 22px; justify-content: center; margin: 16px 0 0; font-family: var(--font-mono); font-size: 12px; }
+  .pagenav a { color: var(--accent); }
+  .doc { max-width: 860px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 22px 24px; margin: 0 0 16px;
+  }
+  .panel h2 {
+    font-family: var(--font-disp); font-size: 22px; font-weight: 700; letter-spacing: -0.01em;
+    margin: 0 0 14px; color: var(--ink);
+  }
+  .panel h3 {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin: 20px 0 6px;
+  }
+  .panel p { color: var(--ink); margin: 0 0 12px; }
+  .panel ul { color: var(--ink); margin: 0 0 6px; padding-left: 20px; }
+  .panel li { margin: 0 0 8px; }
+  code { font-family: var(--font-mono); font-size: 0.9em; color: var(--accent); background: var(--bg-2); padding: 1px 5px; border-radius: 5px; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; }
+  .toc a { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .toc a:hover { text-decoration: underline; }
+
+  .formula {
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--ink);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; white-space: pre; margin: 0 0 14px;
+  }
+
+  .mtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .mtable th {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
+  }
+  .mtable td { padding: 9px 10px; border-bottom: 1px solid var(--bg-2); color: var(--ink); vertical-align: top; }
+  .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--accent); white-space: nowrap; }
+
+  .tax { border-color: color-mix(in srgb, var(--buy) 30%, var(--line)); }
+  .tax h2 { color: var(--buy); }
+  .taxnote { color: var(--dim); font-size: 12px; }
+  .disc { border-color: color-mix(in srgb, var(--caution) 30%, var(--line)); }
+  .disc h2 { color: var(--caution); }
+  .disc p { color: var(--dim); font-size: 13px; }
+
+  footer a { color: var(--accent); }
+  @media (max-width: 640px) {
+    .mtable, .mtable thead, .mtable tbody, .mtable tr, .mtable td, .mtable th { display: block; }
+    .mtable thead { display: none; }
+    .mtable td { border-bottom: none; padding: 3px 0; }
+    .mtable tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+    .mtable td.m { color: var(--accent); font-size: 14px; margin-bottom: 4px; }
+  }
+</style>
