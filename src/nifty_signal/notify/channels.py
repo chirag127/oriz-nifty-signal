@@ -141,7 +141,17 @@ def _lowest_pe_section(lowest_pe: list[dict], html: bool = False, top: int = 10)
     return head + "\n" + " · ".join(bits)
 
 
-def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> str:
+def _picks_section(picks: list[dict], title: str, html: bool = False, top: int = 5) -> str:
+    """Top picks (MTF or value) — symbol only, STRONG-BUY-only ride-along."""
+    if not picks:
+        return ""
+    bits = [_esc(p["symbol"]) if html else p["symbol"] for p in picks[:top]]
+    head = f"<b>{_esc(title)}</b>" if html else f"{title}:"
+    return head + "\n" + " · ".join(bits)
+
+
+def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+                   top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> str:
     """Telegram HTML combined message: Nifty verdict + segment breakdown + MMI."""
     emoji = _VERDICT_EMOJI.get(sig.verdict, "⚪")
     head = (
@@ -176,6 +186,12 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowe
         lines.append("")
         lines.extend(lp.split("\n"))
 
+    for picks, title in ((top_mtf, "Top MTF buy-and-hold"), (top_value, "Top value")):
+        sec = _picks_section(picks or [], title, html=True)
+        if sec:
+            lines.append("")
+            lines.extend(sec.split("\n"))
+
     # MMI section (separator + block)
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=True)
@@ -186,7 +202,8 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowe
     return "\n".join(lines)
 
 
-def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> str:
+def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+                top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> str:
     lines = [f"{sig.verdict} — score {sig.verdict_score:.0f}/100", sig.rationale]
 
     ind = _ind_line(sig)
@@ -211,6 +228,12 @@ def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_
     if lp:
         lines.append("")
         lines.append(lp)
+
+    for picks, title in ((top_mtf, "Top MTF buy-and-hold"), (top_value, "Top value")):
+        sec = _picks_section(picks or [], title, html=False)
+        if sec:
+            lines.append("")
+            lines.append(sec)
 
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=False)
@@ -272,8 +295,11 @@ def send_ntfy(text: str) -> bool:
         return False
 
 
-def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None) -> dict[str, bool]:
+def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+               top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> dict[str, bool]:
     return {
-        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)),
-        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe)),
+        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe,
+                                                  top_mtf=top_mtf, top_value=top_value)),
+        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe,
+                                      top_mtf=top_mtf, top_value=top_value)),
     }

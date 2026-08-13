@@ -230,6 +230,25 @@ def test_commentary_falls_back_without_llm(monkeypatch):
     assert isinstance(out, str) and len(out) > 10
 
 
+def test_format_message_renders_top_picks():
+    picks_mtf = [{"symbol": "RELIANCE"}, {"symbol": "TCS"}]
+    picks_val = [{"symbol": "IOC"}]
+    html = format_message(_signal(), top_mtf=picks_mtf, top_value=picks_val)
+    assert "Top MTF buy-and-hold" in html and "RELIANCE" in html and "IOC" in html
+    txt = format_ntfy(_signal(), top_mtf=picks_mtf, top_value=picks_val)
+    assert "Top value" in txt and "TCS" in txt
+
+
+def test_notify_all_accepts_top_picks_kwargs(monkeypatch):
+    # regression: pipeline passes top_mtf/top_value on STRONG BUY — must not TypeError
+    from nifty_signal.notify import channels
+    monkeypatch.setattr(channels, "send_telegram", lambda msg: True)
+    monkeypatch.setattr(channels, "send_ntfy", lambda msg: True)
+    out = channels.notify_all(_signal(), lowest_pe=[{"symbol": "IOC", "pe": 4.7}],
+                              top_mtf=[{"symbol": "RELIANCE"}], top_value=[{"symbol": "TCS"}])
+    assert out == {"telegram": True, "ntfy": True}
+
+
 # ---- integration: live network (skip if offline) ----------------------------
 
 @pytest.mark.integration
