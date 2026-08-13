@@ -6,9 +6,9 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { StockRow, Payload } from '../lib/screener';
 import {
-  SUBS, PROFILES, COLS, FMT, MTF_RATE, LTCG,
-  normalise, composite, drivers, aftertax1y,
-  type SubKey, type Col,
+  SUBS, PRESETS, DEFAULT_PRESET, COLS, FMT,
+  normalise, composite, drivers, aftertax1y, scanMembership,
+  type SubKey, type Col, type Preset, type PresetGroup,
 } from '../lib/scoring';
 import { HeatBar } from './HeatBar';
 import { WeightPanel } from './WeightPanel';
@@ -22,6 +22,17 @@ const FACTOR_COLOR: Record<SubKey, string> = {
 
 type Weights = Record<SubKey, number>;
 const eqWeights = (): Weights => ({ value: 20, growth: 20, quality: 20, momentum: 20, analyst: 20 });
+const TOP_N = 100; // scans surface the top ~100; user narrows to their 5
+
+const PRESET_GROUPS: PresetGroup[] = ['Core', 'Named', 'Strategy'];
+const byId = (id: string): Preset | undefined => PRESETS.find((p) => p.id === id);
+// convert a preset's declarative filters+flags into FilterBuilder state
+function presetFilters(p: Preset): Filter[] {
+  const out: Filter[] = [];
+  for (const fl of p.flags || []) out.push({ kind: 'flag', field: fl, on: true });
+  for (const f of p.filters || []) out.push({ kind: 'num', field: f.field, op: f.op, a: f.a, b: f.b });
+  return out;
+}
 
 export default function Screener({ demo, hasAi }: { demo: boolean; hasAi: boolean }) {
   const [data, setData] = useState<Payload | null>(null);
@@ -40,29 +51,39 @@ export default function Screener({ demo, hasAi }: { demo: boolean; hasAi: boolea
 }
 
 function Board({ data }: { data: Payload }) {
-  const rows = useMemo(() => (data.stocks || []).filter((r) => r && r.symbol), [data]);
+  const rows = useMemo(() => (data.stocks || [])
+    .filter((r) => r && r.symbol)
+    .map((r) => (r.fii == null && r.dii == null) ? r : { ...r, fii_dii: (r.fii ?? 0) + (r.dii ?? 0) }), [data]);
 
-  const [profile, setProfile] = useState('return');
-  const [weights, setWeights] = useState<Weights>(() => ({ ...PROFILES[0].weights }));
-  const [filters, setFilters] = useState<Filter[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'composite', desc: true }]);
+  const defPreset = byId(DEFAULT_PRESET)!;
+  const [preset, setPreset] = useState(DEFAULT_PRESET);
+  const [weights, setWeights] = useState<Weights>(() => ({ ...(defPreset.weights || eqWeights()) }));
+  const [filters, setFilters] = useState<Filter[]>(() => presetFilters(defPreset));
+  const [sorting, setSorting] = useState<SortingState>(() => [{ id: defPreset.sort!.id, desc: defPreset.sort!.desc }]);
   const [watch, setWatch] = useState<Set<string>>(new Set());
   const [showSector, setShowSector] = useState(false);
+  const [topOnly, setTopOnly] = useState(true);
+
+  // apply a preset: set weights (if any), filters+flags, and sort together
+  const applyPreset = useCallback((id: string) => {
+    const p = byId(id);
+    if (!p) return;
+    setPreset(id);
+    if (p.weights) setWeights({ ...p.weights });
+    setFilters(presetFilters(p));
+    if (p.sort) setSorting([{ id: p.sort.id, desc: p.sort.desc }]);
+  }, []);
 
   // ---- URL state (shareable) ----
   useEffect(() => {
     const u = new URLSearchParams(location.search);
-    if (u.get('p') && PROFILES.some((p) => p.id === u.get('p'))) {
-      const pid = u.get('p')!;
-      setProfile(pid);
-      setWeights({ ...PROFILES.find((p) => p.id === pid)!.weights });
-    }
+    if (u.get('p') && byId(u.get('p')!)) { applyPreset(u.get('p')!); }
     if (u.get('w')) {
       const parts = u.get('w')!.split(',').map(Number);
       const w = eqWeights();
       SUBS.forEach((s, i) => { if (isFinite(parts[i])) w[s.key] = parts[i]; });
       setWeights(w);
-      setProfile('custom');
+      setPreset('custom');
     }
     if (u.get('s')) {
       const [id, dir] = u.get('s')!.split(':');
@@ -75,12 +96,12 @@ function Board({ data }: { data: Payload }) {
 
   useEffect(() => {
     const u = new URLSearchParams();
-    if (profile && profile !== 'custom') u.set('p', profile);
+    if (preset && preset !== 'custom') u.set('p', preset);
     u.set('w', SUBS.map((s) => weights[s.key]).join(','));
     if (sorting[0]) u.set('s', sorting[0].id + ':' + (sorting[0].desc ? 'desc' : 'asc'));
     if (filters.length) u.set('f', encodeURIComponent(JSON.stringify(filters)));
     history.replaceState(null, '', '?' + u.toString());
-  }, [profile, weights, sorting, filters]);
+  }, [preset, weights, sorting, filters]);
 
   const derived = useCallback((r: StockRow) => composite(r, weights), [weights]);
 
@@ -107,13 +128,9 @@ function Board({ data }: { data: Payload }) {
     return filtered;
   }, [rows, derived, filters, sorting]);
 
-  const setProfilePick = (id: string) => {
-    const p = PROFILES.find((x) => x.id === id);
-    if (!p) return;
-    setProfile(id);
-    setWeights({ ...p.weights });
-  };
-  const onWeights = (w: Weights) => { setWeights(w); setProfile('custom'); };
+  const shown = useMemo(() => (topOnly ? view.slice(0, TOP_N) : view), [view, topOnly]);
+
+  const onWeights = (w: Weights) => { setWeights(w); setPreset('custom'); };
 
   const toggleWatch = (sym: string) => setWatch((prev) => {
     const n = new Set(prev);
@@ -121,16 +138,12 @@ function Board({ data }: { data: Payload }) {
     return n;
   });
 
-  const reset = () => {
-    setProfilePick('return');
-    setFilters([]);
-    setSorting([{ id: 'composite', desc: true }]);
-  };
+  const reset = () => applyPreset(DEFAULT_PRESET);
   const share = async () => {
     try { await navigator.clipboard.writeText(location.href); } catch { /* address bar has it */ }
   };
 
-  const activeProfile = PROFILES.find((p) => p.id === profile);
+  const activePreset = byId(preset);
   const nz = normalise(weights);
 
   return (
@@ -145,30 +158,32 @@ function Board({ data }: { data: Payload }) {
 
       {data.ai && <AiCard ai={data.ai} rows={rows} weights={weights} />}
 
-      {/* PROFILE picker — the weighting hero control */}
+      {/* PRESET picker — grouped scans + weighting profiles */}
       <section class="profiles">
         <div class="phead">
-          <h2>Weighting profile</h2>
-          <span class="pct-hint">each profile tilts the return-potential composite — weights shown as % of influence</span>
+          <h2>Presets — scans &amp; weightings</h2>
+          <span class="pct-hint">each sets the filters + sort (and, where relevant, the factor weights); surfaces the top {TOP_N} — narrow to your 5</span>
         </div>
-        <div class="profile-row">
-          {PROFILES.map((p) => {
-            const flag = (p as { flagship?: boolean }).flagship;
-            return (
-              <button
-                key={p.id}
-                class={'profile-chip' + (profile === p.id ? ' active' : '') + (flag ? ' flagship' : '')}
-                onClick={() => setProfilePick(p.id)}
-                aria-pressed={profile === p.id}
-              >
-                {flag && <span class="star" aria-hidden="true">★</span>}
-                {p.label}
-              </button>
-            );
-          })}
-          {profile === 'custom' && <span class="profile-chip active custom">Custom mix</span>}
-        </div>
-        <p class="profile-blurb">{profile === 'custom' ? 'Your own factor mix — sliders below drive the ranking live.' : activeProfile?.blurb}</p>
+        {PRESET_GROUPS.map((g) => (
+          <div class="preset-group" key={g}>
+            <span class="pg-label">{g}</span>
+            <div class="profile-row">
+              {PRESETS.filter((p) => p.group === g).map((p) => (
+                <button
+                  key={p.id}
+                  class={'profile-chip' + (preset === p.id ? ' active' : '') + (p.flagship ? ' flagship' : '')}
+                  onClick={() => applyPreset(p.id)}
+                  aria-pressed={preset === p.id}
+                >
+                  {p.flagship && <span class="star" aria-hidden="true">★</span>}
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        {preset === 'custom' && <div class="profile-row"><span class="profile-chip active custom">Custom mix</span></div>}
+        <p class="profile-blurb">{preset === 'custom' ? 'Your own factor mix — sliders below drive the ranking live.' : activePreset?.blurb}</p>
       </section>
 
       <div class="grid">
@@ -186,14 +201,19 @@ function Board({ data }: { data: Payload }) {
 
         <section class="results">
           <div class="results-bar">
-            <div class="count"><b>{view.length.toLocaleString('en-IN')}</b> of {rows.length.toLocaleString('en-IN')} stocks</div>
+            <div class="count">
+              <b>{shown.length.toLocaleString('en-IN')}</b>
+              {topOnly && view.length > TOP_N ? <> of top {TOP_N}</> : <> of {view.length.toLocaleString('en-IN')}</>}
+              {' '}({rows.length.toLocaleString('en-IN')} total)
+            </div>
             <div class="rb-actions">
+              <button class={'mini' + (topOnly ? ' on' : '')} onClick={() => setTopOnly((t) => !t)}>top {TOP_N}</button>
               <button class={'mini' + (showSector ? ' on' : '')} onClick={() => setShowSector((s) => !s)}>sector view</button>
-              <button class="mini" onClick={() => exportCsv(view, weights)}>export CSV</button>
+              <button class="mini" onClick={() => exportCsv(shown, weights)}>export CSV</button>
             </div>
           </div>
           <Grid
-            view={view} weights={weights} sorting={sorting} setSorting={setSorting}
+            view={shown} weights={weights} sorting={sorting} setSorting={setSorting}
             watch={watch} toggleWatch={toggleWatch}
           />
         </section>
@@ -213,6 +233,10 @@ function cellVal(a: { row: StockRow; composite: number | null; aftertax_1y: numb
   if (id === 'symbol') return a.row.symbol;
   if (id === 'sector') return a.row.sector ?? '';
   if (id === 'consensus') return a.row.consensus ?? null;
+  if (id === 'fii_dii') {
+    const r = a.row;
+    return (r.fii == null && r.dii == null) ? null : (r.fii ?? 0) + (r.dii ?? 0);
+  }
   const v = a.row[id];
   return typeof v === 'number' ? v : null;
 }
@@ -416,6 +440,12 @@ function SectorView({ rows, derived }: { rows: StockRow[]; derived: (r: StockRow
 
 // ------------------------------------------------------------------ AI ------
 function AiCard({ ai, rows, weights }: { ai: NonNullable<Payload['ai']>; rows: StockRow[]; weights: Record<SubKey, number> }) {
+  const bySym = useMemo(() => {
+    const m: Record<string, StockRow> = {};
+    for (const r of rows) m[r.symbol] = r;
+    return m;
+  }, [rows]);
+  const scanLabel = (id: string) => byId(id)?.label ?? id;
   return (
     <section class="panel ai-card">
       <div class="ai-head">
@@ -425,12 +455,19 @@ function AiCard({ ai, rows, weights }: { ai: NonNullable<Payload['ai']>; rows: S
       {ai.daily && <p class="ai-daily">{ai.daily}</p>}
       {ai.stocks?.length ? (
         <ul class="ai-picks">
-          {ai.stocks.slice(0, 10).map((p) => (
-            <li key={p.symbol}>
-              <b>{p.symbol}</b> {p.why_cheap && <span>{p.why_cheap}</span>}
-              {p.key_risk && <span class="ai-risk"> Risk: {p.key_risk}</span>}
-            </li>
-          ))}
+          {ai.stocks.slice(0, 10).map((p) => {
+            const r = bySym[p.symbol];
+            const scans = r ? scanMembership(r) : [];
+            return (
+              <li key={p.symbol}>
+                <b>{p.symbol}</b> {p.why_cheap && <span>{p.why_cheap}</span>}
+                {p.key_risk && <span class="ai-risk"> Risk: {p.key_risk}</span>}
+                {scans.length > 0 && (
+                  <span class="ai-scans"> Passes: {scans.map(scanLabel).join(', ')}</span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </section>

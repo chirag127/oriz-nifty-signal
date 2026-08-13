@@ -14,7 +14,11 @@ const OPS = [['>=', '≥'], ['<=', '≤'], ['>', '>'], ['<', '<'], ['between', '
 export function passes(row: StockRow, filters: Filter[], composite: number | null, aftertax: number | null): boolean {
   for (const f of filters) {
     if (f.kind === 'num' || f.kind === 'derived') {
-      const v = f.kind === 'derived' ? (f.field === 'composite' ? composite : aftertax) : (row[f.field] as number | undefined);
+      const v = f.kind === 'derived'
+        ? (f.field === 'composite' ? composite : aftertax)
+        : (f.field === 'fii_dii'
+            ? ((row.fii == null && row.dii == null) ? undefined : (row.fii ?? 0) + (row.dii ?? 0))
+            : (row[f.field] as number | undefined));
       if (typeof v !== 'number') return false;
       if (f.op === '>=' && !(v >= f.a)) return false;
       if (f.op === '<=' && !(v <= f.a)) return false;

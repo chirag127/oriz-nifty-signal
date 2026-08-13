@@ -101,6 +101,12 @@ const hasAi = Boolean(data.ai);
   .profile-chip.flagship .star { color: var(--gold); margin-right: 5px; }
   .profile-chip.flagship.active { box-shadow: 0 0 0 1px var(--gold); }
   .profile-chip.custom { cursor: default; font-style: italic; }
+  .preset-group { display: flex; align-items: baseline; gap: 12px; margin: 0 0 10px; flex-wrap: wrap; }
+  .pg-label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--dimmer); min-width: 62px; padding-top: 4px;
+  }
+  .preset-group .profile-row { flex: 1; }
   .profile-blurb { color: var(--dim); font-size: 13.5px; margin: 12px 0 0; min-height: 1.3em; max-width: 90ch; }
 
   .grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -231,6 +237,7 @@ const hasAi = Boolean(data.ai);
   .ai-picks li { margin: 0 0 6px; font-size: 13px; color: var(--dim); }
   .ai-picks b { font-family: var(--font-mono); color: var(--gold-soft); margin-right: 4px; }
   .ai-risk { color: var(--bad); }
+  .ai-scans { color: var(--f-quality, var(--gold-soft)); font-size: 12px; }
 
   footer .wrap span { max-width: 70ch; }
 

@@ -1,6 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
-import { PROFILES, SUBS, normalise } from '../lib/scoring';
+import { PRESETS, type PresetGroup } from '../lib/scoring';
+
+const opSym = (o: string) => ({ '>=': '≥', '<=': '≤', '>': '>', '<': '<', between: '–' }[o] ?? o);
+const ruleText = (p: typeof PRESETS[number]): string => {
+  const parts: string[] = [];
+  for (const fl of p.flags || []) parts.push(fl === 'mtf_eligible' ? 'MTF/F&O-eligible' : fl === 'n500' ? 'Nifty-500' : 'quality-flag');
+  for (const f of p.filters || []) parts.push(`${f.field} ${opSym(f.op)} ${f.a}${f.op === 'between' ? '–' + (f.b ?? '') : ''}`);
+  const filt = parts.length ? parts.join(' · ') : 'no filter — whole universe';
+  return `${filt} — sort ${p.sort!.id} ${p.sort!.desc ? '↓' : '↑'}`;
+};
+const groups: PresetGroup[] = ['Core', 'Named', 'Strategy'];
 
 const metrics = [
   { m: 'PE (P/E)', mean: 'Price ÷ trailing earnings per share.', why: 'How many rupees you pay per rupee of annual profit.', good: 'Lower = cheaper. <15 cheap, >30 rich — but banks/utilities run low, growth runs high. Loss-makers have no meaningful PE.' },
@@ -45,8 +55,8 @@ const piotroski = [
 
   <main class="wrap wrap-narrow doc">
     <nav class="toc panel">
-      <a href="#composite">Return-potential composite</a>
-      <a href="#profiles">Weighting profiles</a>
+      <a href="#composite">Value composite</a>
+      <a href="#profiles">Presets &amp; scans</a>
       <a href="#metrics">Every metric</a>
       <a href="#piotroski">Piotroski 9-pt</a>
       <a href="#value-quality">Value vs quality</a>
@@ -56,16 +66,17 @@ const piotroski = [
     </nav>
 
     <section id="composite" class="panel">
-      <h2>The return-potential composite — what Screener.in doesn’t give you</h2>
-      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended score. That blended score is the point of this site. It runs in two layers:</p>
-      <p><b>1 · Value composite (per-factor z-scores).</b> Each cheapness factor is turned into a <b>yield</b> (so higher = cheaper), then z-scored across the market — how many standard deviations above/below average it sits:</p>
-      <pre class="formula">value factors = E/P, B/P, S/P, EBITDA/EV, FCF-yield, 1/PEG   (div-yield display-only)
+      <h2>The value composite — what Screener.in doesn’t give you</h2>
+      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended cheapness score. That blended score is the point of this site. It runs in two layers:</p>
+      <p><b>1 · Value composite (percentile-ranked).</b> Each cheapness factor is turned into a <b>yield</b> (so higher = cheaper), then <b>percentile-ranked 0–100 across the whole investable universe</b> — the 90th percentile means cheaper than 90% of stocks on that factor. The value score is the equal-weight mean of the percentiles the stock has:</p>
+      <pre class="formula">value factors = E/P, B/P, S/P, EBITDA/EV, FCF-yield   (div-yield display-only)
 
-per factor:  yield = 1 / ratio        (E/P = 1/PE, etc.)
-             z     = (yield − market mean) / market stdev
+per factor:  yield      = 1 / ratio                    (E/P = 1/PE, etc.)
+             pct[f]      = percentile-rank of yield across the universe (0–100, higher=cheaper)
 
-value_score = mean( z[f]  for each factor f the stock HAS )</pre>
-      <p><b>2 · Return-potential composite (weighted sub-scores).</b> Five sub-scores — <b>Value, Growth, Quality, Momentum, Analyst</b> — are each a z-mean of their inputs. The composite is their <b>weighted mean</b>, renormalised over the sub-scores the stock actually has:</p>
+value_score = mean( pct[f]  for each factor f the stock HAS )   (≥2 factors required)</pre>
+      <p>Percentile (not raw z-score) is used so one extreme outlier can’t distort the scale — every stock sits on a clean 0–100 ladder. A value_score of 97 means the stock is in the cheapest ~3% of the market on its available factors.</p>
+      <p><b>2 · Return-potential composite (weighted sub-scores).</b> Five sub-scores — <b>Value, Growth, Quality, Momentum, Analyst</b> — feed a weighted mean, renormalised over the sub-scores the stock actually has. Growth/quality/momentum/analyst are cross-sectional z-means; the 0–100 value percentile is mapped onto the same z scale (50th→0, ~90th→+2) so the blend is apples-to-apples:</p>
       <pre class="formula">subs = value · growth · quality · momentum · analyst
 
 composite = Σ( wₖ · subₖ )  /  Σ( wₖ )     over present subs
@@ -79,23 +90,36 @@ higher composite = higher return potential</pre>
     </section>
 
     <section id="profiles" class="panel">
-      <h2>Weighting profiles — how each tilts the composite</h2>
-      <p>Weights are shown as a <b>normalised % of influence</b> (they sum to 100), not raw multipliers, so relative emphasis is always visible. Pick a profile, or drag any slider to build your own “Custom mix.”</p>
-      <table class="mtable prof-table">
-        <thead><tr><th>Profile</th><th>Emphasis</th>{SUBS.map((s) => <th>{s.label}</th>)}</tr></thead>
-        <tbody>
-          {PROFILES.map((p) => {
-            const nz = normalise(p.weights);
-            return (
-              <tr>
-                <td class="m">{p.label}{(p as { flagship?: boolean }).flagship ? ' ★' : ''}</td>
-                <td>{p.blurb}</td>
-                {SUBS.map((s) => <td class="pw">{Math.round(nz[s.key])}%</td>)}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <h2>Presets — 12 curated scans &amp; weightings</h2>
+      <p>Every preset sets the <b>filters + the sort</b> (and, for the weighting ones, the factor sliders), then surfaces the <b>top ~100</b> so you narrow to your final 5. Grouped Core / Named / Strategy. <b>My Deep Value</b> loads by default. Exact rule for each:</p>
+      {groups.map((g) => (
+        <>
+          <h3>{g}</h3>
+          <table class="mtable prof-table">
+            <thead><tr><th>Preset</th><th>What it screens</th><th>Exact rule</th></tr></thead>
+            <tbody>
+              {PRESETS.filter((p) => p.group === g).map((p) => (
+                <tr>
+                  <td class="m">{p.label}{p.flagship ? ' ★' : ''}{p.id === 'my_deep_value' ? ' (default)' : ''}</td>
+                  <td>{p.blurb}</td>
+                  <td class="rule">{ruleText(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      ))}
+      <h3>My Deep Value — the default &amp; its value-trap guard</h3>
+      <p>The screen opens on <b>My Deep Value</b>: <code>PE &lt; 6 AND PB &lt; 1.5</code>, sorted cheapest-first. Cheap alone catches value-traps, so a <b>quality guard</b> is documented as the intended filter — keep names where <b>ROE &gt; 12% OR Piotroski F ≥ 6 OR D/E &lt; 1</b> — to drop the obvious traps inside the cheap tail while staying deliberately wide. The Value, Graham and net-net cheapness rungs stack on top for tighter cuts.</p>
+      <h3>Named-scan definitions</h3>
+      <ul>
+        <li><b>Graham defensive</b> — PE &lt; 15, PB &lt; 1.5, PE×PB &lt; 22.5, D/E &lt; 1. All four rungs must pass (the <code>graham_ok</code> flag).</li>
+        <li><b>Magic Formula (Greenblatt)</b> — rank the universe by earnings-yield (EBIT/EV) and separately by ROCE, sum the two ranks, re-rank; <code>magic_rank</code> = 1 is best. Sorted ascending.</li>
+        <li><b>Piotroski</b> — the 9-point health score (below); the scan keeps <b>F ≥ 7</b>. Computed on the liquid enriched shortlist, so coverage is intentionally narrow.</li>
+        <li><b>GARP</b> — PEG &lt; 1 with ROE &gt; 15% and positive EPS growth: growth you’re not overpaying for.</li>
+        <li><b>FII/DII Accumulation</b> — combined institutional stake (FII + DII) ≥ 25% and cheap (value ≥ 60th pct): following smart money into cheap names.</li>
+        <li><b>High FCF-Yield</b> — lowest P/FCF (the most free cash per rupee of price).</li>
+      </ul>
     </section>
 
     <section id="metrics" class="panel">
@@ -132,7 +156,7 @@ higher composite = higher return potential</pre>
       <ul>
         <li>The primary rank is <b>pure value</b>, so genuinely cheap names surface even if unglamorous.</li>
         <li>A <b>Quality flag</b> (ROE&gt;15% &amp; ROCE&gt;15% &amp; Piotroski≥6 &amp; D/E&lt;1.5) marks the strong businesses.</li>
-        <li>Cheap <b>and</b> quality = the sweet spot; cheap <b>without</b> quality = possible value-trap. The <b>Quality Value</b> preset intersects both.</li>
+        <li>Cheap <b>and</b> quality = the sweet spot; cheap <b>without</b> quality = possible value-trap. The <b>Quality-Value</b> preset intersects both (value ≥70th pct, ROE&gt;15%, D/E&lt;1).</li>
       </ul>
     </section>
 
@@ -145,7 +169,7 @@ higher composite = higher return potential</pre>
         <li><b>Margin-call risk</b> — leverage magnifies drawdowns; a sharp fall can force liquidation at the worst time. Hence the preset caps <b>beta ≤ 1.2</b> and tilts to quality.</li>
         <li><b>Value-trap risk</b> — cheap + weak fundamentals can stay cheap for years while interest accrues. The quality tilt + Piotroski guard against it.</li>
       </ul>
-      <p>The <b>MTF Buy-and-Hold (1yr)</b> preset therefore restricts to MTF-eligible, β≤1.2, ROE≥12 names and ranks by <b>after-tax, after-interest 1Y return</b> — not gross return.</p>
+      <p>The <b>MTF Buy-Hold 1yr</b> preset (flagship) restricts to MTF-eligible, β ≤ 1.2 names and ranks by <b>after-tax, after-interest 1Y return</b> — not gross return.</p>
     </section>
 
     <section id="tax" class="panel tax">
@@ -214,7 +238,8 @@ higher composite = higher return potential</pre>
   .mtable td { padding: 9px 10px; border-bottom: 1px solid var(--bg-2); color: var(--ink); vertical-align: top; }
   .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--gold); white-space: nowrap; }
   .prof-table td.pw { font-family: var(--font-mono); text-align: right; color: var(--gold-soft); font-weight: 600; }
-  .prof-table th:nth-child(n+3), .prof-table td:nth-child(n+3) { text-align: right; }
+  .mtable td.rule { font-family: var(--font-mono); font-size: 11.5px; color: var(--gold-soft); text-align: left; }
+
 
   .tax { border-color: color-mix(in srgb, var(--good) 30%, var(--line)); }
   .tax h2 { color: var(--good); }
