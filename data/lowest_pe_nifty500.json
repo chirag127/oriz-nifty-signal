@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-13T11:58:45+00:00",
+  "ts": "2026-08-14T08:21:45+00:00",
   "stocks": [
     {
       "symbol": "TMPV",
@@ -70,16 +70,16 @@
       "pe": 7.17
     },
     {
+      "symbol": "ONGC",
+      "pe": 7.27
+    },
+    {
       "symbol": "JSWDULUX",
       "pe": 7.28
     },
     {
       "symbol": "J&KBANK",
       "pe": 7.3
-    },
-    {
-      "symbol": "COALINDIA",
-      "pe": 8.18
     }
   ]
 }
