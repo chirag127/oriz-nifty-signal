@@ -1,28 +1,28 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 46.6,
+  "verdict_score": 47.6,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-14T08:21:45+00:00",
+  "ts": "2026-08-17T07:56:51+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.59,
+      "value": 20.56,
       "unit": "x",
       "zone": "fair",
-      "score": 59.9,
-      "detail": "vs 22.07 5-yr median",
+      "score": 60.1,
+      "detail": "vs 22.05 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 23.01,
+      "value": 22.94,
       "unit": "x",
       "zone": "fair",
-      "score": 61.3,
-      "detail": "vs 23.82 5-yr median",
+      "score": 61.8,
+      "detail": "vs 23.81 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 62.49,
+      "value": 58.32,
       "unit": "",
       "zone": "Greed",
-      "score": 37.5,
+      "score": 41.7,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-14T08:21:00.063Z"
+      "as_of": "2026-08-17T07:54:00.074Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.99,
+      "value": 30.81,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,27 +62,27 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.96,
+      "value": 31.74,
       "unit": "x",
       "zone": "expensive",
       "score": null,
-      "detail": "vs 29 5-yr median",
+      "detail": "vs 28.99 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 65.0,
+      "value": 70.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Conflicting low Nifty PE and high VIX signals warrant a neutral cautious market timing stance",
+      "detail": "Nifty pauses post recent rally amid lack of clear near-term directional catalysts.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "Stretched smallcap valuations and overvalued Buffett indicator warrant SIP-only allocation for long-term Indian equity investors, lump-sum buys deferred.",
+  "summary": "Long-term Indian equity investors should stick to SIP-only deployments, avoiding lump-sum additions for now.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
