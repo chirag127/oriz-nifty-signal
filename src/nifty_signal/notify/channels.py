@@ -19,6 +19,13 @@ log = logging.getLogger("nifty_signal")
 
 SITE = "https://nifty-signal.oriz.in"
 MMI_SITE = "https://mmi.oriz.in"
+# Upstream data sources cited in every signal notification (transparency).
+_SOURCES = [
+    ("Tickertape MMI", "https://www.tickertape.in/market-mood-index"),
+    ("IndexPE", "https://indexpe.in/nifty-50"),
+    ("MoneyControl", "https://www.moneycontrol.com/"),
+    ("NSE", "https://www.nseindia.com/"),
+]
 
 _VERDICT_EMOJI = {
     "STRONG BUY": "🟢",
@@ -199,6 +206,11 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowe
             lines.append("")
             lines.extend(mmi_block.split("\n"))
 
+    # Sources — cite the upstream data providers (transparency).
+    src = " · ".join(f'<a href="{u}">{_esc(n)}</a>' for n, u in _SOURCES)
+    lines.append("")
+    lines.append(f"<i>Sources:</i> {src}")
+
     return "\n".join(lines)
 
 
@@ -240,6 +252,9 @@ def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_
         if mmi_block:
             lines.append("")
             lines.append(mmi_block)
+
+    lines.append("")
+    lines.append("Sources: " + " · ".join(f"{n} ({u})" for n, u in _SOURCES))
 
     return "\n".join(lines)
 
