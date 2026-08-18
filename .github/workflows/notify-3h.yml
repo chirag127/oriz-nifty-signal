@@ -1,0 +1,87 @@
+name: nifty-signal-3h-notify
+
+# 3-hourly Telegram notification: read latest signal and send.
+# Runs Mon-Fri trading hours (roughly 9:15-15:30 IST = 03:45-10:00 UTC).
+# Sends regardless of verdict change — just the current snapshot.
+
+on:
+  schedule:
+    - cron: '15 3 * * 1-5'   # 03:15 UTC = 08:45 IST (pre-open)
+    - cron: '15 6 * * 1-5'   # 06:15 UTC = 11:45 IST (mid-morning)
+    - cron: '15 9 * * 1-5'   # 09:15 UTC = 14:45 IST (afternoon)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nifty-3h-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Send 3-hourly notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          python - <<'PY'
+          import json, os, sys, logging
+          from pathlib import Path
+
+          logging.basicConfig(level=logging.INFO)
+          log = logging.getLogger("nifty-3h")
+
+          data_dir = Path("data")
+          latest_file = data_dir / "latest.json"
+          if not latest_file.exists():
+              log.error("data/latest.json not found — daily scrape must run first")
+              sys.exit(1)
+
+          payload = json.loads(latest_file.read_text(encoding="utf-8"))
+          from src.nifty_signal.models import Signal, Indicator
+          sig = Signal(**payload)
+
+          # Also load MMI snapshot
+          mmi = {}
+          mmi_file = data_dir / "mmi_latest.json"
+          if mmi_file.exists():
+              mmi = json.loads(mmi_file.read_text(encoding="utf-8"))
+
+          # Load lowest PE, top MTF, top value
+          lowest_pe = payload.get("lowest_pe", [])
+          top_mtf = payload.get("top_mtf", [])
+          top_value = payload.get("top_value", [])
+
+          from src.nifty_signal.notify.channels import notify_all, format_message, format_ntfy
+
+          res = notify_all(
+              sig,
+              mmi_snapshot=mmi,
+              lowest_pe=lowest_pe,
+              top_mtf=top_mtf,
+              top_value=top_value,
+          )
+          log.info("3h notify result: %s", res)
+          if not any(res.values()):
+              log.warning("no channel succeeded")
+              sys.exit(1)
+          PY
