@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 48.6,
+  "verdict_score": 51.4,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-19T07:46:29+00:00",
+  "ts": "2026-08-20T07:47:42+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.42,
+      "value": 20.36,
       "unit": "x",
       "zone": "fair",
-      "score": 61.1,
+      "score": 61.5,
       "detail": "vs 22.05 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.81,
+      "value": 22.72,
       "unit": "x",
       "zone": "fair",
-      "score": 62.8,
+      "score": 63.5,
       "detail": "vs 23.81 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 52.61,
+      "value": 42.11,
       "unit": "",
-      "zone": "Greed",
-      "score": 47.4,
+      "zone": "Fear",
+      "score": 57.9,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-19T07:45:00.165Z"
+      "as_of": "2026-08-20T07:45:00.089Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.65,
+      "value": 30.56,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,27 +62,27 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.41,
+      "value": 31.23,
       "unit": "x",
       "zone": "expensive",
       "score": null,
-      "detail": "vs 28.99 5-yr median",
+      "detail": "vs 29 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 75.0,
+      "value": 90.0,
       "unit": "",
-      "zone": "bullish",
-      "score": 38.8,
-      "detail": "Nifty PE ~20.5, 12.6% below 10-year average, indicates fair current market valuations.",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Nifty 50 PE at ~20.4 is 12.6% below 10-year average, indicating fair market valuations.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "For long-term Indian equity investors, elevated mid/small-cap valuations and overbought market mood make SIP-only the prudent choice, skip lumpsum for now.",
+  "summary": "Neutral market timing for long-term Indian equity investors warrants SIP-only additions, with lump-sum investments unattractive amid mixed fair-to-overvalued valuations and neutral-to-fear market sentiment.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
