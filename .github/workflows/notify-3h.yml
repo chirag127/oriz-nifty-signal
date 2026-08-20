@@ -59,8 +59,12 @@ jobs:
           payload = json.loads(latest_file.read_text(encoding="utf-8"))
           from src.nifty_signal.models import Signal, Indicator
           # latest.json carries extra keys (lowest_pe, top_mtf, ...) beyond the
-          # Signal dataclass; construct from the dataclass fields only.
-          sig = Signal(**{k: v for k, v in payload.items() if k in Signal.__dataclass_fields__})
+          # Signal dataclass; construct from the dataclass fields only, and
+          # deserialize indicators (JSON dicts) into Indicator objects.
+          sig = Signal(
+              **{k: v for k, v in payload.items() if k in Signal.__dataclass_fields__ and k != "indicators"},
+              indicators=[Indicator(**i) for i in (payload.get("indicators") or [])],
+          )
 
           # Also load MMI snapshot
           mmi = {}
