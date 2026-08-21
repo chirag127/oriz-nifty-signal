@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 51.4,
+  "verdict_score": 50.6,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-20T07:47:42+00:00",
+  "ts": "2026-08-21T07:49:32+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.36,
+      "value": 20.48,
       "unit": "x",
       "zone": "fair",
-      "score": 61.5,
+      "score": 60.6,
       "detail": "vs 22.05 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.72,
+      "value": 22.84,
       "unit": "x",
       "zone": "fair",
-      "score": 63.5,
+      "score": 62.5,
       "detail": "vs 23.81 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,89 +40,89 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 42.11,
+      "value": 43.91,
       "unit": "",
       "zone": "Fear",
-      "score": 57.9,
+      "score": 56.1,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-20T07:45:00.089Z"
+      "as_of": "2026-08-21T07:48:00.060Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.56,
+      "value": 30.69,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.55 5-yr median",
+      "detail": "vs 29.59 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.23,
+      "value": 31.45,
       "unit": "x",
       "zone": "expensive",
       "score": null,
-      "detail": "vs 29 5-yr median",
+      "detail": "vs 29.02 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 90.0,
+      "value": 85.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty 50 PE at ~20.4 is 12.6% below 10-year average, indicating fair market valuations.",
+      "detail": "Nifty 50 PE at ~20.4, 12.6% below 10-year average, neutral valuation stance.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "Neutral market timing for long-term Indian equity investors warrants SIP-only additions, with lump-sum investments unattractive amid mixed fair-to-overvalued valuations and neutral-to-fear market sentiment.",
+  "summary": "For long-term Indian equity investors, elevated aggregate valuations alongside smallcap overvaluation make SIP-only the prudent current allocation, avoid lumpsum.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.55
+      "pe": 1.43
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.61
+      "pe": 4.28
     },
     {
       "symbol": "IOC",
-      "pe": 4.7
+      "pe": 4.56
     },
     {
       "symbol": "PFC",
-      "pe": 4.85
+      "pe": 4.64
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 4.93
+      "pe": 4.99
     },
     {
       "symbol": "BPCL",
-      "pe": 5.34
+      "pe": 5.18
     },
     {
       "symbol": "RECLTD",
-      "pe": 5.57
+      "pe": 5.3
     },
     {
       "symbol": "VEDL",
-      "pe": 6.17
+      "pe": 6.02
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.24
+      "pe": 6.22
     },
     {
       "symbol": "GESHIP",
-      "pe": 6.27
+      "pe": 6.3
     },
     {
       "symbol": "BANKINDIA",
@@ -130,39 +130,39 @@
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 6.42
+      "pe": 6.37
     },
     {
       "symbol": "GICRE",
-      "pe": 6.46
+      "pe": 6.53
     },
     {
       "symbol": "CANBK",
-      "pe": 6.61
+      "pe": 6.58
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 6.84
-    },
-    {
-      "symbol": "PNB",
-      "pe": 7.13
-    },
-    {
-      "symbol": "UNIONBANK",
-      "pe": 7.17
-    },
-    {
-      "symbol": "ONGC",
-      "pe": 7.27
-    },
-    {
-      "symbol": "JSWDULUX",
-      "pe": 7.28
+      "pe": 6.67
     },
     {
       "symbol": "J&KBANK",
-      "pe": 7.3
+      "pe": 6.89
+    },
+    {
+      "symbol": "JSWDULUX",
+      "pe": 7.12
+    },
+    {
+      "symbol": "ONGC",
+      "pe": 7.24
+    },
+    {
+      "symbol": "UNIONBANK",
+      "pe": 7.26
+    },
+    {
+      "symbol": "PNB",
+      "pe": 7.37
     }
   ],
   "errors": []
