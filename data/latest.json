@@ -1,27 +1,27 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 49.0,
+  "verdict_score": 48.8,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-24T08:00:59+00:00",
+  "ts": "2026-08-25T07:50:40+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.5,
+      "value": 20.47,
       "unit": "x",
       "zone": "fair",
-      "score": 60.5,
-      "detail": "vs 22.04 5-yr median",
+      "score": 60.7,
+      "detail": "vs 22.03 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.86,
+      "value": 22.84,
       "unit": "x",
       "zone": "fair",
-      "score": 62.3,
+      "score": 62.5,
       "detail": "vs 23.8 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 49.79,
+      "value": 53.78,
       "unit": "",
-      "zone": "Fear",
-      "score": 50.2,
+      "zone": "Greed",
+      "score": 46.2,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-24T08:00:00.385Z"
+      "as_of": "2026-08-25T07:48:00.071Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.72,
+      "value": 30.76,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,27 +62,27 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.66,
+      "value": 31.58,
       "unit": "x",
       "zone": "expensive",
       "score": null,
-      "detail": "vs 29 5-yr median",
+      "detail": "vs 28.99 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 55.0,
+      "value": 50.0,
       "unit": "",
-      "zone": "bullish",
-      "score": 41.8,
-      "detail": "Headlines lean positive; watch valuations.",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Mixed signals; SIP continues.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "HOLD-SIP-ONLY (score 49/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.5x (fair); Nifty 500 PE (breadth) 22.86x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 49.79 (Fear); Nifty Midcap 100 PE 30.72x (fair); Nifty Smallcap 100 PE 31.66x (expensive); News sentiment 55 (bullish).",
+  "summary": "Neutral long-term Indian equity timing read: Stick to SIP-only allocations, deferring lump-sum additions until more attractive valuation windows open.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
