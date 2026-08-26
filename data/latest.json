@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 48.8,
+  "verdict_score": 48.3,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-25T07:50:40+00:00",
+  "ts": "2026-08-26T07:52:33+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.47,
+      "value": 20.57,
       "unit": "x",
       "zone": "fair",
-      "score": 60.7,
+      "score": 60.0,
       "detail": "vs 22.03 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.84,
+      "value": 22.94,
       "unit": "x",
       "zone": "fair",
-      "score": 62.5,
+      "score": 61.7,
       "detail": "vs 23.8 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
@@ -40,29 +40,29 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 53.78,
+      "value": 54.36,
       "unit": "",
       "zone": "Greed",
-      "score": 46.2,
+      "score": 45.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-25T07:48:00.071Z"
+      "as_of": "2026-08-26T07:51:00.223Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.76,
+      "value": 30.91,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.64 5-yr median",
+      "detail": "vs 29.65 5-yr median",
       "source": "IndexPE",
       "as_of": "August 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.58,
+      "value": 31.49,
       "unit": "x",
       "zone": "expensive",
       "score": null,
@@ -82,7 +82,7 @@
       "as_of": ""
     }
   ],
-  "summary": "Neutral long-term Indian equity timing read: Stick to SIP-only allocations, deferring lump-sum additions until more attractive valuation windows open.",
+  "summary": "For long-term Indian equity investors, current mixed but overvalued-leaning market valuations make SIP-only the right call, with no room for lump-sum additions now.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
