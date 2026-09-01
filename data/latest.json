@@ -1,30 +1,30 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 50.3,
+  "verdict_score": 51.2,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-08-31T14:59:17+00:00",
+  "ts": "2026-09-01T12:30:41+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.36,
+      "value": 20.34,
       "unit": "x",
       "zone": "fair",
-      "score": 61.5,
-      "detail": "vs 22.02 5-yr median",
+      "score": 61.6,
+      "detail": "vs 22.01 5-yr median",
       "source": "IndexPE",
-      "as_of": "August 2026"
+      "as_of": "September 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.73,
+      "value": 22.62,
       "unit": "x",
       "zone": "fair",
-      "score": 63.2,
-      "detail": "vs 23.78 5-yr median",
+      "score": 64.0,
+      "detail": "vs 23.77 5-yr median",
       "source": "IndexPE",
-      "as_of": "August 2026"
+      "as_of": "September 2026"
     },
     {
       "key": "buffett",
@@ -40,49 +40,49 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 47.6,
+      "value": 43.69,
       "unit": "",
       "zone": "Fear",
-      "score": 52.4,
+      "score": 56.3,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-08-31T14:20:00.111Z"
+      "as_of": "2026-09-01T10:27:00.059Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.95,
+      "value": 30.53,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.73 5-yr median",
+      "detail": "vs 29.75 5-yr median",
       "source": "IndexPE",
-      "as_of": "August 2026"
+      "as_of": "September 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.57,
+      "value": 31.5,
       "unit": "x",
       "zone": "expensive",
       "score": null,
       "detail": "vs 29 5-yr median",
       "source": "IndexPE",
-      "as_of": "August 2026"
+      "as_of": "September 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 75.0,
+      "value": 65.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Nifty at fair valuation with near-term banking stock resistance, mixed market signals.",
+      "detail": "Nifty’s below-average PE signals fair valuation amid mixed short-term market sentiment.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "With fair large/midcap valuations, overvalued aggregate market, expensive smallcaps and neutral fear-tinged sentiment, long-term Indian equity investors should allocate only via SIPs.",
+  "summary": "Broadly fair valuations, expensive smallcaps and prevailing fear sentiment mean stick to SIP-only, avoid lump sums.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
