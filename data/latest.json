@@ -1,8 +1,8 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 52.2,
+  "verdict_score": 53.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-09-02T12:03:24+00:00",
+  "ts": "2026-09-03T12:02:05+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -29,10 +29,10 @@
     {
       "key": "buffett",
       "label": "Buffett indicator",
-      "value": 137.4,
+      "value": 137.8,
       "unit": "%",
       "zone": "overvalued",
-      "score": 23.6,
+      "score": 23.3,
       "detail": "mkt-cap/GDP, Dec 2025 (annual, lagging)",
       "source": "CEIC",
       "as_of": "Dec 2025"
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 40.96,
+      "value": 38.59,
       "unit": "",
       "zone": "Fear",
-      "score": 59.0,
+      "score": 61.4,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-02T10:27:00.060Z"
+      "as_of": "2026-09-03T10:27:00.034Z"
     },
     {
       "key": "midcap_pe",
@@ -73,16 +73,16 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 62.0,
+      "value": 55.0,
       "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Elevated valuations near 20 PE, bearish technicals, and oil/geopolitical headwinds suggest cautious timing.",
+      "zone": "bearish",
+      "score": 58.2,
+      "detail": "Headlines cautious; stick to SIP.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "HOLD-SIP-ONLY (score 52/100). fully valued — SIP only, hold lumpsum for a better price. Nifty 50 PE 20.22x (fair); Nifty 500 PE (breadth) 22.5x (fair); Buffett indicator 137.4% (overvalued); Market Mood (MMI) 40.96 (Fear); Nifty Midcap 100 PE 30.36x (fair); Nifty Smallcap 100 PE 31.38x (expensive); News sentiment 62 (neutral).",
+  "summary": "Lumpsum not ideal: market mixed, Buffett indicator overvalued, and sentiment fearful—better to stick with SIP-only.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
@@ -146,7 +146,7 @@
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.93
+      "pe": 6.95
     },
     {
       "symbol": "ONGC",
