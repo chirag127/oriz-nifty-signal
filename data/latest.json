@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 53.0,
+  "verdict_score": 52.7,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-09-03T12:02:05+00:00",
+  "ts": "2026-09-04T12:04:09+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.22,
+      "value": 20.18,
       "unit": "x",
       "zone": "fair",
-      "score": 62.5,
+      "score": 62.7,
       "detail": "vs 22.01 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
@@ -18,11 +18,11 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.5,
+      "value": 22.53,
       "unit": "x",
       "zone": "fair",
-      "score": 64.8,
-      "detail": "vs 23.76 5-yr median",
+      "score": 64.5,
+      "detail": "vs 23.75 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
     },
@@ -40,49 +40,49 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 38.59,
+      "value": 38.41,
       "unit": "",
       "zone": "Fear",
-      "score": 61.4,
+      "score": 61.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-03T10:27:00.034Z"
+      "as_of": "2026-09-04T10:27:00.177Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.36,
+      "value": 30.48,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.76 5-yr median",
+      "detail": "vs 29.77 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.38,
+      "value": 31.76,
       "unit": "x",
       "zone": "expensive",
       "score": null,
-      "detail": "vs 29 5-yr median",
+      "detail": "vs 29.02 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 55.0,
+      "value": 50.0,
       "unit": "",
-      "zone": "bearish",
-      "score": 58.2,
-      "detail": "Headlines cautious; stick to SIP.",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Mixed signals; SIP continues.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "Lumpsum not ideal: market mixed, Buffett indicator overvalued, and sentiment fearful—better to stick with SIP-only.",
+  "summary": "Verdict: SIP-only — valuations fair but market overvalued with fear-driven sentiment, lumpsum entry risky near-term despite long-term merit.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
