@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 52.0,
+  "verdict_score": 54.8,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-09-07T13:26:23+00:00",
+  "ts": "2026-09-08T12:04:58+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.1,
+      "value": 19.98,
       "unit": "x",
       "zone": "fair",
-      "score": 63.3,
+      "score": 64.1,
       "detail": "vs 22.01 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.44,
+      "value": 22.39,
       "unit": "x",
       "zone": "fair",
-      "score": 65.1,
+      "score": 65.5,
       "detail": "vs 23.74 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
@@ -40,29 +40,29 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 46.64,
+      "value": 32.7,
       "unit": "",
       "zone": "Fear",
-      "score": 53.4,
+      "score": 67.3,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-07T10:27:00.039Z"
+      "as_of": "2026-09-08T10:27:00.042Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.26,
+      "value": 30.32,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.78 5-yr median",
+      "detail": "vs 29.79 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.84,
+      "value": 31.89,
       "unit": "x",
       "zone": "expensive",
       "score": null,
@@ -73,16 +73,16 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 75.0,
+      "value": 55.0,
       "unit": "",
       "zone": "bearish",
-      "score": 61.2,
-      "detail": "Nifty at ~23750 post 500-point Sensex fall, elevated VIX warrants near-term market caution.",
+      "score": 58.2,
+      "detail": "Headlines cautious; stick to SIP.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "At present fair-to-overvalued Indian equity valuations with bearish sentiment, long-term Indian equity investors should opt for SIP-only deployments and avoid lumpsum additions.",
+  "summary": "For long-term Indian equity investors, fair largecap valuations alongside overvalued smallcaps and bearish sentiment warrant SIP-only deployments, hold lumpsum additions.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
