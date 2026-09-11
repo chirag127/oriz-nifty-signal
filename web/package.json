@@ -14,7 +14,7 @@
     "@preact/preset-vite": "^2.10.6",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",
-    "astro": "^6.4.8",
+    "astro": "^7.3.2",
     "preact": "^10.29.8"
   }
 }
