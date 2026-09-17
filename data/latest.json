@@ -1,8 +1,8 @@
 {
-  "verdict": "ACCUMULATE",
-  "verdict_score": 60.8,
-  "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-09-16T12:32:32+00:00",
+  "verdict": "STRONG BUY",
+  "verdict_score": 71.9,
+  "rationale": "Valuations cheap + sentiment supportive — good time to add lumpsum; SIP always.",
+  "ts": "2026-09-17T12:32:28+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -27,26 +27,15 @@
       "as_of": "September 2026"
     },
     {
-      "key": "buffett",
-      "label": "Buffett indicator",
-      "value": 137.8,
-      "unit": "%",
-      "zone": "overvalued",
-      "score": 23.3,
-      "detail": "mkt-cap/GDP, Dec 2025 (annual, lagging)",
-      "source": "CEIC",
-      "as_of": "Dec 2025"
-    },
-    {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 10.36,
+      "value": 10.07,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 89.6,
+      "score": 89.9,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-16T10:27:00.062Z"
+      "as_of": "2026-09-17T10:27:00.058Z"
     },
     {
       "key": "midcap_pe",
@@ -73,68 +62,68 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 85.0,
+      "value": 65.0,
       "unit": "",
-      "zone": "bearish",
-      "score": 62.8,
-      "detail": "Nifty 50's P/E at 2nd percentile since 2021 and bearish MMI signal caution ahead of Fed meet.",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Nifty 50 P/E near 19.63, slightly above historical lows, with mixed technical signals; sideways movement likely until Fed outcome.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "Despite Buffett indicator signaling overvaluation, mixed valuations and extreme fear support gradual accumulation via SIP rather than lumpsum entry.",
+  "summary": "**Verdict: Strong Buy (72/100).** Fair valuations (PEs 19-31x), extreme fear (MMI 10.07), and neutral sentiment suggest strong buy-attractiveness—ideal for lumpsum additions, especially in mid/small caps. Avoid smallcaps due to elevated PE.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.36
+      "pe": 1.35
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.07
+      "pe": 4.13
     },
     {
       "symbol": "PFC",
-      "pe": 4.38
+      "pe": 4.41
     },
     {
       "symbol": "IOC",
-      "pe": 4.43
+      "pe": 4.52
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.98
+      "pe": 5.05
     },
     {
       "symbol": "BPCL",
-      "pe": 5.01
+      "pe": 5.09
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.32
+      "pe": 5.33
     },
     {
       "symbol": "VEDL",
-      "pe": 5.77
-    },
-    {
-      "symbol": "BANKBARODA",
-      "pe": 6.06
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 6.08
+      "pe": 5.75
     },
     {
       "symbol": "CENTRALBK",
+      "pe": 6.08
+    },
+    {
+      "symbol": "BANKINDIA",
       "pe": 6.09
     },
     {
+      "symbol": "BANKBARODA",
+      "pe": 6.12
+    },
+    {
       "symbol": "GICRE",
-      "pe": 6.14
+      "pe": 6.13
     },
     {
       "symbol": "CANBK",
-      "pe": 6.21
+      "pe": 6.25
     },
     {
       "symbol": "GESHIP",
@@ -142,28 +131,30 @@
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.76
-    },
-    {
-      "symbol": "UNIONBANK",
-      "pe": 6.88
+      "pe": 6.89
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 7.06
+      "pe": 6.99
     },
     {
-      "symbol": "ONGC",
-      "pe": 7.17
-    },
-    {
-      "symbol": "PNB",
-      "pe": 7.17
+      "symbol": "UNIONBANK",
+      "pe": 7.0
     },
     {
       "symbol": "JSWDULUX",
-      "pe": 7.23
+      "pe": 7.11
+    },
+    {
+      "symbol": "ONGC",
+      "pe": 7.19
+    },
+    {
+      "symbol": "PNB",
+      "pe": 7.3
     }
   ],
-  "errors": []
+  "errors": [
+    "buffett: The read operation timed out"
+  ]
 }
