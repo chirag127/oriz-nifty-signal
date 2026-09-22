@@ -1,16 +1,16 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 57.0,
+  "verdict_score": 55.8,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-09-21T13:50:07+00:00",
+  "ts": "2026-09-22T12:32:02+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.79,
+      "value": 19.72,
       "unit": "x",
       "zone": "fair",
-      "score": 65.5,
+      "score": 66.0,
       "detail": "vs 21.98 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
@@ -18,11 +18,11 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.15,
+      "value": 22.09,
       "unit": "x",
       "zone": "fair",
-      "score": 67.0,
-      "detail": "vs 23.69 5-yr median",
+      "score": 67.4,
+      "detail": "vs 23.68 5-yr median",
       "source": "IndexPE",
       "as_of": "September 2026"
     },
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 22.72,
+      "value": 30.75,
       "unit": "",
-      "zone": "Extreme Fear",
-      "score": 77.3,
+      "zone": "Fear",
+      "score": 69.2,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-21T10:27:00.111Z"
+      "as_of": "2026-09-22T10:27:00.073Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 29.89,
+      "value": 29.86,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,7 +62,7 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.46,
+      "value": 31.39,
       "unit": "x",
       "zone": "expensive",
       "score": null,
@@ -82,87 +82,87 @@
       "as_of": ""
     }
   ],
-  "summary": "**Verdict: ACCUMULATE (buy-attractiveness 57/100).** Fair valuations, extreme fear, and neutral sentiment suggest a good time for lump-sum additions, though avoid smallcaps.",
+  "summary": "**Verdict:** ACCUMULATE (buy-attractiveness 56/100). Fair valuations, fear-driven sentiment, and neutral news suggest a cautious but opportunistic entry point.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.36
+      "pe": 1.35
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.23
+      "pe": 4.22
     },
     {
       "symbol": "PFC",
-      "pe": 4.36
+      "pe": 4.39
     },
     {
       "symbol": "IOC",
-      "pe": 4.6
+      "pe": 4.58
     },
     {
       "symbol": "RECLTD",
-      "pe": 5.04
+      "pe": 5.01
     },
     {
       "symbol": "BPCL",
-      "pe": 5.27
+      "pe": 5.25
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.38
+      "pe": 5.58
     },
     {
       "symbol": "VEDL",
-      "pe": 6.01
+      "pe": 5.85
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 6.12
+      "pe": 6.09
     },
     {
       "symbol": "BANKINDIA",
-      "pe": 6.18
+      "pe": 6.12
     },
     {
       "symbol": "CANBK",
       "pe": 6.28
     },
     {
-      "symbol": "CENTRALBK",
-      "pe": 6.35
+      "symbol": "GICRE",
+      "pe": 6.29
     },
     {
-      "symbol": "GICRE",
-      "pe": 6.37
+      "symbol": "CENTRALBK",
+      "pe": 6.3
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 6.8
+      "pe": 6.6
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.84
+      "pe": 6.81
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.94
-    },
-    {
-      "symbol": "GESHIP",
-      "pe": 6.95
+      "pe": 7.0
     },
     {
       "symbol": "ONGC",
-      "pe": 7.07
+      "pe": 7.16
     },
     {
-      "symbol": "PNB",
-      "pe": 7.33
+      "symbol": "GESHIP",
+      "pe": 7.21
     },
     {
       "symbol": "JSWDULUX",
-      "pe": 7.36
+      "pe": 7.29
+    },
+    {
+      "symbol": "PNB",
+      "pe": 7.37
     }
   ],
   "errors": []
