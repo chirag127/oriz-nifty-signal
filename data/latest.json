@@ -2,7 +2,7 @@
   "verdict": "ACCUMULATE",
   "verdict_score": 61.7,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-01T14:22:29+00:00",
+  "ts": "2026-10-02T13:44:32+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -69,100 +69,89 @@
       "detail": "vs 29.04 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 78.0,
-      "unit": "",
-      "zone": "bearish",
-      "score": 61.7,
-      "detail": "Derivatives weakness and risk-off signals warrant patience despite valuation-tracking headlines lacking clear directional confirmation.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
-  "summary": "**Verdict: ACCUMULATE (buy-attractiveness 62/100).** Fair valuations, but extreme fear and frothy small-caps suggest cautious lump-sum additions, with SIPs preferred for long-term discipline.",
+  "summary": "Stick to SIP-only for new smallcap exposure, but selectively add lumpsums into broad and midcaps to exploit extreme fear amid macro overvaluation.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.27
-    },
-    {
-      "symbol": "HINDPETRO",
-      "pe": 4.13
+      "pe": 1.25
     },
     {
       "symbol": "PFC",
-      "pe": 4.15
+      "pe": 4.05
+    },
+    {
+      "symbol": "HINDPETRO",
+      "pe": 4.07
     },
     {
       "symbol": "IOC",
-      "pe": 4.53
+      "pe": 4.41
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.83
-    },
-    {
-      "symbol": "BPCL",
-      "pe": 5.09
+      "pe": 4.65
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.2
+      "pe": 5.0
     },
     {
-      "symbol": "BANKINDIA",
-      "pe": 5.75
+      "symbol": "BPCL",
+      "pe": 5.05
     },
     {
       "symbol": "VEDL",
-      "pe": 5.81
+      "pe": 5.66
+    },
+    {
+      "symbol": "BANKINDIA",
+      "pe": 5.72
+    },
+    {
+      "symbol": "GICRE",
+      "pe": 5.88
+    },
+    {
+      "symbol": "CENTRALBK",
+      "pe": 6.0
     },
     {
       "symbol": "BANKBARODA",
       "pe": 6.01
     },
     {
-      "symbol": "GICRE",
+      "symbol": "CANBK",
       "pe": 6.01
     },
     {
-      "symbol": "CANBK",
-      "pe": 6.06
-    },
-    {
-      "symbol": "CENTRALBK",
-      "pe": 6.09
+      "symbol": "CHENNPETRO",
+      "pe": 6.46
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.47
+      "pe": 6.53
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.72
+      "pe": 6.58
     },
     {
       "symbol": "ONGC",
-      "pe": 6.86
-    },
-    {
-      "symbol": "CHENNPETRO",
-      "pe": 6.89
+      "pe": 6.75
     },
     {
       "symbol": "PNB",
-      "pe": 7.06
+      "pe": 6.85
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.57
+      "pe": 7.43
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.27
+      "pe": 8.02
     }
   ],
   "errors": []
