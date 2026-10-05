@@ -1,27 +1,27 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 61.7,
+  "verdict_score": 61.3,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-02T13:44:32+00:00",
+  "ts": "2026-10-05T15:47:36+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.19,
+      "value": 19.3,
       "unit": "x",
       "zone": "fair",
-      "score": 69.7,
-      "detail": "vs 21.97 5-yr median",
+      "score": 68.9,
+      "detail": "vs 21.96 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.56,
+      "value": 21.67,
       "unit": "x",
       "zone": "fair",
-      "score": 71.4,
+      "score": 70.6,
       "detail": "vs 23.66 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -40,38 +40,38 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 12.74,
+      "value": 12.59,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 87.3,
+      "score": 87.4,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-01T14:20:00.167Z"
+      "as_of": "2026-10-05T14:20:00.134Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.7,
+      "value": 27.88,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.88 5-yr median",
+      "detail": "vs 29.84 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 37.37,
+      "value": 37.54,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.04 5-yr median",
+      "detail": "vs 29.05 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     }
   ],
-  "summary": "Stick to SIP-only for new smallcap exposure, but selectively add lumpsums into broad and midcaps to exploit extreme fear amid macro overvaluation.",
+  "summary": "Favor SIP-only over lumpsum: mid/small-cap froth and a rich Buffett indicator outweigh fair large-cap valuations and extreme fear, keeping lumpsum risk elevated.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
