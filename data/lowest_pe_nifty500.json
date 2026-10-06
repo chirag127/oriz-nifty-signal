@@ -1,85 +1,85 @@
 {
-  "ts": "2026-10-05T15:47:36+00:00",
+  "ts": "2026-10-06T14:04:33+00:00",
   "stocks": [
     {
       "symbol": "TMPV",
-      "pe": 1.25
-    },
-    {
-      "symbol": "PFC",
-      "pe": 4.05
+      "pe": 1.29
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.07
+      "pe": 4.04
+    },
+    {
+      "symbol": "PFC",
+      "pe": 4.1
     },
     {
       "symbol": "IOC",
-      "pe": 4.41
+      "pe": 4.38
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.65
+      "pe": 4.77
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.0
+      "pe": 4.96
     },
     {
       "symbol": "BPCL",
-      "pe": 5.05
+      "pe": 4.99
     },
     {
       "symbol": "VEDL",
-      "pe": 5.66
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 5.72
+      "pe": 5.73
     },
     {
       "symbol": "GICRE",
-      "pe": 5.88
+      "pe": 5.79
     },
     {
-      "symbol": "CENTRALBK",
-      "pe": 6.0
-    },
-    {
-      "symbol": "BANKBARODA",
-      "pe": 6.01
+      "symbol": "BANKINDIA",
+      "pe": 5.9
     },
     {
       "symbol": "CANBK",
       "pe": 6.01
     },
     {
-      "symbol": "CHENNPETRO",
-      "pe": 6.46
+      "symbol": "CENTRALBK",
+      "pe": 6.06
     },
     {
-      "symbol": "J&KBANK",
-      "pe": 6.53
+      "symbol": "BANKBARODA",
+      "pe": 6.07
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.58
+      "pe": 6.6
+    },
+    {
+      "symbol": "J&KBANK",
+      "pe": 6.61
+    },
+    {
+      "symbol": "CHENNPETRO",
+      "pe": 6.72
     },
     {
       "symbol": "ONGC",
-      "pe": 6.75
+      "pe": 6.83
     },
     {
       "symbol": "PNB",
-      "pe": 6.85
+      "pe": 7.02
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.43
+      "pe": 7.57
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.02
+      "pe": 8.04
     }
   ]
 }

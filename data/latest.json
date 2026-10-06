@@ -1,16 +1,16 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 61.3,
+  "verdict_score": 59.6,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-05T15:47:36+00:00",
+  "ts": "2026-10-06T14:04:33+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.3,
+      "value": 19.49,
       "unit": "x",
       "zone": "fair",
-      "score": 68.9,
+      "score": 67.6,
       "detail": "vs 21.96 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.67,
+      "value": 21.9,
       "unit": "x",
       "zone": "fair",
-      "score": 70.6,
+      "score": 68.8,
       "detail": "vs 23.66 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -40,118 +40,118 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 12.59,
+      "value": 17.39,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 87.4,
+      "score": 82.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-05T14:20:00.134Z"
+      "as_of": "2026-10-06T10:27:00.098Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.88,
+      "value": 28.19,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.84 5-yr median",
+      "detail": "vs 29.8 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 37.54,
+      "value": 38.13,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.05 5-yr median",
+      "detail": "vs 29.06 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     }
   ],
-  "summary": "Favor SIP-only over lumpsum: mid/small-cap froth and a rich Buffett indicator outweigh fair large-cap valuations and extreme fear, keeping lumpsum risk elevated.",
+  "summary": "Prefer SIP-only over lumpsum, as fair large-cap valuations and extreme fear support accumulating, but macro overvaluation and frothy small-caps warrant staggered entry.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.25
-    },
-    {
-      "symbol": "PFC",
-      "pe": 4.05
+      "pe": 1.29
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.07
+      "pe": 4.04
+    },
+    {
+      "symbol": "PFC",
+      "pe": 4.1
     },
     {
       "symbol": "IOC",
-      "pe": 4.41
+      "pe": 4.38
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.65
+      "pe": 4.77
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.0
+      "pe": 4.96
     },
     {
       "symbol": "BPCL",
-      "pe": 5.05
+      "pe": 4.99
     },
     {
       "symbol": "VEDL",
-      "pe": 5.66
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 5.72
+      "pe": 5.73
     },
     {
       "symbol": "GICRE",
-      "pe": 5.88
+      "pe": 5.79
     },
     {
-      "symbol": "CENTRALBK",
-      "pe": 6.0
-    },
-    {
-      "symbol": "BANKBARODA",
-      "pe": 6.01
+      "symbol": "BANKINDIA",
+      "pe": 5.9
     },
     {
       "symbol": "CANBK",
       "pe": 6.01
     },
     {
-      "symbol": "CHENNPETRO",
-      "pe": 6.46
+      "symbol": "CENTRALBK",
+      "pe": 6.06
     },
     {
-      "symbol": "J&KBANK",
-      "pe": 6.53
+      "symbol": "BANKBARODA",
+      "pe": 6.07
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.58
+      "pe": 6.6
+    },
+    {
+      "symbol": "J&KBANK",
+      "pe": 6.61
+    },
+    {
+      "symbol": "CHENNPETRO",
+      "pe": 6.72
     },
     {
       "symbol": "ONGC",
-      "pe": 6.75
+      "pe": 6.83
     },
     {
       "symbol": "PNB",
-      "pe": 6.85
+      "pe": 7.02
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.43
+      "pe": 7.57
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.02
+      "pe": 8.04
     }
   ],
   "errors": []
