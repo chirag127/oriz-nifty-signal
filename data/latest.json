@@ -2,15 +2,15 @@
   "verdict": "ACCUMULATE",
   "verdict_score": 59.6,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-06T14:04:33+00:00",
+  "ts": "2026-10-07T14:22:18+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.49,
+      "value": 19.34,
       "unit": "x",
       "zone": "fair",
-      "score": 67.6,
+      "score": 68.6,
       "detail": "vs 21.96 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,11 +18,11 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.9,
+      "value": 21.75,
       "unit": "x",
       "zone": "fair",
-      "score": 68.8,
-      "detail": "vs 23.66 5-yr median",
+      "score": 69.9,
+      "detail": "vs 23.65 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 17.39,
+      "value": 17.68,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 82.6,
+      "score": 82.3,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-06T10:27:00.098Z"
+      "as_of": "2026-10-07T14:20:00.229Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 28.19,
+      "value": 28.01,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,96 +62,107 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 38.13,
+      "value": 38.25,
       "unit": "x",
       "zone": "frothy",
       "score": null,
       "detail": "vs 29.06 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
+    },
+    {
+      "key": "news_sentiment",
+      "label": "News sentiment",
+      "value": 50.0,
+      "unit": "",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Mixed signals; SIP continues.",
+      "source": "kilo/ddgs",
+      "as_of": ""
     }
   ],
-  "summary": "Prefer SIP-only over lumpsum, as fair large-cap valuations and extreme fear support accumulating, but macro overvaluation and frothy small-caps warrant staggered entry.",
+  "summary": "ACCUMULATE (score 60/100). reasonable entry — stagger lumpsum in, keep the SIP. Nifty 50 PE 19.34x (fair); Nifty 500 PE (breadth) 21.75x (fair); Buffett indicator 137.8% (overvalued); Market Mood (MMI) 17.68 (Extreme Fear); Nifty Midcap 100 PE 28.01x (fair); Nifty Smallcap 100 PE 38.25x (frothy); News sentiment 50 (neutral).",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.29
-    },
-    {
-      "symbol": "HINDPETRO",
-      "pe": 4.04
+      "pe": 1.28
     },
     {
       "symbol": "PFC",
-      "pe": 4.1
+      "pe": 4.11
+    },
+    {
+      "symbol": "HINDPETRO",
+      "pe": 4.14
     },
     {
       "symbol": "IOC",
-      "pe": 4.38
+      "pe": 4.41
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.77
+      "pe": 4.84
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 4.96
+      "pe": 4.93
     },
     {
       "symbol": "BPCL",
-      "pe": 4.99
-    },
-    {
-      "symbol": "VEDL",
-      "pe": 5.73
+      "pe": 5.04
     },
     {
       "symbol": "GICRE",
-      "pe": 5.79
+      "pe": 5.71
     },
     {
       "symbol": "BANKINDIA",
-      "pe": 5.9
+      "pe": 5.84
+    },
+    {
+      "symbol": "VEDL",
+      "pe": 5.96
     },
     {
       "symbol": "CANBK",
-      "pe": 6.01
+      "pe": 5.98
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.06
+      "pe": 6.04
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 6.07
-    },
-    {
-      "symbol": "UNIONBANK",
-      "pe": 6.6
+      "pe": 6.06
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.61
+      "pe": 6.51
+    },
+    {
+      "symbol": "UNIONBANK",
+      "pe": 6.62
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 6.72
+      "pe": 6.75
     },
     {
       "symbol": "ONGC",
-      "pe": 6.83
+      "pe": 6.81
     },
     {
       "symbol": "PNB",
-      "pe": 7.02
+      "pe": 6.99
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.57
+      "pe": 7.44
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.04
+      "pe": 7.99
     }
   ],
   "errors": []
