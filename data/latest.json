@@ -1,16 +1,16 @@
 {
-  "verdict": "ACCUMULATE",
-  "verdict_score": 61.6,
-  "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-08T14:31:17+00:00",
+  "verdict": "STRONG BUY",
+  "verdict_score": 72.4,
+  "rationale": "Valuations cheap + sentiment supportive — good time to add lumpsum; SIP always.",
+  "ts": "2026-10-09T14:20:56+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.02,
+      "value": 19.27,
       "unit": "x",
       "zone": "fair",
-      "score": 70.9,
+      "score": 69.1,
       "detail": "vs 21.96 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,40 +18,29 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.32,
+      "value": 21.56,
       "unit": "x",
       "zone": "fair",
-      "score": 73.2,
+      "score": 71.3,
       "detail": "vs 23.65 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
-      "key": "buffett",
-      "label": "Buffett indicator",
-      "value": 137.8,
-      "unit": "%",
-      "zone": "overvalued",
-      "score": 23.3,
-      "detail": "mkt-cap/GDP, Dec 2025 (annual, lagging)",
-      "source": "CEIC",
-      "as_of": "Dec 2025"
-    },
-    {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 17.02,
+      "value": 20.25,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 83.0,
+      "score": 79.8,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-08T14:20:00.177Z"
+      "as_of": "2026-10-09T14:20:00.039Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.3,
+      "value": 27.73,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,7 +51,7 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 37.35,
+      "value": 37.55,
       "unit": "x",
       "zone": "frothy",
       "score": null,
@@ -71,88 +60,90 @@
       "as_of": "October 2026"
     }
   ],
-  "summary": "ACCUMULATE (score 62/100). reasonable entry — stagger lumpsum in, keep the SIP. Nifty 50 PE 19.02x (fair); Nifty 500 PE (breadth) 21.32x (fair); Buffett indicator 137.8% (overvalued); Market Mood (MMI) 17.02 (Extreme Fear); Nifty Midcap 100 PE 27.3x (fair); Nifty Smallcap 100 PE 37.35x (frothy).",
+  "summary": "Amid Extreme Fear but smallcap froth, long-term Indian-equity investors should favour SIPs, with staggered lumpsum limited to fairly valued large- and mid-caps.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.27
-    },
-    {
-      "symbol": "AXISBANK",
-      "pe": 1.47
+      "pe": 1.22
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.05
+      "pe": 3.85
     },
     {
       "symbol": "PFC",
-      "pe": 4.15
+      "pe": 4.12
     },
     {
       "symbol": "IOC",
-      "pe": 4.36
+      "pe": 4.24
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.83
+      "pe": 4.76
     },
     {
       "symbol": "BPCL",
-      "pe": 4.98
+      "pe": 4.81
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.06
+      "pe": 5.27
     },
     {
       "symbol": "GICRE",
-      "pe": 5.75
+      "pe": 5.61
     },
     {
       "symbol": "VEDL",
-      "pe": 5.87
+      "pe": 5.68
     },
     {
       "symbol": "BANKINDIA",
-      "pe": 5.9
+      "pe": 5.85
     },
     {
       "symbol": "CANBK",
-      "pe": 6.05
+      "pe": 5.96
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.09
+      "pe": 6.0
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 6.11
+      "pe": 6.1
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.51
+      "pe": 6.32
     },
     {
       "symbol": "ONGC",
-      "pe": 6.74
+      "pe": 6.68
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.8
+      "pe": 6.74
     },
     {
       "symbol": "PNB",
-      "pe": 7.16
-    },
-    {
-      "symbol": "GESHIP",
-      "pe": 7.61
+      "pe": 7.2
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 7.74
+      "pe": 7.35
+    },
+    {
+      "symbol": "GESHIP",
+      "pe": 7.42
+    },
+    {
+      "symbol": "CHAMBLFERT",
+      "pe": 7.77
     }
   ],
-  "errors": []
+  "errors": [
+    "buffett: Server error '502 Bad Gateway' for url 'https://www.ceicdata.com/en/indicator/india/market-capitalization--nominal-gdp'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
+  ]
 }
