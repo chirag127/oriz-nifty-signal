@@ -1,16 +1,16 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 59.4,
+  "verdict_score": 57.5,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-12T16:39:31+00:00",
+  "ts": "2026-10-13T14:56:21+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.12,
+      "value": 19.41,
       "unit": "x",
       "zone": "fair",
-      "score": 70.2,
+      "score": 68.1,
       "detail": "vs 21.95 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.51,
+      "value": 21.76,
       "unit": "x",
       "zone": "fair",
-      "score": 71.7,
+      "score": 69.7,
       "detail": "vs 23.64 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 23.36,
+      "value": 27.37,
       "unit": "",
       "zone": "Extreme Fear",
-      "score": 76.6,
+      "score": 72.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-12T14:20:00.108Z"
+      "as_of": "2026-10-13T14:20:00.152Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.75,
+      "value": 28.04,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,7 +62,7 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 38.09,
+      "value": 37.86,
       "unit": "x",
       "zone": "frothy",
       "score": null,
@@ -73,16 +73,16 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 65.0,
+      "value": 75.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Neutral sentiment; watch valuation cues before committing.",
+      "detail": "Valuation indicators and sentiment indices suggest neutral market conditions; await clearer trends for timing.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "For long-term investors, steady SIP accumulation is prudent now, as lumpsum timing risks persist despite fair large-cap valuations and extreme fear.",
+  "summary": "For a long-term investor, the mix of fair valuations, frothy small caps, and extreme fear suggests SIP-only accumulation is advisable.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
