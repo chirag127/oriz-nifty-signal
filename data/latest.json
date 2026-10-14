@@ -1,8 +1,8 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 57.5,
+  "verdict_score": 55.8,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-13T14:56:21+00:00",
+  "ts": "2026-10-14T12:48:24+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 27.37,
+      "value": 36.23,
       "unit": "",
-      "zone": "Extreme Fear",
-      "score": 72.6,
+      "zone": "Fear",
+      "score": 63.8,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-13T14:20:00.152Z"
+      "as_of": "2026-10-14T10:27:00.051Z"
     },
     {
       "key": "midcap_pe",
@@ -73,96 +73,96 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 75.0,
+      "value": 85.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Valuation indicators and sentiment indices suggest neutral market conditions; await clearer trends for timing.",
+      "detail": "Valuation metrics suggest fair pricing; await directional catalysts.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "For a long-term investor, the mix of fair valuations, frothy small caps, and extreme fear suggests SIP-only accumulation is advisable.",
+  "summary": "Favor SIP; deploy lumpsum selectively in large-caps as fear sentiment offsets broad overvaluation and smallcap froth.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.25
+      "pe": 1.28
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 3.84
-    },
-    {
-      "symbol": "PFC",
-      "pe": 4.18
+      "pe": 3.88
     },
     {
       "symbol": "IOC",
-      "pe": 4.24
+      "pe": 4.23
+    },
+    {
+      "symbol": "PFC",
+      "pe": 4.36
     },
     {
       "symbol": "BPCL",
-      "pe": 4.83
+      "pe": 4.82
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.84
+      "pe": 4.96
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.42
-    },
-    {
-      "symbol": "GICRE",
-      "pe": 5.68
+      "pe": 5.54
     },
     {
       "symbol": "VEDL",
-      "pe": 5.93
+      "pe": 5.75
+    },
+    {
+      "symbol": "GICRE",
+      "pe": 5.79
     },
     {
       "symbol": "BANKINDIA",
-      "pe": 5.94
+      "pe": 5.93
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.02
+      "pe": 6.08
     },
     {
       "symbol": "CANBK",
-      "pe": 6.07
+      "pe": 6.11
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 6.14
+      "pe": 6.21
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.45
+      "pe": 6.5
     },
     {
       "symbol": "ONGC",
-      "pe": 6.72
+      "pe": 6.76
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.8
+      "pe": 6.77
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 7.14
+      "pe": 7.01
     },
     {
       "symbol": "PNB",
-      "pe": 7.31
+      "pe": 7.28
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.44
+      "pe": 7.48
     },
     {
       "symbol": "CHAMBLFERT",
-      "pe": 7.68
+      "pe": 7.77
     }
   ],
   "errors": []
