@@ -1,16 +1,16 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 65.4,
+  "verdict_score": 63.7,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-15T12:35:15+00:00",
+  "ts": "2026-10-16T12:14:51+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.65,
+      "value": 19.77,
       "unit": "x",
       "zone": "fair",
-      "score": 66.5,
+      "score": 65.6,
       "detail": "vs 21.95 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.83,
+      "value": 21.89,
       "unit": "x",
       "zone": "fair",
-      "score": 69.2,
+      "score": 68.7,
       "detail": "vs 23.64 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -29,29 +29,29 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 39.51,
+      "value": 43.7,
       "unit": "",
       "zone": "Fear",
-      "score": 60.5,
+      "score": 56.3,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-15T10:27:00.040Z"
+      "as_of": "2026-10-16T10:27:00.239Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.84,
+      "value": 27.77,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.76 5-yr median",
+      "detail": "vs 29.75 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 37.05,
+      "value": 36.49,
       "unit": "x",
       "zone": "frothy",
       "score": null,
@@ -60,90 +60,90 @@
       "as_of": "October 2026"
     }
   ],
-  "summary": "Given fair‑valued large‑caps, fearful mood and frothy small‑caps, a staggered SIP is preferable; lump‑sum adds risk unless you tolerate near‑term volatility.",
+  "summary": "SIP-only: fair large/mid valuations support accumulation, but frothy small-caps and fearful sentiment argue against lump-sum entry now.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
-      "pe": 1.27
+      "pe": 1.28
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 3.9
+      "pe": 4.11
     },
     {
       "symbol": "IOC",
-      "pe": 4.29
+      "pe": 4.32
     },
     {
       "symbol": "PFC",
-      "pe": 4.39
+      "pe": 4.36
     },
     {
       "symbol": "BPCL",
-      "pe": 4.86
+      "pe": 4.93
     },
     {
       "symbol": "RECLTD",
-      "pe": 5.03
+      "pe": 5.0
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.25
+      "pe": 5.23
     },
     {
       "symbol": "VEDL",
-      "pe": 5.61
-    },
-    {
-      "symbol": "GICRE",
-      "pe": 5.82
+      "pe": 5.52
     },
     {
       "symbol": "BANKINDIA",
-      "pe": 5.94
+      "pe": 5.76
+    },
+    {
+      "symbol": "GICRE",
+      "pe": 5.93
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 5.97
-    },
-    {
-      "symbol": "CENTRALBK",
-      "pe": 6.24
+      "pe": 5.94
     },
     {
       "symbol": "CANBK",
-      "pe": 6.33
+      "pe": 5.94
+    },
+    {
+      "symbol": "CENTRALBK",
+      "pe": 6.16
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.48
+      "pe": 6.41
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 6.84
+      "pe": 6.78
     },
     {
       "symbol": "ONGC",
-      "pe": 6.85
-    },
-    {
-      "symbol": "PNB",
-      "pe": 7.4
+      "pe": 6.82
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 7.42
+      "pe": 6.93
+    },
+    {
+      "symbol": "PNB",
+      "pe": 7.19
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.49
+      "pe": 7.2
     },
     {
-      "symbol": "CHAMBLFERT",
-      "pe": 7.94
+      "symbol": "HUDCO",
+      "pe": 7.99
     }
   ],
   "errors": [
-    "buffett: Server error '502 Bad Gateway' for url 'https://www.ceicdata.com/en/indicator/india/market-capitalization--nominal-gdp'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
+    "buffett: The read operation timed out"
   ]
 }
