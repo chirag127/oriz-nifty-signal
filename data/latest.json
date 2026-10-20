@@ -2,7 +2,7 @@
   "verdict": "HOLD-SIP-ONLY",
   "verdict_score": 53.7,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-10-19T14:32:18+00:00",
+  "ts": "2026-10-20T12:39:29+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -22,7 +22,7 @@
       "unit": "x",
       "zone": "fair",
       "score": 71.7,
-      "detail": "vs 23.64 5-yr median",
+      "detail": "vs 23.63 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -55,7 +55,7 @@
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.69 5-yr median",
+      "detail": "vs 29.68 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -66,23 +66,23 @@
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.07 5-yr median",
+      "detail": "vs 29.06 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 50.0,
+      "value": 80.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Valuation trackers show mixed signals; await clearer trend confirmation.",
+      "detail": "Mixed valuations suggest a wait-and-watch approach.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "SIP-only now: fair large-cap valuations, but elevated Buffett indicator, greed, and frothy smallcaps argue against lumpsum.",
+  "summary": "**Verdict: HOLD-SIP-ONLY (buy-attractiveness 54/100).**",
   "lowest_pe": [
     {
       "symbol": "TMPV",
