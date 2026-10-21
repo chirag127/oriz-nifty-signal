@@ -1,8 +1,8 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 53.7,
+  "verdict_score": 54.4,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-10-20T12:39:29+00:00",
+  "ts": "2026-10-21T12:51:09+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 50.25,
+      "value": 46.39,
       "unit": "",
-      "zone": "Greed",
-      "score": 49.8,
+      "zone": "Fear",
+      "score": 53.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-19T14:20:00.155Z"
+      "as_of": "2026-10-21T10:27:00.043Z"
     },
     {
       "key": "midcap_pe",
@@ -55,7 +55,7 @@
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.68 5-yr median",
+      "detail": "vs 29.67 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -73,16 +73,16 @@
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 80.0,
+      "value": 65.0,
       "unit": "",
       "zone": "neutral",
       "score": 50.0,
-      "detail": "Mixed valuations suggest a wait-and-watch approach.",
+      "detail": "Valuations appear fair, await sentiment cues for entry.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "**Verdict: HOLD-SIP-ONLY (buy-attractiveness 54/100).**",
+  "summary": "With valuations fair-to-frothy and the Buffett gauge flashing overvalue, stick to SIPs—lumpsums lack sufficient margin of safety here.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
