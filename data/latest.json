@@ -1,16 +1,16 @@
 {
-  "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 54.4,
-  "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-10-21T12:51:09+00:00",
+  "verdict": "ACCUMULATE",
+  "verdict_score": 56.8,
+  "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
+  "ts": "2026-10-22T13:03:25+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.33,
+      "value": 19.13,
       "unit": "x",
       "zone": "fair",
-      "score": 68.7,
+      "score": 70.1,
       "detail": "vs 21.94 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
@@ -18,11 +18,11 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.5,
+      "value": 21.11,
       "unit": "x",
-      "zone": "fair",
-      "score": 71.7,
-      "detail": "vs 23.63 5-yr median",
+      "zone": "cheap",
+      "score": 74.7,
+      "detail": "vs 23.62 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -40,49 +40,49 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 46.39,
+      "value": 35.49,
       "unit": "",
       "zone": "Fear",
-      "score": 53.6,
+      "score": 64.5,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-21T10:27:00.043Z"
+      "as_of": "2026-10-22T12:27:55.382Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.35,
+      "value": 26.63,
       "unit": "x",
-      "zone": "fair",
+      "zone": "cheap",
       "score": null,
-      "detail": "vs 29.67 5-yr median",
+      "detail": "vs 29.65 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 36.18,
+      "value": 34.65,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.06 5-yr median",
+      "detail": "vs 29.07 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 65.0,
+      "value": 85.0,
       "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Valuations appear fair, await sentiment cues for entry.",
+      "zone": "bullish",
+      "score": 37.2,
+      "detail": "Nifty PE below median suggests undervaluation, potential upside ahead.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "With valuations fair-to-frothy and the Buffett gauge flashing overvalue, stick to SIPs—lumpsums lack sufficient margin of safety here.",
+  "summary": "With valuations merely fair at the top but breadth cheap and fear elevated, tilt toward SIP-only with selective lumpsum into midcaps—not broadly attractive enough for aggressive lumpsum.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
