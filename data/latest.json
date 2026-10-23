@@ -1,8 +1,8 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 56.8,
+  "verdict_score": 58.9,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-22T13:03:25+00:00",
+  "ts": "2026-10-23T12:32:15+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -40,13 +40,13 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 35.49,
+      "value": 30.34,
       "unit": "",
       "zone": "Fear",
-      "score": 64.5,
+      "score": 69.7,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-22T12:27:55.382Z"
+      "as_of": "2026-10-23T10:27:00.087Z"
     },
     {
       "key": "midcap_pe",
@@ -69,20 +69,9 @@
       "detail": "vs 29.07 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 85.0,
-      "unit": "",
-      "zone": "bullish",
-      "score": 37.2,
-      "detail": "Nifty PE below median suggests undervaluation, potential upside ahead.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
-  "summary": "With valuations merely fair at the top but breadth cheap and fear elevated, tilt toward SIP-only with selective lumpsum into midcaps—not broadly attractive enough for aggressive lumpsum.",
+  "summary": "Valuations are fair-to-cheap on breadth and mid-caps with fear in sentiment, but macro overvaluation warrants SIP-only accumulation rather than aggressive lumpsums.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
