@@ -1,28 +1,28 @@
 {
   "verdict": "ACCUMULATE",
-  "verdict_score": 58.9,
+  "verdict_score": 57.6,
   "rationale": "Fairly-to-cheaply valued — stagger lumpsum in; SIP always.",
-  "ts": "2026-10-23T12:32:15+00:00",
+  "ts": "2026-10-26T14:04:57+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.13,
+      "value": 19.18,
       "unit": "x",
       "zone": "fair",
-      "score": 70.1,
-      "detail": "vs 21.94 5-yr median",
+      "score": 69.7,
+      "detail": "vs 21.93 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.11,
+      "value": 20.99,
       "unit": "x",
       "zone": "cheap",
-      "score": 74.7,
-      "detail": "vs 23.62 5-yr median",
+      "score": 75.5,
+      "detail": "vs 23.61 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
@@ -40,38 +40,49 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 30.34,
+      "value": 34.41,
       "unit": "",
       "zone": "Fear",
-      "score": 69.7,
+      "score": 65.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-10-23T10:27:00.087Z"
+      "as_of": "2026-10-26T10:27:00.078Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 26.63,
+      "value": 26.28,
       "unit": "x",
       "zone": "cheap",
       "score": null,
-      "detail": "vs 29.65 5-yr median",
+      "detail": "vs 29.64 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.65,
+      "value": 33.48,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.07 5-yr median",
+      "detail": "vs 29.06 5-yr median",
       "source": "IndexPE",
       "as_of": "October 2026"
+    },
+    {
+      "key": "news_sentiment",
+      "label": "News sentiment",
+      "value": 60.0,
+      "unit": "",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Nifty steady near fair valuation; await clearer breadth signals.",
+      "source": "kilo/ddgs",
+      "as_of": ""
     }
   ],
-  "summary": "Valuations are fair-to-cheap on breadth and mid-caps with fear in sentiment, but macro overvaluation warrants SIP-only accumulation rather than aggressive lumpsums.",
+  "summary": "Prefer SIP over lumpsum: breadth valuations are fair-to-cheap, but elevated market-cap-to-GDP and frothy smallcaps argue against fresh lumpsum.",
   "lowest_pe": [
     {
       "symbol": "TMPV",
