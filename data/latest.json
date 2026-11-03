@@ -1,28 +1,28 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 53.9,
+  "verdict_score": 51.2,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-02T16:57:32+00:00",
+  "ts": "2026-11-03T14:56:34+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.43,
+      "value": 19.71,
       "unit": "x",
       "zone": "fair",
-      "score": 68.0,
-      "detail": "vs 21.93 5-yr median",
+      "score": 66.0,
+      "detail": "vs 21.92 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 21.07,
+      "value": 21.31,
       "unit": "x",
-      "zone": "cheap",
-      "score": 74.8,
-      "detail": "vs 23.59 5-yr median",
+      "zone": "fair",
+      "score": 72.8,
+      "detail": "vs 23.58 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
@@ -40,49 +40,38 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 50.14,
+      "value": 58.86,
       "unit": "",
       "zone": "Greed",
-      "score": 49.9,
+      "score": 41.1,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-02T14:20:00.064Z"
+      "as_of": "2026-11-03T14:20:00.164Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 26.18,
+      "value": 26.47,
       "unit": "x",
       "zone": "cheap",
       "score": null,
-      "detail": "vs 29.54 5-yr median",
+      "detail": "vs 29.52 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 33.37,
+      "value": 33.42,
       "unit": "x",
       "zone": "expensive",
       "score": null,
       "detail": "vs 29.07 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 55.0,
-      "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Valuation and sentiment tools suggest range-bound conditions; wait for clearer trend confirmation.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
-  "summary": "\"Maintain SIP, avoid lumpsum.\"",
+  "summary": "Valuations are mixed and mood is greedy, so prefer SIP-only over a lumpsum now.",
   "lowest_pe": [
     {
       "symbol": "PFC",
