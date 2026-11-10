@@ -1,8 +1,8 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 44.4,
+  "verdict_score": 44.7,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-09T17:20:34+00:00",
+  "ts": "2026-11-10T15:30:17+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
@@ -55,7 +55,7 @@
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.43 5-yr median",
+      "detail": "vs 29.42 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
@@ -66,12 +66,23 @@
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.07 5-yr median",
+      "detail": "vs 29.08 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
+    },
+    {
+      "key": "news_sentiment",
+      "label": "News sentiment",
+      "value": 85.0,
+      "unit": "",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Valuations stretched; market awaits clearer directional cues.",
+      "source": "kilo/ddgs",
+      "as_of": ""
     }
   ],
-  "summary": "**Verdict: HOLD-SIP-ONLY (buy-attractiveness 44/100).**",
+  "summary": "Given fair large-cap valuations but an overvalued Buffett indicator, extreme greed, and frothy small caps, long-term Indian-equity investors should favor SIPs over lumpsum additions.",
   "lowest_pe": [
     {
       "symbol": "PFC",
