@@ -1,5 +1,5 @@
 {
-  "ts": "2026-11-10T15:30:17+00:00",
+  "ts": "2026-11-12T15:54:36+00:00",
   "stocks": [
     {
       "symbol": "PFC",
@@ -46,12 +46,12 @@
       "pe": 6.33
     },
     {
-      "symbol": "GESHIP",
-      "pe": 6.73
-    },
-    {
       "symbol": "BANKBARODA",
       "pe": 6.78
+    },
+    {
+      "symbol": "GESHIP",
+      "pe": 6.92
     },
     {
       "symbol": "CHENNPETRO",

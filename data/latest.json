@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 44.7,
+  "verdict_score": 49.4,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-10T15:30:17+00:00",
+  "ts": "2026-11-12T15:54:36+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.48,
+      "value": 20.62,
       "unit": "x",
       "zone": "fair",
-      "score": 60.6,
+      "score": 59.7,
       "detail": "vs 21.91 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -18,71 +18,49 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.11,
+      "value": 22.32,
       "unit": "x",
       "zone": "fair",
-      "score": 66.4,
+      "score": 64.7,
       "detail": "vs 23.56 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
-      "key": "buffett",
-      "label": "Buffett indicator",
-      "value": 137.8,
-      "unit": "%",
-      "zone": "overvalued",
-      "score": 23.3,
-      "detail": "mkt-cap/GDP, Dec 2025 (annual, lagging)",
-      "source": "CEIC",
-      "as_of": "Dec 2025"
-    },
-    {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 77.5,
+      "value": 82.38,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 22.5,
+      "score": 17.6,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-09T14:20:00.105Z"
+      "as_of": "2026-11-12T14:20:00.257Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.46,
+      "value": 27.92,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.42 5-yr median",
+      "detail": "vs 29.38 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.73,
+      "value": 35.08,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.08 5-yr median",
+      "detail": "vs 29.09 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 85.0,
-      "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Valuations stretched; market awaits clearer directional cues.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
-  "summary": "Given fair large-cap valuations but an overvalued Buffett indicator, extreme greed, and frothy small caps, long-term Indian-equity investors should favor SIPs over lumpsum additions.",
+  "summary": "**Verdict:** HOLD-SIP-ONLY (buy-attractiveness 49/100). Nifty 50 PE (20.62x) and Nifty 500 PE (22.32x) are fair, but smallcaps (35.08x) and extreme greed (MMI 82.38) suggest caution.",
   "lowest_pe": [
     {
       "symbol": "PFC",
@@ -129,12 +107,12 @@
       "pe": 6.33
     },
     {
-      "symbol": "GESHIP",
-      "pe": 6.73
-    },
-    {
       "symbol": "BANKBARODA",
       "pe": 6.78
+    },
+    {
+      "symbol": "GESHIP",
+      "pe": 6.92
     },
     {
       "symbol": "CHENNPETRO",
@@ -165,5 +143,7 @@
       "pe": 8.39
     }
   ],
-  "errors": []
+  "errors": [
+    "buffett: The read operation timed out"
+  ]
 }
