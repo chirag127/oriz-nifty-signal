@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 44.2,
+  "verdict_score": 45.1,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-17T16:48:33+00:00",
+  "ts": "2026-11-18T16:20:05+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.68,
+      "value": 20.55,
       "unit": "x",
       "zone": "fair",
-      "score": 59.2,
+      "score": 60.1,
       "detail": "vs 21.9 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.25,
+      "value": 22.07,
       "unit": "x",
       "zone": "fair",
-      "score": 65.2,
+      "score": 66.6,
       "detail": "vs 23.55 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 76.59,
+      "value": 72.99,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 23.4,
+      "score": 27.0,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-17T14:20:00.272Z"
+      "as_of": "2026-11-18T14:20:00.291Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.67,
+      "value": 27.34,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,43 +62,32 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.33,
+      "value": 34.21,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.08 5-yr median",
+      "detail": "vs 29.09 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 55.0,
-      "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Headlines list valuation and sentiment tools only, with no directional data; stay neutral and await price signals.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
-  "summary": "#### \n\nWith mixed valuations, elevated market sentiment and frothy small caps, SIP-only is preferable; defer fresh lumpsum deployment until valuations and sentiment become more attractive.",
+  "summary": "SIP-only is preferred over lumpsum now; elevated valuations, extreme greed, and frothy small caps argue against lumpsum entry for long-term investors.",
   "lowest_pe": [
     {
       "symbol": "PFC",
-      "pe": 4.18
+      "pe": 4.12
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.59
-    },
-    {
-      "symbol": "IOC",
-      "pe": 4.76
+      "pe": 4.56
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.81
+      "pe": 4.69
+    },
+    {
+      "symbol": "IOC",
+      "pe": 4.7
     },
     {
       "symbol": "BPCL",
@@ -106,63 +95,63 @@
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 6.11
+      "pe": 5.99
     },
     {
       "symbol": "CANBK",
-      "pe": 6.17
+      "pe": 6.14
     },
     {
       "symbol": "GICRE",
-      "pe": 6.21
-    },
-    {
-      "symbol": "J&KBANK",
-      "pe": 6.53
+      "pe": 6.15
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.61
+      "pe": 6.57
     },
     {
-      "symbol": "ONGC",
-      "pe": 6.74
-    },
-    {
-      "symbol": "CHENNPETRO",
-      "pe": 6.77
+      "symbol": "J&KBANK",
+      "pe": 6.57
     },
     {
       "symbol": "BANKINDIA",
+      "pe": 6.73
+    },
+    {
+      "symbol": "ONGC",
       "pe": 6.78
     },
     {
+      "symbol": "CHENNPETRO",
+      "pe": 6.81
+    },
+    {
       "symbol": "BANKBARODA",
-      "pe": 7.16
+      "pe": 7.15
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.51
+      "pe": 7.43
     },
     {
       "symbol": "CHAMBLFERT",
-      "pe": 7.65
+      "pe": 7.62
     },
     {
       "symbol": "COALINDIA",
-      "pe": 7.76
+      "pe": 7.69
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.09
+      "pe": 8.02
+    },
+    {
+      "symbol": "NMDC",
+      "pe": 8.05
     },
     {
       "symbol": "UNIONBANK",
       "pe": 8.17
-    },
-    {
-      "symbol": "NMDC",
-      "pe": 8.18
     }
   ],
   "errors": []
