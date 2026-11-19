@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 45.1,
+  "verdict_score": 44.4,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-18T16:20:05+00:00",
+  "ts": "2026-11-19T16:28:25+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.55,
+      "value": 20.78,
       "unit": "x",
       "zone": "fair",
-      "score": 60.1,
+      "score": 58.5,
       "detail": "vs 21.9 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -18,10 +18,10 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.07,
+      "value": 22.32,
       "unit": "x",
       "zone": "fair",
-      "score": 66.6,
+      "score": 64.7,
       "detail": "vs 23.55 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 72.99,
+      "value": 71.87,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 27.0,
+      "score": 28.1,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-18T14:20:00.291Z"
+      "as_of": "2026-11-19T14:20:00.377Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.34,
+      "value": 27.63,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,7 +62,7 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.21,
+      "value": 34.49,
       "unit": "x",
       "zone": "frothy",
       "score": null,
@@ -71,87 +71,87 @@
       "as_of": "November 2026"
     }
   ],
-  "summary": "SIP-only is preferred over lumpsum now; elevated valuations, extreme greed, and frothy small caps argue against lumpsum entry for long-term investors.",
+  "summary": "### Copilot moved to a new app\n\n- Install the new Copilot app (needs iOS 26 or Android 13 or later).\n- Sign in with the same account.\n\nIf you don't sign in by December 31, 2026, your Copilot history and content will be deleted. If you can't use the new app on this phone, sign in on your PC or Mac.\n\n[Install now](https://unifiedlink.svc.cloud.microsoft/app/copilot/?openAppStoreOnLoad=true&fromcode=cmm5pinh4s5&referrer=utm_source%3Dmai_copilot_migration%26utm_campaign%3Dmigration_chatblock&ocid=migration_chatblock&pt=80423&ct=migration_chatblock&qrversion=email&ccac=tofmigration)",
   "lowest_pe": [
     {
       "symbol": "PFC",
-      "pe": 4.12
+      "pe": 4.22
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.56
+      "pe": 4.6
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.69
+      "pe": 4.82
     },
     {
       "symbol": "IOC",
-      "pe": 4.7
+      "pe": 4.84
     },
     {
       "symbol": "BPCL",
-      "pe": 5.07
+      "pe": 5.11
     },
     {
       "symbol": "LICHSGFIN",
       "pe": 5.99
     },
     {
-      "symbol": "CANBK",
+      "symbol": "GICRE",
       "pe": 6.14
     },
     {
-      "symbol": "GICRE",
-      "pe": 6.15
-    },
-    {
-      "symbol": "CENTRALBK",
-      "pe": 6.57
-    },
-    {
-      "symbol": "J&KBANK",
-      "pe": 6.57
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 6.73
+      "symbol": "CANBK",
+      "pe": 6.26
     },
     {
       "symbol": "ONGC",
-      "pe": 6.78
+      "pe": 6.77
     },
     {
-      "symbol": "CHENNPETRO",
+      "symbol": "CENTRALBK",
       "pe": 6.81
     },
     {
-      "symbol": "BANKBARODA",
-      "pe": 7.15
+      "symbol": "CHENNPETRO",
+      "pe": 6.84
+    },
+    {
+      "symbol": "J&KBANK",
+      "pe": 6.84
+    },
+    {
+      "symbol": "BANKINDIA",
+      "pe": 6.89
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.43
+      "pe": 7.31
+    },
+    {
+      "symbol": "BANKBARODA",
+      "pe": 7.45
     },
     {
       "symbol": "CHAMBLFERT",
-      "pe": 7.62
+      "pe": 7.64
     },
     {
       "symbol": "COALINDIA",
-      "pe": 7.69
-    },
-    {
-      "symbol": "HUDCO",
-      "pe": 8.02
+      "pe": 7.76
     },
     {
       "symbol": "NMDC",
       "pe": 8.05
     },
     {
+      "symbol": "HUDCO",
+      "pe": 8.22
+    },
+    {
       "symbol": "UNIONBANK",
-      "pe": 8.17
+      "pe": 8.25
     }
   ],
   "errors": []
