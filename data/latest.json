@@ -1,27 +1,27 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 44.4,
+  "verdict_score": 43.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-19T16:28:25+00:00",
+  "ts": "2026-11-20T16:00:40+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.78,
+      "value": 21.02,
       "unit": "x",
       "zone": "fair",
-      "score": 58.5,
-      "detail": "vs 21.9 5-yr median",
+      "score": 56.9,
+      "detail": "vs 21.89 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.32,
+      "value": 22.5,
       "unit": "x",
       "zone": "fair",
-      "score": 64.7,
+      "score": 63.2,
       "detail": "vs 23.55 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 71.87,
+      "value": 74.79,
       "unit": "",
       "zone": "Extreme Greed",
-      "score": 28.1,
+      "score": 25.2,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-19T14:20:00.377Z"
+      "as_of": "2026-11-20T14:20:00.395Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.63,
+      "value": 27.81,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,7 +62,7 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.49,
+      "value": 34.45,
       "unit": "x",
       "zone": "frothy",
       "score": null,
@@ -71,7 +71,7 @@
       "as_of": "November 2026"
     }
   ],
-  "summary": "### Copilot moved to a new app\n\n- Install the new Copilot app (needs iOS 26 or Android 13 or later).\n- Sign in with the same account.\n\nIf you don't sign in by December 31, 2026, your Copilot history and content will be deleted. If you can't use the new app on this phone, sign in on your PC or Mac.\n\n[Install now](https://unifiedlink.svc.cloud.microsoft/app/copilot/?openAppStoreOnLoad=true&fromcode=cmm5pinh4s5&referrer=utm_source%3Dmai_copilot_migration%26utm_campaign%3Dmigration_chatblock&ocid=migration_chatblock&pt=80423&ct=migration_chatblock&qrversion=email&ccac=tofmigration)",
+  "summary": "SIP-only is prudent now; defer lumpsum amid full valuations, extreme greed, and frothy smallcaps despite fair large-cap PEs.",
   "lowest_pe": [
     {
       "symbol": "PFC",
