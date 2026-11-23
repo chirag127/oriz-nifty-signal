@@ -1,85 +1,85 @@
 {
-  "ts": "2026-11-20T16:00:40+00:00",
+  "ts": "2026-11-23T19:10:52+00:00",
   "stocks": [
     {
       "symbol": "PFC",
-      "pe": 4.22
+      "pe": 4.13
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.6
+      "pe": 4.54
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.82
+      "pe": 4.73
     },
     {
       "symbol": "IOC",
-      "pe": 4.84
+      "pe": 4.74
     },
     {
       "symbol": "BPCL",
-      "pe": 5.11
+      "pe": 5.07
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.99
+      "pe": 5.95
     },
     {
       "symbol": "GICRE",
-      "pe": 6.14
+      "pe": 6.06
     },
     {
       "symbol": "CANBK",
-      "pe": 6.26
+      "pe": 6.16
     },
     {
       "symbol": "ONGC",
+      "pe": 6.72
+    },
+    {
+      "symbol": "BANKINDIA",
       "pe": 6.77
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.81
-    },
-    {
-      "symbol": "CHENNPETRO",
-      "pe": 6.84
+      "pe": 6.77
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.84
+      "pe": 6.85
     },
     {
-      "symbol": "BANKINDIA",
-      "pe": 6.89
-    },
-    {
-      "symbol": "GESHIP",
-      "pe": 7.31
+      "symbol": "CHENNPETRO",
+      "pe": 6.93
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 7.45
+      "pe": 7.18
     },
     {
-      "symbol": "CHAMBLFERT",
-      "pe": 7.64
+      "symbol": "GESHIP",
+      "pe": 7.23
     },
     {
       "symbol": "COALINDIA",
-      "pe": 7.76
+      "pe": 7.57
     },
     {
-      "symbol": "NMDC",
-      "pe": 8.05
+      "symbol": "CHAMBLFERT",
+      "pe": 7.58
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.22
+      "pe": 7.85
+    },
+    {
+      "symbol": "NMDC",
+      "pe": 7.95
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 8.25
+      "pe": 8.18
     }
   ]
 }

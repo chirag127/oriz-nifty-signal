@@ -1,27 +1,27 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 43.0,
+  "verdict_score": 46.3,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-20T16:00:40+00:00",
+  "ts": "2026-11-23T19:10:52+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 21.02,
+      "value": 20.65,
       "unit": "x",
       "zone": "fair",
-      "score": 56.9,
-      "detail": "vs 21.89 5-yr median",
+      "score": 59.5,
+      "detail": "vs 21.88 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.5,
+      "value": 22.18,
       "unit": "x",
       "zone": "fair",
-      "score": 63.2,
+      "score": 65.8,
       "detail": "vs 23.55 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 74.79,
+      "value": 66.51,
       "unit": "",
-      "zone": "Extreme Greed",
-      "score": 25.2,
+      "zone": "Greed",
+      "score": 33.5,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-20T14:20:00.395Z"
+      "as_of": "2026-11-23T14:20:00.483Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.81,
+      "value": 27.53,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,96 +62,107 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.45,
+      "value": 34.22,
       "unit": "x",
       "zone": "frothy",
       "score": null,
       "detail": "vs 29.09 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
+    },
+    {
+      "key": "news_sentiment",
+      "label": "News sentiment",
+      "value": 55.0,
+      "unit": "",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Valuation metrics near historical averages suggest range-bound trading.",
+      "source": "kilo/ddgs",
+      "as_of": ""
     }
   ],
-  "summary": "SIP-only is prudent now; defer lumpsum amid full valuations, extreme greed, and frothy smallcaps despite fair large-cap PEs.",
+  "summary": "### Copilot moved to a new app\n\n- Install the new Copilot app (needs iOS 26 or Android 13 or later).\n- Sign in with the same account.\n\nIf you don't sign in by December 31, 2026, your Copilot history and content will be deleted. If you can't use the new app on this phone, sign in on your PC or Mac.\n\n[Install now](https://unifiedlink.svc.cloud.microsoft/app/copilot/?openAppStoreOnLoad=true&fromcode=cmm5pinh4s5&referrer=utm_source%3Dmai_copilot_migration%26utm_campaign%3Dmigration_chatblock&ocid=migration_chatblock&pt=80423&ct=migration_chatblock&qrversion=email&ccac=tofmigration)",
   "lowest_pe": [
     {
       "symbol": "PFC",
-      "pe": 4.22
+      "pe": 4.13
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.6
+      "pe": 4.54
     },
     {
       "symbol": "RECLTD",
-      "pe": 4.82
+      "pe": 4.73
     },
     {
       "symbol": "IOC",
-      "pe": 4.84
+      "pe": 4.74
     },
     {
       "symbol": "BPCL",
-      "pe": 5.11
+      "pe": 5.07
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.99
+      "pe": 5.95
     },
     {
       "symbol": "GICRE",
-      "pe": 6.14
+      "pe": 6.06
     },
     {
       "symbol": "CANBK",
-      "pe": 6.26
+      "pe": 6.16
     },
     {
       "symbol": "ONGC",
+      "pe": 6.72
+    },
+    {
+      "symbol": "BANKINDIA",
       "pe": 6.77
     },
     {
       "symbol": "CENTRALBK",
-      "pe": 6.81
-    },
-    {
-      "symbol": "CHENNPETRO",
-      "pe": 6.84
+      "pe": 6.77
     },
     {
       "symbol": "J&KBANK",
-      "pe": 6.84
+      "pe": 6.85
     },
     {
-      "symbol": "BANKINDIA",
-      "pe": 6.89
-    },
-    {
-      "symbol": "GESHIP",
-      "pe": 7.31
+      "symbol": "CHENNPETRO",
+      "pe": 6.93
     },
     {
       "symbol": "BANKBARODA",
-      "pe": 7.45
+      "pe": 7.18
     },
     {
-      "symbol": "CHAMBLFERT",
-      "pe": 7.64
+      "symbol": "GESHIP",
+      "pe": 7.23
     },
     {
       "symbol": "COALINDIA",
-      "pe": 7.76
+      "pe": 7.57
     },
     {
-      "symbol": "NMDC",
-      "pe": 8.05
+      "symbol": "CHAMBLFERT",
+      "pe": 7.58
     },
     {
       "symbol": "HUDCO",
-      "pe": 8.22
+      "pe": 7.85
+    },
+    {
+      "symbol": "NMDC",
+      "pe": 7.95
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 8.25
+      "pe": 8.18
     }
   ],
   "errors": []
