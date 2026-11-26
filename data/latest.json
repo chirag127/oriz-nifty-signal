@@ -1,16 +1,16 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 46.3,
+  "verdict_score": 46.0,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-11-23T19:10:52+00:00",
+  "ts": "2026-11-25T17:54:12+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 20.65,
+      "value": 21.03,
       "unit": "x",
       "zone": "fair",
-      "score": 59.5,
+      "score": 56.8,
       "detail": "vs 21.88 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
@@ -18,11 +18,11 @@
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.18,
+      "value": 22.44,
       "unit": "x",
       "zone": "fair",
-      "score": 65.8,
-      "detail": "vs 23.55 5-yr median",
+      "score": 63.6,
+      "detail": "vs 23.53 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
     },
@@ -40,18 +40,18 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 66.51,
+      "value": 59.93,
       "unit": "",
       "zone": "Greed",
-      "score": 33.5,
+      "score": 40.1,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-11-23T14:20:00.483Z"
+      "as_of": "2026-11-25T14:20:00.557Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 27.53,
+      "value": 27.61,
       "unit": "x",
       "zone": "fair",
       "score": null,
@@ -62,24 +62,13 @@
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 34.22,
+      "value": 34.07,
       "unit": "x",
       "zone": "frothy",
       "score": null,
-      "detail": "vs 29.09 5-yr median",
+      "detail": "vs 29.08 5-yr median",
       "source": "IndexPE",
       "as_of": "November 2026"
-    },
-    {
-      "key": "news_sentiment",
-      "label": "News sentiment",
-      "value": 55.0,
-      "unit": "",
-      "zone": "neutral",
-      "score": 50.0,
-      "detail": "Valuation metrics near historical averages suggest range-bound trading.",
-      "source": "kilo/ddgs",
-      "as_of": ""
     }
   ],
   "summary": "### Copilot moved to a new app\n\n- Install the new Copilot app (needs iOS 26 or Android 13 or later).\n- Sign in with the same account.\n\nIf you don't sign in by December 31, 2026, your Copilot history and content will be deleted. If you can't use the new app on this phone, sign in on your PC or Mac.\n\n[Install now](https://unifiedlink.svc.cloud.microsoft/app/copilot/?openAppStoreOnLoad=true&fromcode=cmm5pinh4s5&referrer=utm_source%3Dmai_copilot_migration%26utm_campaign%3Dmigration_chatblock&ocid=migration_chatblock&pt=80423&ct=migration_chatblock&qrversion=email&ccac=tofmigration)",
