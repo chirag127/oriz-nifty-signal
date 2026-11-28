@@ -20,8 +20,9 @@ Fields to gather (omit + note any the sources truly lack; never fabricate):
 Also store PER-FACTOR Z-SCORES (E/P, B/P, S/P, EBITDA/EV, FCF-yield, div-yield, 1/PEG) so the browser can re-weight the composite without refetching.
 
 ## Scoring (in the JSON)
-- VALUE composite = equal-weight z-score of: E/P + B/P + S/P + EBITDA/EV + FCF-yield + 1/PEG (+ div-yield). Missing-factor-tolerant; exclude negative/zero earnings+book from those factors; loss-makers don't score cheap. Rank descending = cheapest.
-- QUALITY sub-score from ROE/ROCE/Piotroski/D-E (separate) + a quality flag (ROE>15 & D/E<1.5 & Piotroski>=6).
+- VALUE composite = equal-weight mean of the PERCENTILE ranks (0-100, higher=cheaper) of the 5 classic cheapness yields across the investable universe: E/P + B/P + S/P + EBITDA/EV + FCF-yield. Missing-factor-tolerant (avg over present, need ≥2); negative/zero earnings+book excluded per-factor; the investable filter already drops PE≤0/PB≤0/mcap<500Cr so loss-makers never score cheap. Div-yield percentile stored (`dy`) but KEPT OUT of the core rank (tax drag). Each factor's percentile stored in the row `z` object so the site can re-weight. Rank descending = cheapest.
+- PRESET-BACKING fields (computed so site presets are exact): `graham_ok`/`graham_score` (Graham defensive: PE<15 & PB<1.5 & PE·PB<22.5 & D/E<1), `magic_rank`+`magic_ey_rank`+`magic_roce_rank` (Greenblatt Magic Formula, lower magic_rank=better), `f_score` (Piotroski, exposed as-is).
+- QUALITY sub-score from ROE/ROCE/Piotroski/D-E (z-based, separate) + a quality flag (ROE>15 & D/E<1.5 & Piotroski>=6). Growth/momentum/analyst sub-scores stay z-based; only VALUE is percentile.
 - "MTF Buy-and-Hold (1yr)" blended score = value + quality + reasonable momentum/growth, restricted to MTF-eligible + acceptable beta (<~1.2). This is the flagship ranking.
 
 ## Site (Astro, client-side, backend-free, bespoke to site identity)
@@ -67,14 +68,15 @@ Produced by `metrics.all_metrics()` + `pipeline.write_metrics()`. Compact (no wh
   mtf_eligible_count: int (F&O-eligible),
   analyst_covered: int (rows with analyst coverage),
   assumptions: {mtf_interest_pct:12.0, ltcg_pct:12.5, beta_cap:1.2},
-  value_factors: ["ep","bp","sp","ebitda_ev","fcf_yield","inv_peg"],   // core VALUE composite factors
-  z_factors:     [...value_factors, "dy"],                              // all z-scored factors (dy=div-yield, display-only)
+  value_factors: ["ep","bp","sp","ebitda_ev","fcf_yield"],             // core VALUE composite factors (percentile-ranked)
+  z_factors:     [...value_factors, "dy"],                              // all ranked factors (dy=div-yield, display-only, kept out of core)
   rp_weights: {value:0.30, growth:0.22, quality:0.22, momentum:0.16, analyst:0.10},
   ai: {                                     // keyless-AI block (cron-time, best-effort; ABSENT if LLM unreachable)
     ts: ISO8601, disclaimer: "AI-generated, not advice.",
     daily: "2-3 sentence market-context commentary",
-    stocks: [{symbol, why_cheap, key_risk}, ... top-10 return-potential picks]
+    stocks: [{symbol, scans:[slug,...], why_cheap, key_risk}, ... flagship top-30 return-potential picks]
   },
+  scan_labels: {graham:"Graham Defensive", magic_q1:"Magic Formula (top quartile)", piotroski8:"Piotroski 8-9", piotroski7:"Piotroski 7", garp:"GARP", quality:"Quality", deep_value:"Deep Value"},
   stocks: [ <row>, ... ]
 }
 ```
@@ -99,14 +101,19 @@ Produced by `metrics.all_metrics()` + `pipeline.write_metrics()`. Compact (no wh
 | `analyst_count` | int | # analysts covering |
 | `target` `target_high` `target_low` | num | analyst price targets |
 | `upside_pct` | num | (target−price)/price ×100 |
-| `z` | obj | per-factor z-scores `{ep,bp,sp,ebitda_ev,fcf_yield,inv_peg,dy}` (present-only) — **browser re-weights the composite from these without refetching** |
-| `value_score` | num | equal-weight mean of core value-factor z (higher = cheaper) |
-| `growth_score` `quality_score` `momentum_score` `analyst_score` | num | sub-score z-means |
+| `z` | obj | per-factor VALUE **percentiles** 0-100 `{ep,bp,sp,ebitda_ev,fcf_yield,dy}` (present-only; higher=cheaper; `dy`=div-yield display-only) — **browser re-weights the composite from these without refetching** |
+| `value_score` | num 0-100 | equal-weight mean of the present core value-factor percentiles (higher = cheaper); ≥2 factors required else absent |
+| `graham_ok` | bool | classic Graham defensive: PE<15 & PB<1.5 & PE·PB<22.5 & D/E<1 (all four present + met) |
+| `graham_score` | int 0-4 | how many of the four Graham rungs pass (present-tolerant; missing D/E fails that rung) |
+| `magic_rank` | int | Greenblatt Magic Formula combined rank (lower=better); sum of the two component ranks, re-ranked 1..N |
+| `magic_ey_rank` `magic_roce_rank` | int | component ranks: earnings-yield (EBIT/EV) and ROCE (rank 1 = best); both required else absent |
+| `growth_score` `quality_score` `momentum_score` `analyst_score` | num | sub-score z-means (still z-based) |
 | `rp_score` | num | flagship RETURN-POTENTIAL composite (rp_weights-weighted, renormalised over present subs) |
 | `mtf_score` | num | rp_score GATED to F&O-eligible + beta<1.2 + non-loss (else absent) |
 | `mtf_net_1y` | num | after-tax after-interest 1Y return: `r_1y − 12% − LTCG 12.5% on the positive net` |
 | `quality_flag` | bool | ROE>15 & D/E<1.5 & (f_score≥6 or unknown) |
 | `mtf_eligible` | bool | `lot` present |
+| `scans` | str[] | named screens this stock passes (slugs; label map in top-level `scan_labels`): `graham`, `magic_q1` (Magic Formula top quartile), `piotroski8`/`piotroski7`, `garp`, `quality`, `deep_value` (value_score≥80) — site chips + AI narration ("passes Graham + Magic Formula + Piotroski 8") |
 | `n500` | bool | Nifty-500 member (large-cap narrowing filter) |
 | `value_rank` `rp_rank` `mtf_rank` | int | 1-based ranks (descending score) |
 

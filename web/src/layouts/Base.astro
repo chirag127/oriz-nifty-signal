@@ -2,10 +2,12 @@
 interface Props {
   title?: string;
   desc?: string;
+  active?: 'signal' | 'screener' | 'methodology';
 }
 const {
-  title = 'Nifty Signal — is now a good time to buy Indian equity?',
-  desc = 'Market-timing verdict for Indian equity: Nifty PE, Buffett indicator & market mood combined into a single STRONG BUY / ACCUMULATE / HOLD / CAUTION signal. Updated daily.',
+  title = 'Nifty Signal — rank every Indian stock by return potential',
+  desc = 'Client-side screener over ~5,800 Indian stocks. Rank by a combined return-potential composite, re-weight the factors with weighting profiles, and read the after-tax MTF buy-and-hold return. Backend-free, shareable.',
+  active,
 } = Astro.props;
 ---
 
@@ -15,83 +17,142 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={desc} />
+    <meta name="theme-color" content="#161512" />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <style is:global>
       :root {
-        /* Nifty Signal identity — a "trading-desk signal board": near-black
-           slate canvas, a single traffic-light accent (red→amber→green) that
-           tracks the verdict, and IBM Plex Mono for a terminal feel.
-           Deliberately NOT oriz-mmi's indigo fear/greed dial, NOT oriz-ipo's
-           phosphor-green ledger. */
-        --bg: #0c0e12;
-        --bg-2: #12151c;
-        --panel: #161a22;
-        --panel-2: #1b2029;
-        --line: #262c38;
-        --ink: #eef1f6;
-        --dim: #8b95a7;
-        --dimmer: #5b6474;
-        /* signal traffic-light */
-        --buy: #2fe08a;        /* strong buy — green */
-        --accum: #8fd94a;      /* accumulate — lime */
-        --hold: #f2c14e;       /* hold — amber */
-        --caution: #f2603e;    /* caution — red */
-        --accent: #4ea6ff;     /* cool blue chrome accent */
-        --font-disp: 'Space Grotesk', system-ui, sans-serif;
-        --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-        --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+        /* nifty.oriz.in identity — "the upside ledger": a warm charcoal-paper
+           canvas with a gold ink accent and a teal→amber DIVERGING heat that
+           reads return potential as a filling gauge. A high-optical-size
+           Fraunces serif for display gives it an editorial, printed-ledger
+           character. Deliberately NOT oriz-mmi's indigo fear/greed dial, NOT
+           oriz-ipo's phosphor-green terminal, NOT the old slate signal board. */
+        --bg: #161512;
+        --bg-2: #1d1b17;
+        --panel: #211f1a;
+        --panel-2: #2a271f;
+        --line: #35322a;
+        --line-2: #423e33;
+        --ink: #f4efe4;
+        --dim: #a59d89;
+        --dimmer: #6f6858;
+
+        /* gold ink — the single brand accent */
+        --gold: #e0a92e;
+        --gold-soft: #f0cd7a;
+
+        /* return-heat DIVERGING poles (teal ↔ amber, gray midpoint) */
+        --heat-hi: #f5b52e;   /* strong positive rp */
+        --heat-hi-2: #d6843a; /* warm mid-positive */
+        --heat-mid: #6f6858;  /* ~zero */
+        --heat-lo: #2f9c8f;   /* negative rp (teal) */
+
+        /* status */
+        --good: #4bbf8a;
+        --warn: #e0a92e;
+        --bad: #d6543a;
+
+        /* factor categorical (validated: dark ΔE≥18 normal, ≥11 CVD) */
+        --f-value: #b9891a;
+        --f-growth: #159e8f;
+        --f-quality: #d6543a;
+        --f-momentum: #3f7fd6;
+        --f-analyst: #c74d94;
+
+        --font-disp: 'Fraunces', Georgia, serif;
+        --font-ui: 'Instrument Sans', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+        --r: 14px;
+        --shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.85);
       }
       * { box-sizing: border-box; }
-      html { -webkit-text-size-adjust: 100%; }
+      html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
       body {
         margin: 0;
+        overflow-x: hidden;
         background:
-          radial-gradient(100% 60% at 50% -10%, rgba(78,166,255,0.07), transparent 55%),
+          radial-gradient(120% 70% at 82% -8%, rgba(224, 169, 46, 0.09), transparent 55%),
+          radial-gradient(90% 60% at 0% 0%, rgba(47, 156, 143, 0.06), transparent 50%),
           var(--bg);
         color: var(--ink);
         font-family: var(--font-ui);
         font-size: 15px;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
       a { color: inherit; text-decoration: none; }
-      .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px; }
+      .wrap { max-width: 1360px; margin: 0 auto; padding: 0 24px; }
+      .wrap-narrow { max-width: 900px; }
 
-      header.top { text-align: center; padding: 44px 0 4px; }
-      .kicker {
-        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.34em;
-        text-transform: uppercase; color: var(--accent);
+      /* top brand + nav bar */
+      .navbar {
+        position: sticky; top: 0; z-index: 60;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; padding: 12px 24px; flex-wrap: wrap;
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
       }
+      .brand {
+        font-family: var(--font-disp); font-weight: 700; font-size: 18px;
+        letter-spacing: -0.01em; display: inline-flex; align-items: baseline; gap: 2px;
+      }
+      .brand .dot { color: var(--gold); }
+      .brand small {
+        font-family: var(--font-mono); font-weight: 500; font-size: 10px;
+        letter-spacing: 0.14em; text-transform: uppercase; color: var(--dimmer);
+        margin-left: 10px;
+      }
+      .navlinks { display: flex; gap: 4px; }
+      .navlinks a {
+        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em;
+        color: var(--dim); padding: 6px 12px; border-radius: 999px; transition: 0.15s;
+      }
+      .navlinks a:hover { color: var(--ink); background: var(--bg-2); }
+      .navlinks a.on { color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, transparent); }
+
       h1 {
-        font-family: var(--font-disp); font-weight: 700;
-        font-size: clamp(28px, 5.4vw, 46px); line-height: 1.05;
-        margin: 12px 0 6px; letter-spacing: -0.02em;
+        font-family: var(--font-disp); font-weight: 600;
+        font-size: clamp(30px, 5vw, 52px); line-height: 1.04;
+        margin: 0 0 10px; letter-spacing: -0.02em;
       }
-      .sub { color: var(--dim); max-width: 56ch; margin: 0 auto; }
-
-      footer { border-top: 1px solid var(--line); color: var(--dim); font-size: 12px; padding: 22px 0 44px; text-align: center; }
-      footer a { color: var(--accent); }
-      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-      .oriz-brand {
-        position: sticky; top: 0; z-index: 50;
-        display: block; padding: 8px 20px;
-        font-family: var(--font-mono); font-weight: 600; font-size: 13px;
-        letter-spacing: 0.06em; color: var(--ink);
-        background: var(--bg); border-bottom: 1px solid var(--line);
+      .kicker {
+        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.28em;
+        text-transform: uppercase; color: var(--gold);
       }
-      .oriz-brand span { color: var(--accent); }
-      .oriz-brand:hover { color: var(--accent); }
+      .sub { color: var(--dim); font-size: 16px; }
+
+      footer {
+        border-top: 1px solid var(--line); color: var(--dim); font-size: 12.5px;
+        padding: 26px 0 48px; margin-top: 40px;
+      }
+      footer a { color: var(--gold); }
+      footer .wrap { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+      :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+      ::selection { background: color-mix(in srgb, var(--gold) 35%, transparent); }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        * { transition: none !important; animation: none !important; }
+      }
     </style>
   </head>
   <body>
-    <a class="oriz-brand" href="https://oriz.in">oriz<span>.in</span></a>
+    <nav class="navbar">
+      <a class="brand" href="/">nifty<span class="dot">.</span>signal<small>oriz.in</small></a>
+      <div class="navlinks">
+        <a href="/" class={active === 'signal' ? 'on' : ''}>signal</a>
+        <a href="/screener" class={active === 'screener' ? 'on' : ''}>screener</a>
+        <a href="/methodology" class={active === 'methodology' ? 'on' : ''}>methodology</a>
+      </div>
+    </nav>
     <slot />
   </body>
 </html>

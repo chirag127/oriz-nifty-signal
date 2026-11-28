@@ -1,5 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
+import { PRESETS, METRICS, DEFAULT_WEIGHTS, type PresetGroup, type MetricGroup } from '../lib/scoring';
+
+const opSym = (o: string) => ({ '>=': '≥', '<=': '≤', '>': '>', '<': '<', between: '–' }[o] ?? o);
+const ruleText = (p: typeof PRESETS[number]): string => {
+  const parts: string[] = [];
+  for (const fl of p.flags || []) parts.push(fl === 'mtf_eligible' ? 'MTF/F&O-eligible' : fl === 'n500' ? 'Nifty-500' : 'quality-flag');
+  for (const f of p.filters || []) parts.push(`${f.field} ${opSym(f.op)} ${f.a}${f.op === 'between' ? '–' + (f.b ?? '') : ''}`);
+  const filt = parts.length ? parts.join(' · ') : 'no filter — whole universe';
+  return `${filt} — sort ${p.sort!.id} ${p.sort!.desc ? '↓' : '↑'}`;
+};
+const groups: PresetGroup[] = ['Featured', 'Core', 'Named', 'Strategy'];
+const mgroups: MetricGroup[] = ['Valuation', 'Quality', 'Growth', 'Health', 'Momentum', 'Ownership', 'Analyst'];
 
 const metrics = [
   { m: 'PE (P/E)', mean: 'Price ÷ trailing earnings per share.', why: 'How many rupees you pay per rupee of annual profit.', good: 'Lower = cheaper. <15 cheap, >30 rich — but banks/utilities run low, growth runs high. Loss-makers have no meaningful PE.' },
@@ -32,22 +44,20 @@ const piotroski = [
 ---
 
 <Base
-  title="Methodology & tax rules — how the value composite + MTF screener works | Nifty Signal"
-  desc="The source of truth: every metric explained, the exact equal-weight z-score composite formula, the Piotroski 9-point breakdown, the MTF 1-year buy-and-hold rationale, and the full India equity tax section (LTCG 12.5% vs STCG 20%, exemption, dividend drag, churn-after-12-months)."
+  active="methodology"
+  title="Methodology & tax rules — how the return-potential composite + MTF screener works | Nifty Signal"
+  desc="The source of truth: every metric explained, the composite formula, the weighting profiles, the Piotroski 9-point breakdown, the MTF 1-year buy-and-hold rationale, and the full India equity tax section (LTCG 12.5% vs STCG 20%, exemption, dividend drag, churn-after-12-months)."
 >
-  <header class="top wrap">
+  <header class="top wrap wrap-narrow">
     <span class="kicker">the source of truth</span>
     <h1>How this works</h1>
-    <p class="sub">Every metric, the exact composite formula, the Piotroski breakdown, the MTF strategy, and the full tax logic. Plain language. This page — not a README — is the methodology of record.</p>
-    <nav class="pagenav">
-      <a href="/">← signal</a>
-      <a href="/screener">open the screener →</a>
-    </nav>
+    <p class="sub">Every metric, the composite formula, the weighting profiles, the Piotroski breakdown, the MTF strategy, and the full tax logic. Plain language. This page — not a README — is the methodology of record.</p>
   </header>
 
-  <main class="wrap doc">
+  <main class="wrap wrap-narrow doc">
     <nav class="toc panel">
-      <a href="#composite">Value composite</a>
+      <a href="#composite">The composite</a>
+      <a href="#profiles">Presets, bands &amp; weights</a>
       <a href="#metrics">Every metric</a>
       <a href="#piotroski">Piotroski 9-pt</a>
       <a href="#value-quality">Value vs quality</a>
@@ -57,22 +67,66 @@ const piotroski = [
     </nav>
 
     <section id="composite" class="panel">
-      <h2>The value composite — what Screener.in doesn’t give you</h2>
-      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended cheapness score. That blended score is the point of this site.</p>
-      <p>For each stock we convert every cheapness factor into a <b>yield</b> (so higher = cheaper), then take its <b>cross-sectional z-score</b> — how many standard deviations above/below the market average it sits. The composite is the <b>equal-weight mean of the z-scores the stock has</b>:</p>
-      <pre class="formula">factors  = E/P, B/P, S/P, EBIT/EV, FCF-yield, 1/PEG   (div-yield display-only)
+      <h2>The composite — fundamentals ARE the score</h2>
+      <p>Screener.in shows metrics one at a time; it can’t rank the whole market by a single blended score. That blended score is the point of this site — and it is computed <b>directly from the raw fundamentals</b>, with no abstract sub-score layer in between.</p>
+      <p><b>1 · Percentile each metric, in its GOOD direction.</b> Every metric is percentile-ranked 0–100 across the loaded universe. For “lower is better” metrics (PE, PB, PS, EV/EBITDA, P/FCF, PEG, D/E, pledge, beta, distance-below-52W-high) the percentile is flipped so <b>cheap/safe = high</b>. For “higher is better” metrics (ROE, ROCE, margins, growth, momentum, FCF-yield, upside, Piotroski, institutional stake) the percentile is used as-is.</p>
+      <p><b>2 · Weighted percentile average.</b> The composite is the weighted mean of those percentiles, <b>renormalised over the metrics the stock actually has</b>:</p>
+      <pre class="formula">pct[m]     = percentile of the metric across the universe (0–100, in its good direction)
 
-per factor:  yield = 1 / ratio        (E/P = 1/PE, etc.)
-             z     = (yield − market mean) / market stdev
+composite  = Σ( wₘ · pct[m] )  /  Σ( wₘ )     over the metrics present (weight &gt; 0)
+higher composite = higher return potential (0–100)</pre>
+      <p>A metric with <b>weight 0 is excluded</b>. A metric <b>missing</b> for a stock is dropped and the weights renormalise over the rest — never penalised with a zero. A stock with fewer than <b>{METRICS.length >= 4 ? 4 : 4} present weighted metrics ranks last</b> (too little to score fairly).</p>
+      <h3>Default weights — value-heavy</h3>
+      <p>Out of the box the weights tilt to <b>value</b> (cheapness), then <b>quality</b>, then growth / momentum / analyst light:</p>
+      <table class="mtable">
+        <thead><tr><th>Group</th><th>Metrics (weight)</th></tr></thead>
+        <tbody>
+          {mgroups.map((g) => (
+            <tr>
+              <td class="m">{g}</td>
+              <td>{METRICS.filter((m) => m.group === g).map((m) => `${m.label} ${DEFAULT_WEIGHTS[m.key] ?? 0}`).join(' · ')}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h3>Percentile ranges (slider bands)</h3>
+      <p>Each metric’s slider spans the <b>1st–99th data-percentile</b> of real values, so one outlier can’t stretch the scale. A band left at its full min–max applies <b>no filter</b> (it’s ignored) — only a moved band screens.</p>
+      <h3>Live re-weighting</h3>
+      <p>The whole universe ships as one JSON; the percentiles and the composite are computed <b>in your browser</b>, so dragging any weight re-ranks instantly with no refetch. The <b>heat gauge</b> in the rank column shows the 0–100 composite and the thin strip under it shows <b>which metrics drove the score</b>.</p>
+    </section>
 
-composite = mean( z[f]  for each factor f the stock HAS )
-higher composite = cheaper overall</pre>
-      <h3>Missing-value handling</h3>
-      <p>A factor only counts when its ratio is valid and positive (PE, PB, PS, EV/EBIT &gt; 0). A stock missing a factor is averaged over the rest — never penalised with a zero. Small/micro caps have thinner data, so the <b>Data</b> column shows each row’s completeness.</p>
-      <h3>Loss-maker exclusion</h3>
-      <p>Negative or zero earnings and negative book don’t produce a valid yield, so <b>loss-makers never score “cheap”</b> on those factors — a stock isn’t cheap just because its price collapsed alongside its profits.</p>
-      <h3>Custom weights (live)</h3>
-      <p>The site ships the per-factor z-scores, so the sliders <b>recompute the composite in your browser</b> with no refetch. Default is equal weight; set FCF-yield to max and everything else to zero to rank purely on cash yield, for example.</p>
+    <section id="profiles" class="panel">
+      <h2>Presets, bands &amp; weights</h2>
+      <p>Three controls drive the screen, two-way synced:</p>
+      <ul>
+        <li><b>Metric weights = scoring.</b> Each metric’s weight sets <b>how much it drives the composite</b>. Weight 0 excludes it. Not a filter — nothing is dropped, the ranking just re-tilts.</li>
+        <li><b>Metric filter bands = screening.</b> Each metric’s dual-thumb band sets a numeric min/max <b>filter</b> by dragging. Left at full range = off. Reuses the same filter state the advanced builder writes.</li>
+        <li><b>Presets = scans.</b> Each preset sets the filter bands <b>and</b> a weight profile <b>and</b> a sort, and surfaces the <b>top ~100</b> so you narrow to your final 5. Picking one moves the bands + weights; dragging any band or weight switches to <b>custom</b>.</li>
+      </ul>
+      <p>Presets are grouped Featured / Core / Named / Strategy. <b>Best Return-Potential</b> loads by default. Exact rule for each:</p>
+      {groups.map((g) => (
+        <>
+          <h3>{g}</h3>
+          <table class="mtable prof-table">
+            <thead><tr><th>Preset</th><th>What it screens</th><th>Exact rule</th></tr></thead>
+            <tbody>
+              {PRESETS.filter((p) => p.group === g).map((p) => (
+                <tr>
+                  <td class="m">{p.label}{p.featured ? ' ★' : ''}{p.id === 'best_rp' ? ' (default)' : ''}</td>
+                  <td>{p.blurb}</td>
+                  <td class="rule">{ruleText(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      ))}
+      <h3>The three featured scans</h3>
+      <ul>
+        <li><b>Deep Value</b> — <code>PE &lt; 6 AND PB &lt; 1.5</code> with a documented quality guard (ROE &gt; 12 OR Piotroski ≥ 6 OR D/E &lt; 1) to drop value-traps; value-heavy weights, sorted by composite.</li>
+        <li><b>Best Return-Potential</b> (default) — MTF/F&amp;O-eligible, beta &lt; 1.2, ranked by <b>after-tax after-interest 1Y return</b> (1Y − 12% MTF interest − 12.5% LTCG on the gain).</li>
+        <li><b>Quality-Value + turnaround</b> — quality (ROE &gt; 15 &amp; D/E &lt; 1) that is cheap and turning. The <b>turnaround condition is selectable</b>: default <em>6M momentum up</em> (r_6m &gt; 0 and below the 52W high), or <em>earnings turn</em> (EPS &amp; revenue growth positive), or <em>both</em>.</li>
+      </ul>
     </section>
 
     <section id="metrics" class="panel">
@@ -109,7 +163,7 @@ higher composite = cheaper overall</pre>
       <ul>
         <li>The primary rank is <b>pure value</b>, so genuinely cheap names surface even if unglamorous.</li>
         <li>A <b>Quality flag</b> (ROE&gt;15% &amp; ROCE&gt;15% &amp; Piotroski≥6 &amp; D/E&lt;1.5) marks the strong businesses.</li>
-        <li>Cheap <b>and</b> quality = the sweet spot; cheap <b>without</b> quality = possible value-trap. The <b>Quality Value</b> preset intersects both.</li>
+        <li>Cheap <b>and</b> quality = the sweet spot; cheap <b>without</b> quality = possible value-trap. The <b>Quality-Value</b> preset intersects both (value ≥70th pct, ROE&gt;15%, D/E&lt;1).</li>
       </ul>
     </section>
 
@@ -122,7 +176,7 @@ higher composite = cheaper overall</pre>
         <li><b>Margin-call risk</b> — leverage magnifies drawdowns; a sharp fall can force liquidation at the worst time. Hence the preset caps <b>beta ≤ 1.2</b> and tilts to quality.</li>
         <li><b>Value-trap risk</b> — cheap + weak fundamentals can stay cheap for years while interest accrues. The quality tilt + Piotroski guard against it.</li>
       </ul>
-      <p>The <b>MTF Buy-and-Hold (1yr)</b> preset therefore restricts to MTF-eligible, β≤1.2, ROE≥12 names and ranks by <b>after-tax, after-interest 1Y return</b> — not gross return.</p>
+      <p>The <b>MTF Buy-Hold 1yr</b> preset (flagship) restricts to MTF-eligible, β ≤ 1.2 names and ranks by <b>after-tax, after-interest 1Y return</b> — not gross return.</p>
     </section>
 
     <section id="tax" class="panel tax">
@@ -146,16 +200,16 @@ higher composite = cheaper overall</pre>
   </main>
 
   <footer>
-    <div class="wrap">
+    <div class="wrap wrap-narrow">
       <a href="/screener">← back to the screener</a> · Not investment/tax advice · <a href="https://oriz.in">oriz.in</a>
     </div>
   </footer>
 </Base>
 
 <style>
-  .pagenav { display: flex; gap: 22px; justify-content: center; margin: 16px 0 0; font-family: var(--font-mono); font-size: 12px; }
-  .pagenav a { color: var(--accent); }
-  .doc { max-width: 860px; }
+  .top { text-align: center; padding: 44px 24px 8px; }
+  .top .sub { color: var(--dim); max-width: 60ch; margin: 12px auto 0; }
+  .doc { padding-top: 8px; }
   .panel {
     background: var(--panel); border: 1px solid var(--line);
     border-radius: 14px; padding: 22px 24px; margin: 0 0 16px;
@@ -166,15 +220,15 @@ higher composite = cheaper overall</pre>
   }
   .panel h3 {
     font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--accent); margin: 20px 0 6px;
+    text-transform: uppercase; color: var(--gold); margin: 20px 0 6px;
   }
   .panel p { color: var(--ink); margin: 0 0 12px; }
   .panel ul { color: var(--ink); margin: 0 0 6px; padding-left: 20px; }
   .panel li { margin: 0 0 8px; }
-  code { font-family: var(--font-mono); font-size: 0.9em; color: var(--accent); background: var(--bg-2); padding: 1px 5px; border-radius: 5px; }
+  code { font-family: var(--font-mono); font-size: 0.9em; color: var(--gold); background: var(--bg-2); padding: 1px 5px; border-radius: 5px; }
 
   .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; }
-  .toc a { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .toc a { font-family: var(--font-mono); font-size: 12px; color: var(--gold); }
   .toc a:hover { text-decoration: underline; }
 
   .formula {
@@ -189,21 +243,24 @@ higher composite = cheaper overall</pre>
     color: var(--dim); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
   }
   .mtable td { padding: 9px 10px; border-bottom: 1px solid var(--bg-2); color: var(--ink); vertical-align: top; }
-  .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .mtable td.m { font-family: var(--font-mono); font-weight: 600; color: var(--gold); white-space: nowrap; }
+  .prof-table td.pw { font-family: var(--font-mono); text-align: right; color: var(--gold-soft); font-weight: 600; }
+  .mtable td.rule { font-family: var(--font-mono); font-size: 11.5px; color: var(--gold-soft); text-align: left; }
 
-  .tax { border-color: color-mix(in srgb, var(--buy) 30%, var(--line)); }
-  .tax h2 { color: var(--buy); }
+
+  .tax { border-color: color-mix(in srgb, var(--good) 30%, var(--line)); }
+  .tax h2 { color: var(--good); }
   .taxnote { color: var(--dim); font-size: 12px; }
-  .disc { border-color: color-mix(in srgb, var(--caution) 30%, var(--line)); }
-  .disc h2 { color: var(--caution); }
+  .disc { border-color: color-mix(in srgb, var(--bad) 30%, var(--line)); }
+  .disc h2 { color: var(--bad); }
   .disc p { color: var(--dim); font-size: 13px; }
 
-  footer a { color: var(--accent); }
+  footer a { color: var(--gold); }
   @media (max-width: 640px) {
     .mtable, .mtable thead, .mtable tbody, .mtable tr, .mtable td, .mtable th { display: block; }
     .mtable thead { display: none; }
     .mtable td { border-bottom: none; padding: 3px 0; }
     .mtable tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
-    .mtable td.m { color: var(--accent); font-size: 14px; margin-bottom: 4px; }
+    .mtable td.m { color: var(--gold); font-size: 14px; margin-bottom: 4px; }
   }
 </style>

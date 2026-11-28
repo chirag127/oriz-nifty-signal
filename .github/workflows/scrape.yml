@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: nifty-scrape
@@ -66,6 +67,8 @@ jobs:
           python -m nifty_signal --data data -v
 
       - name: Commit data
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -76,6 +79,9 @@ jobs:
             git commit -m "data: nifty signal $(date -u +'%F %H:%MZ')"
             git pull --rebase --autostash origin main || true
             git push
+            # GITHUB_TOKEN pushes don't trigger deploy.yml (recursion guard) —
+            # dispatch it explicitly so the site rebuilds with fresh numbers.
+            gh workflow run deploy.yml --repo "${{ github.repository }}" || true
           fi
 
       - name: Alert on failure (Telegram)

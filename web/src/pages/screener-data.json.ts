@@ -1,14 +1,11 @@
 import type { APIRoute } from 'astro';
 import { loadMetrics } from '../lib/screener';
 
-// Static endpoint: emits the whole screener universe as one fetchable JSON in
-// dist/. The browser fetches this once, then filters/sorts/re-weights in-memory.
-export const GET: APIRoute = () => {
-  const payload = loadMetrics();
-  return new Response(JSON.stringify(payload), {
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'public, max-age=1800',
-    },
+export const prerender = true;
+
+// Emits dist/screener-data.json — the whole universe the island fetches once,
+// client-side. Kept out of island props so ~7 MB isn't inlined into the HTML.
+export const GET: APIRoute = () =>
+  new Response(JSON.stringify(loadMetrics()), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=1800' },
   });
-};
