@@ -1,30 +1,30 @@
 {
   "verdict": "HOLD-SIP-ONLY",
-  "verdict_score": 54.8,
+  "verdict_score": 45.5,
   "rationale": "Fully valued — SIP only, hold lumpsum for a better entry.",
-  "ts": "2026-09-08T12:04:58+00:00",
+  "ts": "2026-11-27T17:22:07+00:00",
   "indicators": [
     {
       "key": "nifty_pe",
       "label": "Nifty 50 PE",
-      "value": 19.98,
+      "value": 20.86,
       "unit": "x",
       "zone": "fair",
-      "score": 64.1,
-      "detail": "vs 22.01 5-yr median",
+      "score": 58.0,
+      "detail": "vs 21.88 5-yr median",
       "source": "IndexPE",
-      "as_of": "September 2026"
+      "as_of": "November 2026"
     },
     {
       "key": "nifty500_pe",
       "label": "Nifty 500 PE (breadth)",
-      "value": 22.39,
+      "value": 22.37,
       "unit": "x",
       "zone": "fair",
-      "score": 65.5,
-      "detail": "vs 23.74 5-yr median",
+      "score": 64.1,
+      "detail": "vs 23.53 5-yr median",
       "source": "IndexPE",
-      "as_of": "September 2026"
+      "as_of": "November 2026"
     },
     {
       "key": "buffett",
@@ -40,129 +40,129 @@
     {
       "key": "mmi",
       "label": "Market Mood (MMI)",
-      "value": 32.7,
+      "value": 66.33,
       "unit": "",
-      "zone": "Fear",
-      "score": 67.3,
+      "zone": "Greed",
+      "score": 33.7,
       "detail": "contrarian: fear = buy, greed = caution",
       "source": "Tickertape MMI",
-      "as_of": "2026-09-08T10:27:00.042Z"
+      "as_of": "2026-11-27T14:20:01.381Z"
     },
     {
       "key": "midcap_pe",
       "label": "Nifty Midcap 100 PE",
-      "value": 30.32,
+      "value": 27.73,
       "unit": "x",
       "zone": "fair",
       "score": null,
-      "detail": "vs 29.79 5-yr median",
+      "detail": "vs 29.34 5-yr median",
       "source": "IndexPE",
-      "as_of": "September 2026"
+      "as_of": "November 2026"
     },
     {
       "key": "smallcap_pe",
       "label": "Nifty Smallcap 100 PE",
-      "value": 31.89,
+      "value": 34.52,
       "unit": "x",
-      "zone": "expensive",
+      "zone": "frothy",
       "score": null,
-      "detail": "vs 29 5-yr median",
+      "detail": "vs 29.09 5-yr median",
       "source": "IndexPE",
-      "as_of": "September 2026"
+      "as_of": "November 2026"
     },
     {
       "key": "news_sentiment",
       "label": "News sentiment",
-      "value": 55.0,
+      "value": 60.0,
       "unit": "",
-      "zone": "bearish",
-      "score": 58.2,
-      "detail": "Headlines cautious; stick to SIP.",
+      "zone": "neutral",
+      "score": 50.0,
+      "detail": "Nifty PE sits near long-run median; stay selective and avoid chasing rallies.",
       "source": "kilo/ddgs",
       "as_of": ""
     }
   ],
-  "summary": "For long-term Indian equity investors, fair largecap valuations alongside overvalued smallcaps and bearish sentiment warrant SIP-only deployments, hold lumpsum additions.",
+  "summary": "SIP-only now: buy-attractiveness 46/100, with fair broad valuations offset by overvalued Buffett indicator, greed, and frothy small-caps.",
   "lowest_pe": [
     {
-      "symbol": "TMPV",
-      "pe": 1.42
+      "symbol": "PFC",
+      "pe": 4.17
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.28
+      "pe": 4.55
     },
     {
       "symbol": "IOC",
-      "pe": 4.56
-    },
-    {
-      "symbol": "PFC",
-      "pe": 4.63
-    },
-    {
-      "symbol": "LICHSGFIN",
-      "pe": 4.88
-    },
-    {
-      "symbol": "BPCL",
-      "pe": 5.22
+      "pe": 4.72
     },
     {
       "symbol": "RECLTD",
-      "pe": 5.27
+      "pe": 4.76
     },
     {
-      "symbol": "VEDL",
-      "pe": 6.26
+      "symbol": "BPCL",
+      "pe": 5.12
     },
     {
-      "symbol": "CENTRALBK",
-      "pe": 6.26
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 6.31
-    },
-    {
-      "symbol": "GESHIP",
-      "pe": 6.36
-    },
-    {
-      "symbol": "BANKBARODA",
-      "pe": 6.44
-    },
-    {
-      "symbol": "GICRE",
-      "pe": 6.46
+      "symbol": "LICHSGFIN",
+      "pe": 5.84
     },
     {
       "symbol": "CANBK",
-      "pe": 6.6
+      "pe": 6.04
+    },
+    {
+      "symbol": "GICRE",
+      "pe": 6.09
     },
     {
       "symbol": "CHENNPETRO",
+      "pe": 6.49
+    },
+    {
+      "symbol": "CENTRALBK",
       "pe": 6.69
     },
     {
-      "symbol": "J&KBANK",
-      "pe": 6.95
-    },
-    {
       "symbol": "ONGC",
-      "pe": 7.18
+      "pe": 6.76
     },
     {
-      "symbol": "JSWDULUX",
-      "pe": 7.2
+      "symbol": "BANKINDIA",
+      "pe": 6.92
+    },
+    {
+      "symbol": "BANKBARODA",
+      "pe": 7.16
+    },
+    {
+      "symbol": "GESHIP",
+      "pe": 7.28
+    },
+    {
+      "symbol": "CHAMBLFERT",
+      "pe": 7.68
+    },
+    {
+      "symbol": "COALINDIA",
+      "pe": 7.71
+    },
+    {
+      "symbol": "HUDCO",
+      "pe": 7.72
+    },
+    {
+      "symbol": "J&KBANK",
+      "pe": 7.77
+    },
+    {
+      "symbol": "NMDC",
+      "pe": 8.02
     },
     {
       "symbol": "UNIONBANK",
-      "pe": 7.21
-    },
-    {
-      "symbol": "PNB",
-      "pe": 7.28
+      "pe": 8.29
     }
   ],
   "errors": []
