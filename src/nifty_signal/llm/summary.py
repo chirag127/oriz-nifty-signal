@@ -5,9 +5,9 @@ fallback so a missing/failed LLM never blocks the pipeline or notification.
 from __future__ import annotations
 
 import logging
-import os
 
 from ..models import Signal
+from .client import complete
 
 log = logging.getLogger("nifty_signal")
 
@@ -27,28 +27,6 @@ def _template(sig: Signal) -> str:
     return f"{lead}. {advice} {body}."
 
 
-def _g4f_complete(prompt: str) -> str | None:
-    if os.environ.get("NIFTY_DISABLE_LLM") == "1":
-        return None
-    try:
-        from g4f.client import Client  # lazy — g4f may be absent
-    except Exception as e:  # noqa: BLE001
-        log.info("g4f unavailable: %s", e)
-        return None
-    try:
-        client = Client()
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            timeout=45,
-        )
-        text = (resp.choices[0].message.content or "").strip()
-        return text or None
-    except Exception as e:  # noqa: BLE001
-        log.info("g4f completion failed: %s", e)
-        return None
-
-
 def commentary(sig: Signal) -> str:
     """One-line market-timing take. LLM if available, else template."""
     lines = "; ".join(
@@ -61,4 +39,4 @@ def commentary(sig: Signal) -> str:
         f"Verdict: {sig.verdict} (buy-attractiveness {sig.verdict_score:.0f}/100)\n"
         f"Indicators: {lines}"
     )
-    return _g4f_complete(prompt) or _template(sig)
+    return complete(prompt) or _template(sig)

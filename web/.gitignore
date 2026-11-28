@@ -1,0 +1,7 @@
+
+# build artifacts
+public/screener-data.json
+public/screener-meta.json
+dist/
+.astro/
+node_modules/

@@ -8,6 +8,7 @@ and always sends, so the daily read lands in Telegram regardless of change.
 
 from __future__ import annotations
 
+import gzip
 import json
 import logging
 from pathlib import Path
@@ -32,6 +33,24 @@ _RATIONALE = {
     "HOLD-SIP-ONLY": "Fully valued — SIP only, hold lumpsum for a better entry.",
     "CAUTION": "Rich valuations / greedy sentiment — SIP only, wait for a pullback.",
 }
+
+
+def _fetch_metrics() -> dict:
+    """Full-universe screener metrics payload (best-effort, {} on failure)."""
+    try:
+        from .sources.metrics import all_metrics
+        return all_metrics()
+    except Exception as e:  # noqa: BLE001
+        log.warning("metrics build failed: %s", e)
+        return {}
+
+
+def _top_lists(metrics: dict) -> tuple[list[dict], list[dict]]:
+    """(top MTF-buy-hold, top value) short lists for the notification."""
+    stocks = metrics.get("stocks", [])
+    mtf = sorted((s for s in stocks if s.get("mtf_rank")), key=lambda s: s["mtf_rank"])[:10]
+    val = sorted((s for s in stocks if s.get("value_rank")), key=lambda s: s["value_rank"])[:10]
+    return mtf, val
 
 
 def _fetch_mmi_snapshot() -> dict[str, Any] | None:
@@ -81,14 +100,21 @@ def build_signal() -> tuple[Signal, list[str]]:
     return sig, errors
 
 
-def write_snapshot(sig: Signal, errors: list[str], data_dir: Path) -> None:
-    """latest.json = current signal. history/<date>.json = append-only daily log
-    (drives the sparkline)."""
+def write_snapshot(sig: Signal, errors: list[str], data_dir: Path, lowest_pe: list[dict] | None = None) -> None:
+    """latest.json = current signal (+ lowest_pe list). history/<date>.json =
+    append-only daily log (drives the sparkline). lowest_pe_nifty500.json =
+    standalone cheapest-by-PE list (git-as-DB)."""
     data_dir.mkdir(parents=True, exist_ok=True)
-    payload = {**sig.to_dict(), "errors": errors}
+    lowest_pe = lowest_pe or []
+    payload = {**sig.to_dict(), "lowest_pe": lowest_pe, "errors": errors}
     (data_dir / "latest.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+    if lowest_pe:
+        (data_dir / "lowest_pe_nifty500.json").write_text(
+            json.dumps({"ts": sig.ts, "stocks": lowest_pe}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
 
     hist_dir = data_dir / "history"
     hist_dir.mkdir(exist_ok=True)
@@ -107,6 +133,30 @@ def write_snapshot(sig: Signal, errors: list[str], data_dir: Path) -> None:
     log.info("wrote latest.json + history/%s.json (%d points)", day, len(points))
 
 
+def write_metrics(metrics: dict, ts: str, data_dir: Path) -> None:
+    """nifty_all_metrics.json = full-universe screener rows (git-as-DB, site
+    contract). Compact (no indent) + gzip sidecar for the browser."""
+    if not metrics.get("stocks"):
+        log.warning("metrics empty — not writing nifty_all_metrics.json")
+        return
+    data_dir.mkdir(parents=True, exist_ok=True)
+    payload = {"ts": ts, **metrics}
+    blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    (data_dir / "nifty_all_metrics.json").write_text(blob, encoding="utf-8")
+    with gzip.open(data_dir / "nifty_all_metrics.json.gz", "wt", encoding="utf-8") as f:
+        f.write(blob)
+    log.info("wrote nifty_all_metrics.json (%d stocks, %d KB raw)",
+             metrics.get("count", 0), len(blob) // 1024)
+
+
+def _lowest_pe_from_metrics(metrics: dict, top: int = 20) -> list[dict]:
+    """Cheapest Nifty-500 by trailing PE, from the metrics sweep (git-as-DB back-compat)."""
+    stocks = [s for s in metrics.get("stocks", [])
+              if s.get("n500") and isinstance(s.get("pe"), (int, float)) and s["pe"] > 0]
+    stocks.sort(key=lambda s: s["pe"])
+    return [{"symbol": s["symbol"], "pe": round(s["pe"], 2)} for s in stocks[:top]]
+
+
 def run(
     data_dir: Path,
     with_llm: bool = True,
@@ -119,11 +169,28 @@ def run(
     if with_llm:
         sig.summary = commentary(sig)
 
-    write_snapshot(sig, errors, data_dir)
+    metrics = _fetch_metrics()
+    if metrics and with_llm:
+        # keyless AI: daily commentary + per-top-pick why-cheap/key-risk, committed
+        # into the metrics JSON for the site to render. Best-effort; degrades to no block.
+        from .llm.analysis import analyse
+        ai = analyse(metrics, sig.verdict, sig.verdict_score)
+        if ai:
+            metrics["ai"] = ai
+    if metrics:
+        write_metrics(metrics, sig.ts, data_dir)
+    lowest_pe = _lowest_pe_from_metrics(metrics)
+    write_snapshot(sig, errors, data_dir, lowest_pe=lowest_pe)
 
     if with_notify:
         from .notify.channels import notify_all
         mmi_snapshot = _fetch_mmi_snapshot()
-        notify_all(sig, mmi_snapshot=mmi_snapshot)
+        # Stock recommendations (top return-potential / value) ride along ONLY on
+        # a STRONG BUY market signal; other verdicts send the market read alone.
+        strong = sig.verdict == "STRONG BUY"
+        top_mtf, top_value = _top_lists(metrics) if strong else ([], [])
+        notify_all(sig, mmi_snapshot=mmi_snapshot,
+                   lowest_pe=lowest_pe if strong else [],
+                   top_mtf=top_mtf, top_value=top_value)
 
     return sig

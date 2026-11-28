@@ -89,3 +89,4 @@ def test_parse_mmi_missing_indicator():
 
     with pytest.raises(ValueError):
         parse_mmi({"date": "x"})
+

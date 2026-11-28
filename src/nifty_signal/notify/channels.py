@@ -19,6 +19,13 @@ log = logging.getLogger("nifty_signal")
 
 SITE = "https://nifty-signal.oriz.in"
 MMI_SITE = "https://mmi.oriz.in"
+# Upstream data sources cited in every signal notification (transparency).
+_SOURCES = [
+    ("Tickertape MMI", "https://www.tickertape.in/market-mood-index"),
+    ("IndexPE", "https://indexpe.in/nifty-50"),
+    ("MoneyControl", "https://www.moneycontrol.com/"),
+    ("NSE", "https://www.nseindia.com/"),
+]
 
 _VERDICT_EMOJI = {
     "STRONG BUY": "🟢",
@@ -131,7 +138,27 @@ def _mmi_section(mmi: dict[str, Any], html: bool = False) -> str:
         return "\n".join(parts)
 
 
-def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
+def _lowest_pe_section(lowest_pe: list[dict], html: bool = False, top: int = 10) -> str:
+    """Cheapest Nifty 500 by trailing PE — top N as symbol PEx."""
+    if not lowest_pe:
+        return ""
+    rows = lowest_pe[:top]
+    bits = [f"{_esc(r['symbol']) if html else r['symbol']} {r['pe']:g}x" for r in rows]
+    head = "💰 <b>Cheapest Nifty 500 by PE</b>" if html else "Cheapest Nifty 500 by PE:"
+    return head + "\n" + " · ".join(bits)
+
+
+def _picks_section(picks: list[dict], title: str, html: bool = False, top: int = 5) -> str:
+    """Top picks (MTF or value) — symbol only, STRONG-BUY-only ride-along."""
+    if not picks:
+        return ""
+    bits = [_esc(p["symbol"]) if html else p["symbol"] for p in picks[:top]]
+    head = f"<b>{_esc(title)}</b>" if html else f"{title}:"
+    return head + "\n" + " · ".join(bits)
+
+
+def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+                   top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> str:
     """Telegram HTML combined message: Nifty verdict + segment breakdown + MMI."""
     emoji = _VERDICT_EMOJI.get(sig.verdict, "⚪")
     head = (
@@ -161,6 +188,17 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> s
 
     lines.append(f"→ {SITE}")
 
+    lp = _lowest_pe_section(lowest_pe or [], html=True)
+    if lp:
+        lines.append("")
+        lines.extend(lp.split("\n"))
+
+    for picks, title in ((top_mtf, "Top MTF buy-and-hold"), (top_value, "Top value")):
+        sec = _picks_section(picks or [], title, html=True)
+        if sec:
+            lines.append("")
+            lines.extend(sec.split("\n"))
+
     # MMI section (separator + block)
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=True)
@@ -168,10 +206,16 @@ def format_message(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> s
             lines.append("")
             lines.extend(mmi_block.split("\n"))
 
+    # Sources — cite the upstream data providers (transparency).
+    src = " · ".join(f'<a href="{u}">{_esc(n)}</a>' for n, u in _SOURCES)
+    lines.append("")
+    lines.append(f"<i>Sources:</i> {src}")
+
     return "\n".join(lines)
 
 
-def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
+def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+                top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> str:
     lines = [f"{sig.verdict} — score {sig.verdict_score:.0f}/100", sig.rationale]
 
     ind = _ind_line(sig)
@@ -192,11 +236,25 @@ def format_ntfy(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> str:
 
     lines.append(SITE)
 
+    lp = _lowest_pe_section(lowest_pe or [], html=False)
+    if lp:
+        lines.append("")
+        lines.append(lp)
+
+    for picks, title in ((top_mtf, "Top MTF buy-and-hold"), (top_value, "Top value")):
+        sec = _picks_section(picks or [], title, html=False)
+        if sec:
+            lines.append("")
+            lines.append(sec)
+
     if mmi_snapshot:
         mmi_block = _mmi_section(mmi_snapshot, html=False)
         if mmi_block:
             lines.append("")
             lines.append(mmi_block)
+
+    lines.append("")
+    lines.append("Sources: " + " · ".join(f"{n} ({u})" for n, u in _SOURCES))
 
     return "\n".join(lines)
 
@@ -252,8 +310,11 @@ def send_ntfy(text: str) -> bool:
         return False
 
 
-def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None) -> dict[str, bool]:
+def notify_all(sig: Signal, mmi_snapshot: dict[str, Any] | None = None, lowest_pe: list[dict] | None = None,
+               top_mtf: list[dict] | None = None, top_value: list[dict] | None = None) -> dict[str, bool]:
     return {
-        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot)),
-        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot)),
+        "telegram": send_telegram(format_message(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe,
+                                                  top_mtf=top_mtf, top_value=top_value)),
+        "ntfy": send_ntfy(format_ntfy(sig, mmi_snapshot=mmi_snapshot, lowest_pe=lowest_pe,
+                                      top_mtf=top_mtf, top_value=top_value)),
     }
