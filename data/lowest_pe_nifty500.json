@@ -1,85 +1,85 @@
 {
-  "ts": "2026-10-16T12:14:51+00:00",
+  "ts": "2026-11-27T17:22:07+00:00",
   "stocks": [
     {
-      "symbol": "TMPV",
-      "pe": 1.28
+      "symbol": "PFC",
+      "pe": 4.17
     },
     {
       "symbol": "HINDPETRO",
-      "pe": 4.11
+      "pe": 4.55
     },
     {
       "symbol": "IOC",
-      "pe": 4.32
-    },
-    {
-      "symbol": "PFC",
-      "pe": 4.36
-    },
-    {
-      "symbol": "BPCL",
-      "pe": 4.93
+      "pe": 4.72
     },
     {
       "symbol": "RECLTD",
-      "pe": 5.0
+      "pe": 4.76
+    },
+    {
+      "symbol": "BPCL",
+      "pe": 5.12
     },
     {
       "symbol": "LICHSGFIN",
-      "pe": 5.23
-    },
-    {
-      "symbol": "VEDL",
-      "pe": 5.52
-    },
-    {
-      "symbol": "BANKINDIA",
-      "pe": 5.76
-    },
-    {
-      "symbol": "GICRE",
-      "pe": 5.93
-    },
-    {
-      "symbol": "BANKBARODA",
-      "pe": 5.94
+      "pe": 5.84
     },
     {
       "symbol": "CANBK",
-      "pe": 5.94
+      "pe": 6.04
     },
     {
-      "symbol": "CENTRALBK",
-      "pe": 6.16
-    },
-    {
-      "symbol": "J&KBANK",
-      "pe": 6.41
-    },
-    {
-      "symbol": "UNIONBANK",
-      "pe": 6.78
-    },
-    {
-      "symbol": "ONGC",
-      "pe": 6.82
+      "symbol": "GICRE",
+      "pe": 6.09
     },
     {
       "symbol": "CHENNPETRO",
-      "pe": 6.93
+      "pe": 6.49
     },
     {
-      "symbol": "PNB",
-      "pe": 7.19
+      "symbol": "CENTRALBK",
+      "pe": 6.69
+    },
+    {
+      "symbol": "ONGC",
+      "pe": 6.76
+    },
+    {
+      "symbol": "BANKINDIA",
+      "pe": 6.92
+    },
+    {
+      "symbol": "BANKBARODA",
+      "pe": 7.16
     },
     {
       "symbol": "GESHIP",
-      "pe": 7.2
+      "pe": 7.28
+    },
+    {
+      "symbol": "CHAMBLFERT",
+      "pe": 7.68
+    },
+    {
+      "symbol": "COALINDIA",
+      "pe": 7.71
     },
     {
       "symbol": "HUDCO",
-      "pe": 7.99
+      "pe": 7.72
+    },
+    {
+      "symbol": "J&KBANK",
+      "pe": 7.77
+    },
+    {
+      "symbol": "NMDC",
+      "pe": 8.02
+    },
+    {
+      "symbol": "UNIONBANK",
+      "pe": 8.29
     }
   ]
 }
